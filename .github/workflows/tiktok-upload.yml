@@ -1,0 +1,35 @@
+name: TikTok Auto Upload
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm install
+      - run: npx playwright install chromium
+
+      - name: Decode cookies
+        run: echo "${{ secrets.COOKIES_B64 }}" | base64 -d > cookies.json
+
+      - name: Upload video
+        env:
+          VIDEO_PATH: video.mp4
+          VIDEO_DESCRIPTION: "TITAN AI - Auto uploaded #titanai"
+          TIKTOK_EMAIL: ${{ secrets.TIKTOK_EMAIL }}
+          TIKTOK_PASSWORD: ${{ secrets.TIKTOK_PASSWORD }}
+        run: node upload.js
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: upload-logs
+          path: logs/
