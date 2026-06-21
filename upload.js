@@ -42,9 +42,19 @@ const fs = require('fs');
     viewport: { width: 1920, height: 1080 }
   });
   
+  // Validate and fix cookies sameSite
+  const validSameSite = ['Strict', 'Lax', 'None'];
+  const fixedCookies = cookies.map(c => {
+    if (c.sameSite && !validSameSite.includes(c.sameSite)) {
+      console.log(`⚠️ Fixing cookie "${c.name}": sameSite "${c.sameSite}" → "Lax"`);
+      return { ...c, sameSite: 'Lax' };
+    }
+    return c;
+  });
+  
   // Add cookies
-  await context.addCookies(cookies);
-  console.log('🍪 Cookies added');
+  await context.addCookies(fixedCookies);
+  console.log(`🍪 Cookies added (${fixedCookies.length})`);
   
   const page = await context.newPage();
   
