@@ -3,126 +3,862 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marketing Plan — Mustika Lembayung</title>
+<title>Mustika Lembayung — Marketing Plan Jun 2026</title>
 <style>
-body{font-family:Arial,sans-serif;margin:20px;background:#fff;color:#333;line-height:1.6}
-h1{color:#b8860b;border-bottom:3px solid #b8860b;padding-bottom:10px}
-h2{color:#1a5276;border-bottom:1px solid #ddd;padding-bottom:5px;margin-top:25px}
-h3{color:#2874a6;margin-top:15px}
-.kpi{display:inline-block;background:#f5f5f5;border:1px solid #ddd;border-radius:8px;padding:15px;margin:5px;text-align:center;min-width:120px}
-.kpi .num{font-size:24px;font-weight:bold;color:#b8860b}
-.kpi .lbl{font-size:12px;color:#666}
-table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
-th{background:#1a5266;color:#fff;padding:8px;text-align:left}
-td{padding:8px;border-bottom:1px solid #ddd}
-tr:hover{background:#f5f5f5}
-.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;color:#fff}
-.r{background:#c0392b}.y{background:#f39c12}.g{background:#27ae60}.b{background:#2980b9}
-ul{padding-left:20px}li{margin:5px 0}
-.warn{background:#fef9e7;border-left:4px solid #f39c12;padding:10px;margin:10px 0}
-.crit{background:#fdedec;border-left:4px solid #c0392b;padding:10px;margin:10px 0}
-.ok{background:#eafaf1;border-left:4px solid #27ae60;padding:10px;margin:10px 0}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --gold: #D4A843;
+  --gold-light: #F0D68A;
+  --gold-dark: #B8860B;
+  --dark: #0D1117;
+  --dark-card: #161B22;
+  --dark-hover: #1C2333;
+  --text: #E6EDF3;
+  --text-muted: #8B949E;
+  --green: #3FB950;
+  --red: #F85149;
+  --yellow: #D29922;
+  --blue: #58A6FF;
+  --purple: #BC8CFF;
+  --border: #30363D;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══ HEADER ═══ */
+.header {
+  background: linear-gradient(135deg, #0D1117 0%, #161B22 50%, #1C2333 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--dark);
+}
+
+.logo-text h1 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+
+.logo-text span {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.header-badge {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: var(--dark);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ═══ CONTAINER ═══ */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* ═══ KPI CARDS ═══ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.kpi-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-dark));
+}
+
+.kpi-card.warning::before { background: linear-gradient(90deg, var(--yellow), #B8860B); }
+.kpi-card.danger::before { background: linear-gradient(90deg, var(--red), #C0392B); }
+.kpi-card.success::before { background: linear-gradient(90deg, var(--green), #27AE60); }
+
+.kpi-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+
+.kpi-card.warning .kpi-value { color: var(--yellow); }
+.kpi-card.danger .kpi-value { color: var(--red); }
+.kpi-card.success .kpi-value { color: var(--green); }
+
+.kpi-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.kpi-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.progress-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  transition: width 0.5s ease;
+}
+
+.kpi-card.warning .progress-fill { background: linear-gradient(90deg, var(--yellow), #F0D68A); }
+.kpi-card.danger .progress-fill { background: linear-gradient(90deg, var(--red), #FF6B6B); }
+
+/* ═══ SECTION ═══ */
+.section {
+  background: var(--dark-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.section-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ═══ CONTENT LIST ═══ */
+.content-list {
+  list-style: none;
+}
+
+.content-list li {
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: all 0.2s;
+  background: var(--dark);
+}
+
+.content-list li:hover {
+  border-color: var(--gold);
+  background: var(--dark-hover);
+}
+
+.content-list li .num {
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dark);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.content-list li .text {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.batch-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gold);
+  margin: 20px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.batch-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ═══ TCO TABLE ═══ */
+.tco-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin: 16px 0;
+}
+
+.tco-table th {
+  background: var(--dark-hover);
+  color: var(--gold);
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border);
+}
+
+.tco-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tco-table tr:hover td {
+  background: var(--dark-hover);
+}
+
+.tco-table .highlight {
+  color: var(--green);
+  font-weight: 600;
+}
+
+.tco-table .danger {
+  color: var(--red);
+}
+
+.tco-total {
+  background: var(--dark-hover) !important;
+  font-weight: 700;
+}
+
+/* ═══ METHOD CARDS ═══ */
+.method-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.method-card {
+  background: var(--dark);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.method-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+
+.method-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.method-card:nth-child(1)::before { background: linear-gradient(90deg, var(--gold), var(--gold-dark)); }
+.method-card:nth-child(2)::before { background: linear-gradient(90deg, var(--yellow), #B8860B); }
+.method-card:nth-child(3)::before { background: linear-gradient(90deg, var(--blue), #2980B9); }
+
+.method-number {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.method-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.method-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.method-list {
+  list-style: none;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.method-list li {
+  padding: 4px 0;
+  padding-left: 16px;
+  position: relative;
+}
+
+.method-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+}
+
+/* ═══ CALENDAR ═══ */
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.calendar-table th {
+  background: var(--dark-hover);
+  color: var(--gold);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.calendar-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.calendar-table tr:hover td {
+  background: var(--dark-hover);
+}
+
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tag-ready { background: rgba(63, 185, 80, 0.15); color: var(--green); border: 1px solid rgba(63, 185, 80, 0.3); }
+.tag-blocked { background: rgba(248, 81, 73, 0.15); color: var(--red); border: 1px solid rgba(248, 81, 73, 0.3); }
+.tag-planned { background: rgba(88, 166, 255, 0.15); color: var(--blue); border: 1px solid rgba(88, 166, 255, 0.3); }
+
+/* ═══ CHECKLIST ═══ */
+.checklist {
+  list-style: none;
+}
+
+.checklist li {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--dark);
+  transition: all 0.2s;
+}
+
+.checklist li:hover {
+  border-color: var(--gold);
+}
+
+.checklist input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+.checklist li.checked {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+/* ═══ UNITS ═══ */
+.unit-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.unit-card {
+  background: var(--dark);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.unit-card:hover {
+  border-color: var(--green);
+}
+
+.unit-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.unit-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.unit-loc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.unit-status {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(63, 185, 80, 0.15);
+  color: var(--green);
+  border: 1px solid rgba(63, 185, 80, 0.3);
+}
+
+/* ═══ FOOTER ═══ */
+.footer {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 24px;
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 768px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .method-grid { grid-template-columns: 1fr; }
+  .unit-grid { grid-template-columns: 1fr; }
+  .container { padding: 16px; }
+  .header-inner { padding: 12px 16px; }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
-<h1>📋 MARKETING PLAN — MUSTIKA LEMBAYUNG</h1>
-<p><strong>Periode:</strong> 22 Juni - 30 Juni 2026 | <strong>Target:</strong> Closing 3 Unit</p>
-
-<h2>📊 KPI Dashboard</h2>
-<div class="kpi"><div class="num">7/20</div><div class="lbl">Konten Terbuat (35%)</div></div>
-<div class="kpi"><div class="num">13</div><div class="lbl">Konten Belum</div></div>
-<div class="kpi"><div class="num">3</div><div class="lbl">Target Closing</div></div>
-<div class="kpi"><div class="num">18%</div><div class="lbl">Implementasi KPI</div></div>
-
-<h2>🎬 13 Konten Belum — Rencana Shooting</h2>
-
-<h3>Batch 1: Lokasi & Akses</h3>
-<ul>
-<li>Shoot jalan ke Mustika Lembayung Sumbersuko</li>
-<li>Lokasi ML ke tempat terkenal (Puskesmas, Wisata, Kantor Keamanan)</li>
-<li>Mengapa ML? — Lokasi real padat pemukiman, akses jalan beraspal. Komen: "Spill lokasinya"</li>
-<li>Mengapa ML? — Keunggulan kawasan Marketing Gallery</li>
-<li>Konten konsep open space di ML</li>
-</ul>
-
-<h3>Batch 2: Interior & Edukasi</h3>
-<ul>
-<li>Open space → komen negatif "Sumpek, gak ada privasi" → jawab: open space diminati + taman = ruang tamu outdoor</li>
-<li>Spill material (Bata ringan, merk cat, cat pelapis)</li>
-<li>Rumah subsidi rata-rata 2.8-3m vs ML 4 meter</li>
-<li>Drop ceiling atap + Meja ala bar</li>
-</ul>
-
-<h3>Batch 3: Testimoni & Spesifikasi</h3>
-<ul>
-<li>Tukang/Pemborong (Selo) bahas kualitas bangunan ML</li>
-<li>Komen negatif "Bata ringan gak awet" → jawab: kelebihan bata ringan + rumah komersial juga pakai</li>
-<li>Kedalaman septictank</li>
-<li>Akses jalan di lokasi perumahan</li>
-<li>Pengawasan struktur bangunan di ML</li>
-</ul>
-
-<h2>💰 Template TCO</h2>
-<table>
-<tr><th>Komponen</th><th>Kompetitor</th><th>ML</th></tr>
-<tr><td>Harga rumah</td><td>150jt</td><td>165jt</td></tr>
-<tr><td>Dapur</td><td class="r">+15jt</td><td class="g">✅ Ada</td></tr>
-<tr><td>Tembok pembatas</td><td class="r">+8jt</td><td class="g">✅ Ada</td></tr>
-<tr><td>Cat</td><td class="r">+5jt</td><td class="g">✅ Ada</td></tr>
-<tr><td>Drop ceiling</td><td class="r">+7jt</td><td class="g">✅ Ada</td></tr>
-<tr><td>Meja dapur</td><td class="r">+3jt</td><td class="g">✅ Ada</td></tr>
-<tr><td>Taman</td><td class="r">+5jt</td><td class="g">✅ Ada</td></tr>
-<tr><td><strong>TOTAL SIAP HUNI</strong></td><td class="r"><strong>193jt</strong></td><td class="g"><strong>165jt</strong></td></tr>
-</table>
-<p class="ok">💡 Hemat 28jt + Langsung huni + Tanpa repot urus tukang</p>
-
-<h2>🎯 3 Metode Penjualan</h2>
-
-<div class="warn">
-<strong>1. TCO Approach</strong><br>
-Jual "Biaya Total Siap Huni", bukan harga rumah. Hitung: Kompetitor + Renovasi + Repot vs ML = Siap Huni
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">ML</div>
+      <div class="logo-text">
+        <h1>Mustika Lembayung</h1>
+        <span>Marketing Plan — Juni 2026</span>
+      </div>
+    </div>
+    <div class="header-badge">🎯 Target: 3 Unit</div>
+  </div>
 </div>
 
-<div class="warn">
-<strong>2. Scarcity & FOMO</strong><br>
-Kuota subsidi terbatas. "Sisa 2 unit blok siap huni". Tunda = kehilangan hak subsidi.
+<div class="container">
+
+<!-- KPI DASHBOARD -->
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-value">7/20</div>
+    <div class="kpi-label">Konten Terbuat</div>
+    <div class="kpi-sub">35% dari target bulanan</div>
+    <div class="progress-bar"><div class="progress-fill" style="width:35%"></div></div>
+  </div>
+  <div class="kpi-card danger">
+    <div class="kpi-value">13</div>
+    <div class="kpi-label">Konten Belum</div>
+    <div class="kpi-sub">Deadline: 30 Juni 2026</div>
+    <div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div>
+  </div>
+  <div class="kpi-card success">
+    <div class="kpi-value">3</div>
+    <div class="kpi-label">Target Closing</div>
+    <div class="kpi-sub">Unit siap huni</div>
+    <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+  </div>
+  <div class="kpi-card warning">
+    <div class="kpi-value">18%</div>
+    <div class="kpi-label">Implementasi KPI</div>
+    <div class="kpi-sub">dari 100% target</div>
+    <div class="progress-bar"><div class="progress-fill" style="width:18%"></div></div>
+  </div>
 </div>
 
-<div class="warn">
-<strong>3. Menghilangkan Kekhawatiran</strong><br>
-Jaminan asistensi KPR penuh. Booking fee fleksibel. Tim pemberkasan developer urus semua berkas.
+<!-- KONTEN BELUM -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">🎬</div>
+    <div>
+      <div class="section-title">13 Konten Belum — Rencana Shooting</div>
+      <div class="section-subtitle">Target selesai editing: 30 Juni 2026</div>
+    </div>
+  </div>
+
+  <div class="batch-header">Batch 1: Lokasi & Akses</div>
+  <ul class="content-list">
+    <li><span class="num">1</span><span class="text">Shoot jalan ke Mustika Lembayung Sumbersuko</span></li>
+    <li><span class="num">2</span><span class="text">Lokasi ML ke tempat terkenal (Puskesmas, Tempat Wisata, Kantor Keamanan)</span></li>
+    <li><span class="num">3</span><span class="text">Mengapa harus ML? — Lokasi real padat pemukiman, akses jalan beraspal, tanpa gimmick. Komen: "Spill lokasinya"</span></li>
+    <li><span class="num">4</span><span class="text">Mengapa harus ML? — Keunggulan kawasan Marketing Gallery</span></li>
+    <li><span class="num">5</span><span class="text">Konten konsep open space di Mustika Lembayung</span></li>
+  </ul>
+
+  <div class="batch-header">Batch 2: Interior & Edukasi</div>
+  <ul class="content-list">
+    <li><span class="num">6</span><span class="text">Open space → komen negatif "Kaya kelihatan sumpek", "Gak ada privasi" → jawab dengan video mengapa open space diminati + opsi taman jadi ruang tamu outdoor (beri referensi)</span></li>
+    <li><span class="num">7</span><span class="text">Spill material pembangunan (Bata ringan, merk cat, cat pelapis)</span></li>
+    <li><span class="num">8</span><span class="text">Rumah subsidi rata-rata tinggi 2.8-3m vs ML 4 meter</span></li>
+    <li><span class="num">9</span><span class="text">Drop ceiling atap + Meja ala bar</span></li>
+  </ul>
+
+  <div class="batch-header">Batch 3: Testimoni & Spesifikasi</div>
+  <ul class="content-list">
+    <li><span class="num">10</span><span class="text">Tukang/Pemborong (Selo) bahas kualitas bangunan ML</span></li>
+    <li><span class="num">11</span><span class="text">Komen negatif "Dinding pakai bata ringan, pasti gak awet" → jawab kelebihan bata ringan + highlight rumah komersial kota besar juga pakai</span></li>
+    <li><span class="num">12</span><span class="text">Kedalaman septictank</span></li>
+    <li><span class="num">13</span><span class="text">Akses jalan di lokasi perumahan + Pengawasan struktur bangunan</span></li>
+  </ul>
 </div>
 
-<h2>📅 Kalender (24-30 Juni)</h2>
-<table>
-<tr><th>Tgl</th><th>Aktivitas</th><th>PIC</th></tr>
-<tr><td>24 Jun</td><td>Live Streaming "Mulai aja dulu"</td><td>Rizza/Mada</td></tr>
-<tr><td>24 Jun</td><td>Follow up user survey</td><td>Mada</td></tr>
-<tr><td>24 Jun</td><td>Canvassing pabrik</td><td>Rizza</td></tr>
-<tr><td>25 Jun</td><td>Shoot Batch 1 — Lokasi</td><td>-</td></tr>
-<tr><td>26 Jun</td><td>Shoot Batch 2 — Interior</td><td>-</td></tr>
-<tr><td>27 Jun</td><td>Contact person di Linktree</td><td>Rizza</td></tr>
-<tr><td>28 Jun</td><td>Shoot Batch 3 — Testimoni</td><td>-</td></tr>
-<tr><td>29-30</td><td>Editing & finalisasi</td><td>-</td></tr>
-</table>
+<!-- TEMPLATE TCO -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">💰</div>
+    <div>
+      <div class="section-title">Template TCO — Total Cost of Ownership</div>
+      <div class="section-subtitle">Pakai saat konsumen bilang "Kompetitor lebih murah"</div>
+    </div>
+  </div>
 
-<h2>✅ Checklist</h2>
-<ul>
-<li>Equipment Live: Mic Holyland + Tripod</li>
-<li>Moodboard: Kuning-Putih, gradient kuning</li>
-<li>Talent trial: Rizza atau Mada</li>
-<li>Non-paid promote: BNI, Mandiri, BTN</li>
-<li>Banner DEM: Penataan strategis</li>
-</ul>
+  <table class="tco-table">
+    <tr>
+      <th>Komponen</th>
+      <th>Kompetitor X</th>
+      <th>Mustika Lembayung</th>
+    </tr>
+    <tr>
+      <td>Harga rumah (brochure)</td>
+      <td>Rp 150.000.000</td>
+      <td>Rp 165.000.000</td>
+    </tr>
+    <tr>
+      <td>Dapur (belum ada)</td>
+      <td class="danger">+ Rp 15.000.000</td>
+      <td class="highlight">✅ Sudah ada</td>
+    </tr>
+    <tr>
+      <td>Tembok pembatas kamar</td>
+      <td class="danger">+ Rp 8.000.000</td>
+      <td class="highlight">✅ Sudah ada</td>
+    </tr>
+    <tr>
+      <td>Cat dasar</td>
+      <td class="danger">+ Rp 5.000.000</td>
+      <td class="highlight">✅ Sudah di-cat</td>
+    </tr>
+    <tr>
+      <td>Plafon drop ceiling</td>
+      <td class="danger">+ Rp 7.000.000</td>
+      <td class="highlight">✅ Sudah ada</td>
+    </tr>
+    <tr>
+      <td>Meja dapur/ala bar</td>
+      <td class="danger">+ Rp 3.000.000</td>
+      <td class="highlight">✅ Sudah ada</td>
+    </tr>
+    <tr>
+      <td>Taman depan</td>
+      <td class="danger">+ Rp 5.000.000</td>
+      <td class="highlight">✅ Sudah ada</td>
+    </tr>
+    <tr class="tco-total">
+      <td><strong>TOTAL BIAYA SIAP HUNI</strong></td>
+      <td class="danger"><strong>Rp 193.000.000</strong></td>
+      <td class="highlight"><strong>Rp 165.000.000</strong></td>
+    </tr>
+  </table>
 
-<h2>🏠 Unit Ready</h2>
-<table>
-<tr><th>#</th><th>Produk</th><th>Lokasi</th></tr>
-<tr><td>1</td><td>Grand Lembayung Indah</td><td>Kabuaran A9</td></tr>
-<tr><td>2</td><td>Rumah Readystock</td><td>Mustika Lembayung</td></tr>
-<tr><td>3</td><td>Rumah Readystock</td><td>Bhumi Saka Arum</td></tr>
-</table>
+  <div style="background:rgba(63,185,80,0.1);border:1px solid rgba(63,185,80,0.3);border-radius:8px;padding:12px 16px;margin-top:16px">
+    <strong style="color:var(--green)">💡 Hemat Rp 28.000.000</strong> + Langsung huni + Tanpa repot urus tukang
+  </div>
+</div>
+
+<!-- METODE PENJUALAN -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">🎯</div>
+    <div>
+      <div class="section-title">3 Metode Penjualan "Memaksa"</div>
+      <div class="section-subtitle">Teknik closing untuk konsumen yang ragu</div>
+    </div>
+  </div>
+
+  <div class="method-grid">
+    <div class="method-card">
+      <div class="method-number">Metode 1</div>
+      <div class="method-title">Total Utility & TCO</div>
+      <div class="method-desc">Jual "Biaya Total Siap Huni", bukan harga rumah.</div>
+      <ul class="method-list">
+        <li>Edukasi: harga murah = Hidden Cost</li>
+        <li>Tanpa dapur & tembok = CapEx tambahan</li>
+        <li>Ubah perbandingan jadi angka riil</li>
+      </ul>
+    </div>
+    <div class="method-card">
+      <div class="method-number">Metode 2</div>
+      <div class="method-title">Scarcity & FOMO</div>
+      <div class="method-desc">Ciptakan kelangkaan berbasis regulasi kuota pemerintah.</div>
+      <ul class="method-list">
+        <li>Kuota subsidi terbatas per tahun</li>
+        <li>"Sisa 2 unit blok siap huni"</li>
+        <li>Tunda = kehilangan hak subsidi</li>
+      </ul>
+    </div>
+    <div class="method-card">
+      <div class="method-number">Metode 3</div>
+      <div class="method-title">Menghilangkan Kekhawatiran</div>
+      <div class="method-desc">Hilangkan ketakutan: KPR ditolak & administrasi rumit.</div>
+      <ul class="method-list">
+        <li>Jaminan asistensi KPR penuh</li>
+        <li>Booking fee fleksibel/diangsur</li>
+        <li>Tim pemberkasan urus semua berkas</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- KALENDER -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">📅</div>
+    <div>
+      <div class="section-title">Kalender Implementasi</div>
+      <div class="section-subtitle">24 — 30 Juni 2026</div>
+    </div>
+  </div>
+
+  <table class="calendar-table">
+    <tr>
+      <th>Tanggal</th>
+      <th>Aktivitas</th>
+      <th>PIC</th>
+      <th>Status</th>
+    </tr>
+    <tr>
+      <td>24 Jun</td>
+      <td>Live Streaming "Mulai aja dulu" (ref: Lab Persada)</td>
+      <td>Rizza/Mada</td>
+      <td><span class="tag tag-ready">Ready</span></td></tr>
+    <tr>
+      <td>24 Jun</td>
+      <td>Follow up user survey lokasi</td>
+      <td>Mada</td>
+      <td><span class="tag tag-ready">Ready</span></td></tr>
+    <tr>
+      <td>24 Jun</td>
+      <td>Canvassing pabrik (need creative producer)</td>
+      <td>Rizza</td>
+      <td><span class="tag tag-blocked">Blocked</span></td></tr>
+    <tr>
+      <td>25 Jun</td>
+      <td>Shoot Batch 1 — Lokasi & Akses</td>
+      <td>-</td>
+      <td><span class="tag tag-planned">Planned</span></td></tr>
+    <tr>
+      <td>26 Jun</td>
+      <td>Shoot Batch 2 — Interior & Edukasi</td>
+      <td>-</td>
+      <td><span class="tag tag-planned">Planned</span></td></tr>
+    <tr>
+      <td>27 Jun</td>
+      <td>Penambahan contact person di Linktree</td>
+      <td>Rizza</td>
+      <td><span class="tag tag-planned">Planned</span></td></tr>
+    <tr>
+      <td>28 Jun</td>
+      <td>Shoot Batch 3 — Testimoni & Spesifikasi</td>
+      <td>-</td>
+      <td><span class="tag tag-planned">Planned</span></td></tr>
+    <tr>
+      <td>29-30 Jun</td>
+      <td>Editing & finalisasi semua konten</td>
+      <td>-</td>
+      <td><span class="tag tag-planned">Planned</span></td></tr>
+  </table>
+</div>
+
+<!-- CHECKLIST -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">✅</div>
+    <div>
+      <div class="section-title">Checklist Pra-Implementasi</div>
+      <div class="section-subtitle">Centang jika sudah selesai</div>
+    </div>
+  </div>
+
+  <ul class="checklist">
+    <li><input type="checkbox" onchange=this.parentElement.classList.toggle('checked')> <span>Equipment Live Streaming: Mic Holyland + Tripod</span></li>
+    <li><input type="checkbox" onchange=this.parentElement.classList.toggle('checked')> <span>Moodboard Live: Kuning-Putih, gradient kuning top screen</span></li>
+    <li><input type="checkbox" onchange=this.parentElement.classList.toggle('checked')> <span>Tulisan di screen: No telepon + lokasi (center), cicilan (center bawah)</span></li>
+    <li><input type="checkbox" onchange=this.parentElement.classList.toggle('checked')> <span>Talent trial live: Rizza atau MADA — test dulu sebelum 24 Jun</span></li>
+    <li><input type="checkbox" onchange=this.parentElement.classList.toggle('checked')> <span>Non-paid promote ke rekanan perbankan (BNI, Mandiri, BTN)</span></li>
+    <li><input type="checkbox" onchange=this.parentElement.classList.toggle('checked')> <span>Banner DEM: Penataan strategis, tidak asal tempat</span></li>
+    <li><input type="checkbox" onchange=this.parentElement.classList.toggle('checked')> <span>Pricelist Fit ML: Tentukan metodologi "memaksa" dulu sebelum release</span></li>
+  </ul>
+</div>
+
+<!-- UNIT READY -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">🏠</div>
+    <div>
+      <div class="section-title">Unit Ready untuk Closing</div>
+      <div class="section-subtitle">3 unit siap dijual</div>
+    </div>
+  </div>
+
+  <div class="unit-grid">
+    <div class="unit-card">
+      <div class="unit-icon">🏡</div>
+      <div class="unit-name">Grand Lembayung Indah</div>
+      <div class="unit-loc">Kabuaran A9</div>
+      <div class="unit-status">✅ Ready</div>
+    </div>
+    <div class="unit-card">
+      <div class="unit-icon">🏘️</div>
+      <div class="unit-name">Rumah Readystock</div>
+      <div class="unit-loc">Mustika Lembayung</div>
+      <div class="unit-status">✅ Ready</div>
+    </div>
+    <div class="unit-card">
+      <div class="unit-icon">🏘️</div>
+      <div class="unit-name">Rumah Readystock</div>
+      <div class="unit-loc">Bhumi Saka Arum</div>
+      <div class="unit-status">✅ Ready</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  <p>Marketing Plan Mustika Lembayung — Generated by TITAN AI</p>
+  <p>Per 22 Juni 2026 | Target Closing: 3 Unit</p>
+</div>
 
 </body>
 </html>
