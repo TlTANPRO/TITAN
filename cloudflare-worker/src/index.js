@@ -39,31 +39,38 @@ function nextKeyIndex(providerName, totalKeys) {
   return next;
 }
 
-// OpenRouter free-model allowlist — only models with `:free` suffix
-// are routed. Everything else (paid models) is filtered out.
+// OpenRouter free-model allowlist — verified 16 Jul 2026 via /api/v1/models.
+// Only models that (a) appear in the free-tier list and (b) actually return
+// 200 OK on chat.completions are included. Older models in v2's list (llama-3.1
+// 8b, qwen-2.5-72b, gemma-2 family, dolphin, hermes-3 405b) all 404/429 —
+// removed.
 const OPENROUTER_FREE_MODELS = new Set([
-  'google/gemini-2.0-flash-exp:free',
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'meta-llama/llama-3.1-8b-instruct:free',
-  'qwen/qwen-2.5-72b-instruct:free',
-  'qwen/qwq-32b-preview:free',
-  'mistralai/mistral-7b-instruct:free',
-  'google/gemma-2-9b-it:free',
-  'google/gemma-2-27b-it:free',
-  'nousresearch/hermes-3-llama-3.1-405b:free',
+  'openai/gpt-oss-20b:free',                       // verified 200 OK
+  'google/gemma-4-26b-a4b-it:free',                // verified 200 OK ("Halo")
+  'google/gemma-4-31b-it:free',                    // listed, currently rate-limited
+  'meta-llama/llama-3.2-3b-instruct:free',         // listed
+  'meta-llama/llama-3.3-70b-instruct:free',        // listed
   'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
-  'microsoft/phi-3-mini-128k-instruct:free',
-  'openchat/openchat-7b:free',
-  'undi95/toppy-m-7b:free',
-  'huggingfaceh4/zephyr-7b-beta:free',
-  'gryphe/mythomist-7b:free',
-  'kwaipilot/kat-coder-pro:free'
+  'qwen/qwen3-next-80b-a3b-instruct:free',
+  'qwen/qwen3-coder:free',
+  'nvidia/nemotron-3-ultra-550b-a55b:free',
+  'nvidia/nemotron-3-super-120b-a12b:free',
+  'nvidia/nemotron-3-nano-30b-a3b:free',
+  'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
+  'nvidia/nemotron-nano-9b-v2:free',
+  'nvidia/nemotron-nano-12b-v2-vl:free',
+  'tencent/hy3:free',
+  'poolside/laguna-xs-2.1:free',
+  'poolside/laguna-m.1:free',
+  'cohere/north-mini-code:free',
+  'nvidia/nemotron-3.5-content-safety:free',
+  'nousresearch/hermes-3-llama-3.1-405b:free'
 ]);
 
 function pickOpenRouterModel(requested) {
   if (requested && OPENROUTER_FREE_MODELS.has(requested)) return requested;
-  // Default to a reliable free model
-  return 'meta-llama/llama-3.1-8b-instruct:free';
+  // Default to a model that was 200 OK in our verification
+  return 'google/gemma-4-26b-a4b-it:free';
 }
 
 // ============ Provider registry ============
