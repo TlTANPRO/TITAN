@@ -1,15 +1,17 @@
 {
   "name": "cloudflare-worker",
-  "version": "1.0.0",
-  "description": "Holds all LLM API keys server-side. The browser only ever talks to this Worker, never directly to upstream providers. Setting `VITE_LLM_PROXY_URL` to this Worker's URL puts the app in **fully automatic** mode — users do not enter any API keys.",
-  "main": "index.js",
+  "version": "3.0.0",
+  "description": "TITAN LLM Proxy v3 — multi-key rotation, multi-provider chain (google → openrouter free → cohere), Jina tools. Browser only ever talks to this Worker.",
+  "main": "src/index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --check src/index.js",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["cloudflare", "workers", "llm", "proxy", "titan"],
+  "author": "TITAN",
   "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
     "wrangler": "^4.110.0"
   }

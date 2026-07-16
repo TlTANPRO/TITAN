@@ -1,36 +1,75 @@
-// TITAN LLM Proxy — Cloudflare Worker (v2: multi-key rotation + multi-provider fallback)
+// TITAN LLM Proxy — Cloudflare Worker (v3: round-robin + provider config)
+//
+// Changelog vs v2:
+//   v3.0  Round-robin key rotation within provider (16 Google keys all used evenly)
+//         via Cloudflare Worker state (per-instance best-effort, sufficient for free tier).
+//   v3.0  Removed Groq (per user request: simpler chain, less config surface).
+//   v3.0  OpenRouter pinned to free models only (`:free` suffix). Filters out paid models.
+//   v3.0  Cohere kept as last resort. Add `COHERE_KEYS` to enable.
+//   v3.0  Jina search/read unchanged. Key still required.
 //
 // Capabilities:
-//   • Multi-key rotation per provider — comma-separated in env (OPENROUTER_API_KEYS, GOOGLE_KEYS, ...)
-//   • Auto-rotation: on 429/5xx/network error, transparently try next key
-//   • Multi-provider chain: OpenRouter → Google → Groq → Cohere (all OpenAI-compatible except Google)
+//   • Multi-key rotation per provider (comma-separated in env)
+//   • Round-robin: each call uses NEXT key, not key#1 always
+//   • Auto-rotation on 429/5xx/auth/credit error, transparently try next
+//   • Multi-provider chain: google → openrouter (free only) → cohere
 //   • Jina AI integration (web search s.jina.ai + reader r.jina.ai) — free tier fallback
-//   • Worker-level rate limit handling (Cloudflare free: 100k req/day)
-//
-// Deploy: Cloudflare Dashboard → Workers → Create → paste this code → set env vars → Save → Deploy
-// Set env vars in Worker settings (Type: Secret/encrypted, NOT Plaintext):
-//   OPENROUTER_API_KEYS   = sk-or-v1-A,sk-or-v1-B,sk-or-v1-C
-//   GOOGLE_KEYS            = AQ.Ab8-1,AQ.Ab8-2
-//   GROQ_KEYS              = gsk_...
-//   COHERE_KEYS            = ...
-//   JINA_KEYS              = jina_...
-//   ALLOWED_ORIGIN         = https://tltanpro.github.io  (CORS lock-down, optional)
 //
 // Request shape (POST):
-//   Headers: X-Titan-Provider (openrouter|google|groq|cohere|jina|auto), X-Titan-Action (chat|search|read)
+//   Headers: X-Titan-Provider (auto|google|openrouter|cohere|jina), X-Titan-Action (chat|search|read|social)
 //   Body:    { model?, messages: [...], temperature?, max_tokens?, stream: true }
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
   'Access-Control-Allow-Headers': 'Content-Type, X-Titan-Provider, X-Titan-Action',
   'Access-Control-Max-Age': '86400'
 };
 
+// ============ Round-robin key state ============
+// Cloudflare Workers are single-threaded per isolate, and we hold no persistence.
+// Per-isolate round-robin counter is good enough for free-tier load distribution.
+// Maps: providerName -> lastUsedIndex (in-memory, resets on Worker restart)
+const rrIndex = new Map();
+function nextKeyIndex(providerName, totalKeys) {
+  if (totalKeys <= 1) return 0;
+  const cur = rrIndex.get(providerName) ?? -1;
+  const next = (cur + 1) % totalKeys;
+  rrIndex.set(providerName, next);
+  return next;
+}
+
+// OpenRouter free-model allowlist — only models with `:free` suffix
+// are routed. Everything else (paid models) is filtered out.
+const OPENROUTER_FREE_MODELS = new Set([
+  'google/gemini-2.0-flash-exp:free',
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'meta-llama/llama-3.1-8b-instruct:free',
+  'qwen/qwen-2.5-72b-instruct:free',
+  'qwen/qwq-32b-preview:free',
+  'mistralai/mistral-7b-instruct:free',
+  'google/gemma-2-9b-it:free',
+  'google/gemma-2-27b-it:free',
+  'nousresearch/hermes-3-llama-3.1-405b:free',
+  'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
+  'microsoft/phi-3-mini-128k-instruct:free',
+  'openchat/openchat-7b:free',
+  'undi95/toppy-m-7b:free',
+  'huggingfaceh4/zephyr-7b-beta:free',
+  'gryphe/mythomist-7b:free',
+  'kwaipilot/kat-coder-pro:free'
+]);
+
+function pickOpenRouterModel(requested) {
+  if (requested && OPENROUTER_FREE_MODELS.has(requested)) return requested;
+  // Default to a reliable free model
+  return 'meta-llama/llama-3.1-8b-instruct:free';
+}
+
 // ============ Provider registry ============
 const PROVIDERS = {
   openrouter: {
-    label: 'OpenRouter',
+    label: 'OpenRouter (free only)',
     envKey: 'OPENROUTER_API_KEYS',
     buildUrl: () => 'https://openrouter.ai/api/v1/chat/completions',
     buildHeaders: (key) => ({
@@ -40,13 +79,12 @@ const PROVIDERS = {
       'X-Title': 'TITAN'
     }),
     buildBody: (model, messages, opts) => ({
-      model: model || 'anthropic/claude-3-haiku',
+      model: pickOpenRouterModel(model),
       messages,
       temperature: opts.temperature ?? 0.7,
       max_tokens: opts.max_tokens ?? 1024,
       stream: true
     }),
-    // OpenAI-compatible SSE format
     parseStreamChunk: (chunk) => {
       const lines = chunk.split('\n').filter(l => l.startsWith('data: ') && l !== 'data: [DONE]');
       let out = '';
@@ -81,31 +119,6 @@ const PROVIDERS = {
       let out = '';
       for (const line of lines) {
         try { out += JSON.parse(line.slice(6)).candidates?.[0]?.content?.parts?.map(p => p.text).join('') ?? ''; } catch {}
-      }
-      return out;
-    }
-  },
-
-  groq: {
-    label: 'Groq',
-    envKey: 'GROQ_KEYS',
-    buildUrl: () => 'https://api.groq.com/openai/v1/chat/completions',
-    buildHeaders: (key) => ({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${key}`
-    }),
-    buildBody: (model, messages, opts) => ({
-      model: model || 'llama-3.1-8b-instant',
-      messages,
-      temperature: opts.temperature ?? 0.7,
-      max_tokens: opts.max_tokens ?? 1024,
-      stream: true
-    }),
-    parseStreamChunk: (chunk) => {
-      const lines = chunk.split('\n').filter(l => l.startsWith('data: ') && l !== 'data: [DONE]');
-      let out = '';
-      for (const line of lines) {
-        try { out += JSON.parse(line.slice(6)).choices?.[0]?.delta?.content ?? ''; } catch {}
       }
       return out;
     }
@@ -153,7 +166,7 @@ const PROVIDERS = {
 // Jina handles web search (s.jina.ai) and reader (r.jina.ai), not chat LLM
 async function callJina(env, action, payload) {
   const keys = (env.JINA_KEYS || '').split(',').map(k => k.trim()).filter(Boolean);
-  if (keys.length === 0) return { ok: false, error: 'JINA_KEYS not set' };
+  if (keys.length === 0) return { ok: false, error: 'JINA_KEYS not set on worker' };
 
   const endpoint = action === 'search'
     ? 'https://s.jina.ai/'
@@ -162,8 +175,11 @@ async function callJina(env, action, payload) {
     : null;
   if (!endpoint) return { ok: false, error: 'Unknown Jina action' };
 
+  // Round-robin starting point for keys
+  const startIdx = nextKeyIndex('jina', keys.length);
   const errors = [];
-  for (const key of keys) {
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[(startIdx + i) % keys.length];
     try {
       const res = await fetch(endpoint, {
         method: 'POST',
@@ -194,9 +210,6 @@ async function callJina(env, action, payload) {
 }
 
 // ============ Bot UA fetch (Instagram/TikTok/YouTube OG meta bypass) ============
-// Tested 2026-07-15: 6 bot UAs return 100% success rate on 4 active posts
-// (5 rounds × 4 posts = 20/20 reliable).
-// Plain "LinkedInBot/1.0" GAGAL — "Mozilla/5.0 (compatible; LinkedInBot/1.0)" WORKS.
 const BOT_UAS = [
   'Mozilla/5.0 (compatible; LinkedInBot/1.0)',
   'Pinterestbot/1.0 (+http://www.pinterest.com/bot.html)',
@@ -220,12 +233,10 @@ async function fetchSocialOG(url) {
       });
       if (!res.ok) { errors.push(`UA ${ua.slice(0, 30)}: HTTP ${res.status}`); continue; }
       const html = await res.text();
-      // Detect login wall
       if (/Log into Instagram|Sign up · Instagram|Log in to Instagram/i.test(html)) {
         errors.push(`UA ${ua.slice(0, 30)}: login wall`);
         continue;
       }
-      // Extract og meta
       const desc = html.match(/<meta\s+property=["']og:description["']\s+content=["']([^"']+)/i)?.[1]
                 || html.match(/<meta\s+name=["']description["']\s+content=["']([^"']+)/i)?.[1];
       const title = html.match(/<meta\s+property=["']og:title["']\s+content=["']([^"']+)/i)?.[1];
@@ -242,9 +253,6 @@ async function fetchSocialOG(url) {
 }
 
 // ============ Image proxy (avatar/etc) ============
-// Fetches any HTTPS image and returns it with CORS + cross-origin headers.
-// Handles Instagram scontent-*.cdninstagram.com, TikTok p16-*.tiktokcdn-us.com, etc.
-// Why this is needed: direct browser fetch is blocked by CORS + CORP on those CDNs.
 async function handleAvatarProxy(request, env) {
   const url = new URL(request.url);
   const target = url.searchParams.get('url');
@@ -256,7 +264,6 @@ async function handleAvatarProxy(request, env) {
   }
 
   try {
-    // Fetch with a desktop Mozilla UA — some CDNs (esp. Facebook/IG) reject bot/empty UAs
     const res = await fetch(target, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -264,7 +271,7 @@ async function handleAvatarProxy(request, env) {
         'Accept-Language': 'en-US,en;q=0.9',
       },
       redirect: 'follow',
-      cf: { cacheTtl: 86400, cacheEverything: true }, // cache at edge for 24h
+      cf: { cacheTtl: 86400, cacheEverything: true },
     });
 
     if (!res.ok) {
@@ -297,7 +304,6 @@ function json(data, status = 200) {
 }
 
 function sseStream(transformer) {
-  // Wrap async iterator and re-encode as OpenAI-compatible SSE
   const encoder = new TextEncoder();
   return new ReadableStream({
     async start(controller) {
@@ -315,6 +321,10 @@ function sseStream(transformer) {
   });
 }
 
+// ============ LLM streaming with round-robin + fallback ============
+// v3: try the round-robin starting key first, then iterate through all keys.
+// On 429/5xx/auth/credit, try next key. On 400 (bad request), fail fast
+// because trying other keys won't fix a wrong model name.
 async function streamWithProvider(env, providerName, body) {
   const provider = PROVIDERS[providerName];
   if (!provider) return { ok: false, error: `Unknown provider: ${providerName}` };
@@ -324,9 +334,13 @@ async function streamWithProvider(env, providerName, body) {
     return { ok: false, error: `${provider.envKey} not set on worker` };
   }
 
+  // Round-robin: start from next key, not always key#0
+  const startIdx = nextKeyIndex(providerName, keys.length);
+
   const errors = [];
   for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
+    const idx = (startIdx + i) % keys.length;
+    const key = keys[idx];
     const url = provider.buildUrl(body.model, key);
     const requestBody = provider.buildBody(body.model, body.messages, body);
 
@@ -360,24 +374,24 @@ async function streamWithProvider(env, providerName, body) {
             }
           }
         };
-        return { ok: true, stream: sseStream(wrapped), keyUsed: i, totalKeys: keys.length };
+        return { ok: true, stream: sseStream(wrapped), keyUsed: idx, totalKeys: keys.length };
       }
 
       const errText = await res.text().catch(() => '');
-      const errMsg = `${providerName} key#${i + 1} HTTP ${res.status}: ${errText.slice(0, 120)}`;
+      const errMsg = `${providerName} key#${idx + 1} HTTP ${res.status}: ${errText.slice(0, 120)}`;
       errors.push(errMsg);
-      // Retry on rate limit or server error (likely key-specific quota)
+      // 429/5xx: quota, try next key
       if (res.status === 429 || res.status >= 500) continue;
-      // Retry on auth/credit errors (key might be invalid/expired/out of credits, try next)
+      // 401/402/403: auth/credits, try next key
       if (res.status === 401 || res.status === 402 || res.status === 403) continue;
-      // 400 bad request = model param wrong (or message format issue).
-      // DON'T break here — try next key (different model format on different keys? rare but safe),
-      // but if all keys fail, caller will see all-401/400 and the provider-level loop will move on.
+      // 400: bad request (e.g. model not found for this key/account). Try next key
+      // because different keys might have access to different models. If all fail
+      // with 400, the provider-level loop will move on to next provider.
       if (res.status === 400) continue;
-      // Other 4xx — permanent, stop trying this provider
+      // Other 4xx: permanent, stop trying this provider
       break;
     } catch (e) {
-      errors.push(`${providerName} key#${i + 1} network: ${e.message}`);
+      errors.push(`${providerName} key#${idx + 1} network: ${e.message}`);
       continue;
     }
   }
@@ -391,7 +405,6 @@ export default {
       return new Response(null, { status: 204, headers: CORS });
     }
 
-    // GET /avatar?url=... is a public image-proxy route — allow GET here.
     const url = new URL(request.url);
     const path = url.pathname;
     if (request.method === 'GET' && (path.startsWith('/avatar') || path === '/avatar')) {
@@ -424,32 +437,31 @@ export default {
       return json({ error: r.error }, 502);
     }
 
-    // ---- Social media OG meta fetch (IG/TT/YT via bot UA) ----
+    // ---- Social media OG meta fetch ----
     if (action === 'social' || provider === 'social') {
       const targetUrl = body.url;
       if (!targetUrl || !/^https?:\/\//i.test(targetUrl)) {
         return json({ error: 'Invalid url' }, 400);
       }
       const r = await fetchSocialOG(targetUrl);
-      if (r.ok) {
-        return json(r, 200);
-      }
+      if (r.ok) return json(r, 200);
       return json({ error: r.error }, 502);
     }
 
-    // ---- Image proxy (avatar/etc) — bypass IG/TT CDN CORP/CORS ----
-    // Route: /avatar?url=<encoded>&w=192&h=192&fit=cover
-    // Replaces images.weserv.nl which started returning 404 for IG/TT CDNs.
+    // ---- Image proxy (avatar/etc) ----
     if (path.startsWith('/avatar') || action === 'avatar') {
       return handleAvatarProxy(request, env);
     }
 
-    // ---- LLM chat with multi-provider fallback ----
-    // 'auto' chain: google (free, primary) → openrouter → groq → cohere
-    // Reordered 2026-07-16 — Google first for free tier reliability.
+    // ---- LLM chat with provider chain ----
+    // v3 chain: google (free, primary, 16 keys round-robin) → openrouter (free models only) → cohere
+    // Groq REMOVED per user request.
     const chain = provider === 'auto'
-      ? ['google', 'openrouter', 'groq', 'cohere']
-      : [provider];
+      ? ['google', 'openrouter', 'cohere']
+      : (PROVIDERS[provider] ? [provider] : null);
+    if (!chain) {
+      return json({ error: `Unknown provider: ${provider}. Valid: auto, google, openrouter, cohere, jina` }, 400);
+    }
 
     const errors = [];
     for (const pName of chain) {
@@ -473,7 +485,7 @@ export default {
     return json({
       error: 'All LLM providers failed',
       details: errors,
-      hint: 'Cek env vars Worker (OPENROUTER_API_KEYS, GOOGLE_KEYS, GROQ_KEYS, COHERE_KEYS) di Cloudflare Dashboard → Worker → Settings → Variables'
+      hint: 'Cek env vars Worker (GOOGLE_KEYS, OPENROUTER_API_KEYS, COHERE_KEYS). Chain: google → openrouter(free) → cohere.'
     }, 502);
   }
 };
