@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useAccount, useAccountInsights } from '../hooks/useAccount.js';
+import { TopbarActions } from '../components/TopbarActions.jsx';
 import ProfileHeader from '../components/ProfileHeader.jsx';
 import Heatmap from '../components/Heatmap.jsx';
 import OutlierCard from '../components/OutlierCard.jsx';
@@ -19,6 +20,8 @@ import {
   Activity, Target, BookOpen, BarChartHorizontal, Hourglass, Award
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, Tooltip, CartesianGrid, AreaChart, Area, Legend } from 'recharts';
+import { normalizedHashtags, normalizedMentions, marketInsightsExtended, topByMetricExtended } from '../lib/analytics.js';
+import { PlatformIcon, platformLabel } from '../components/icons/PlatformIcon.jsx';
 
 const TIER_LABELS = {
   viral: { label: 'Sangat Viral', color: 'text-purple-400', desc: '> 3× rata-rata' },
@@ -65,21 +68,22 @@ function SectionHeader({ icon: Icon, title, subtitle }) {
 }
 
 function HealthBar({ label, value }) {
+  const safeValue = Number.isFinite(value) ? value : 0;
   return (
     <div>
       <div className="flex items-center justify-between text-text-muted">
         <span>{label}</span>
-        <span className="font-semibold text-text-primary tabular-nums">{value}</span>
+        <span className="font-semibold text-text-primary tabular-nums">{safeValue}</span>
       </div>
       <div className="h-1.5 bg-bg-tertiary rounded-full overflow-hidden mt-0.5">
         <div
           className={`h-full ${
-            value >= 80 ? 'bg-emerald-500' :
-            value >= 60 ? 'bg-sky-500' :
-            value >= 40 ? 'bg-yellow-500' :
+            safeValue >= 80 ? 'bg-emerald-500' :
+            safeValue >= 60 ? 'bg-sky-500' :
+            safeValue >= 40 ? 'bg-yellow-500' :
             'bg-rose-500'
           }`}
-          style={{ width: `${Math.min(100, value)}%` }}
+          style={{ width: `${Math.min(100, safeValue)}%` }}
         />
       </div>
     </div>
@@ -160,12 +164,15 @@ export default function AccountPage() {
     topHashtags, topMentions,
     performanceByDayOfWeek, performanceByMonth,
     durationAnalysis, yearlySummary,
-    marketInsights, growthPotential,
+    marketInsights, marketInsightsExtended: extendedInsights, growthPotential,
     bestTimeOfDay, postingCadence, contentMix,
     hashtagCoOccurrence, hookClassification,
     outlierPosts, growthVelocity, internationalBenchmark, contentPillars,
     healthScore, viralRecipe, contentCalendar, heatmapByMediaType, lastViral
   } = insights;
+
+  // V11: prefer 10+ item extended insights, fall back to short version.
+  const insightsForPanel = extendedInsights ?? marketInsightsExtended({ ...account, aggregates }, insights) ?? marketInsights;
 
   // Map contentMix counts → label bahasa Indonesia
   const contentMixID = Object.entries(contentMix.counts)
@@ -174,7 +181,11 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen bg-bg-primary">
-      <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-6 py-8 space-y-6 pb-20 md:pb-8">
+      <TopbarActions
+        title={`@${account.username}`}
+        subtitle={`${platformLabel(account.platform)} · ${aggregates?.totalPostsAnalyzed ?? account.posts?.length ?? 0} post`}
+      />
+      <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-6 pb-32 md:pb-8">
         {/* ===== SECTION 1: PROFIL ===== */}
         <ProfileHeader account={{ ...account, aggregates, availability, engagementRate: aggregates.engagementRate, tiers, cadence: postingCadence }} />
 
@@ -243,7 +254,7 @@ export default function AccountPage() {
         {/* ===== SECTION 6-7: TEMA KONTEN & KOLABORASI ===== */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="surface p-5">
-            <SectionHeader icon={Hash} title="Tema Konten — 10 Hashtag Terbanyak" subtitle="Tagar yang paling sering muncul di caption" />
+            <SectionHeader icon={Hash} title="Tema Konten — 10 Hashtag Terbanyak" subtitle="Tagar yang paling sering muncul di caption (normalisasi: #doang, lowercase, dedup)" />
             {topHashtags.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {topHashtags.map((h) => (
@@ -257,7 +268,7 @@ export default function AccountPage() {
             )}
           </div>
           <div className="surface p-5">
-            <SectionHeader icon={Users} title="Kolaborasi — 10 Mention Terbanyak" subtitle="Akun yang paling sering di-tag/disebut" />
+            <SectionHeader icon={Users} title="Kolaborasi — 10 Mention Terbanyak" subtitle="Akun yang paling sering di-tag/disebut (normalisasi: @doang, lowercase, dedup)" />
             {topMentions.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {topMentions.map((m) => (
@@ -293,18 +304,18 @@ export default function AccountPage() {
 
         {/* ===== SECTION 9: PERFORMA BULANAN ===== */}
         <div className="surface p-5">
-          <SectionHeader icon={Activity} title="Performa Bulanan" subtitle="Tren rata-rata engagement rate per bulan" />
+          <SectionHeader icon={Activity} title="Performa Bulanan" subtitle="Tren rata-rata engagement rate per bulan (skala auto supaya bulan kecil tidak flat)" />
           <div className="h-56 mt-2">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={performanceByMonth}>
                 <CartesianGrid stroke="#27272a" strokeDasharray="3 3" />
                 <XAxis dataKey="month" stroke="#71717a" fontSize={10} />
-                <YAxis stroke="#71717a" fontSize={11} />
+                <YAxis stroke="#71717a" fontSize={11} domain={['auto', 'auto']} allowDataOverflow={false} />
                 <Tooltip
                   contentStyle={{ background: '#1f1f1f', border: '1px solid #3f3f46', borderRadius: 8 }}
                   formatter={(v) => formatPercent(v, 3)}
                 />
-                <Line type="monotone" dataKey="avgEngagementRate" name="ER (%)" stroke="#3b82f6" strokeWidth={2} dot={{ fill: '#3b82f6', r: 3 }} />
+                <Line type="monotone" dataKey="avgEngagementRate" name="ER (%)" stroke="#3b82f6" strokeWidth={2} dot={{ fill: '#3b82f6', r: 3 }} connectNulls />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -374,30 +385,30 @@ export default function AccountPage() {
 
         {/* ===== SECTION 12: INSIGHT & REKOMENDASI ===== */}
         <div className="surface p-5">
-          <SectionHeader icon={Lightbulb} title="Insight & Rekomendasi" subtitle="Kekuatan, kelemahan, dan saran berdasarkan data" />
+          <SectionHeader icon={Lightbulb} title={`Insight & Rekomendasi (${insightsForPanel.strengths.length} kekuatan · ${insightsForPanel.weaknesses.length} kelemahan · ${insightsForPanel.recommendations.length} aksi)`} subtitle="Dihasilkan otomatis dari 9+ analytics primitives (mix, cadence, viral, pillar, hook, hashtag, velocity, availability)" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
             <div className="bg-accent-success/5 border border-accent-success/20 rounded-lg p-4">
               <div className="text-xs font-semibold text-accent-success uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5" /> Kekuatan
+                <TrendingUp className="w-3.5 h-3.5" /> Kekuatan ({insightsForPanel.strengths.length})
               </div>
               <ul className="text-sm text-text-secondary space-y-1.5 list-disc list-inside">
-                {marketInsights.strengths.map((s, i) => <li key={i}>{s}</li>)}
+                {insightsForPanel.strengths.map((s, i) => <li key={i} className="leading-relaxed">{s}</li>)}
               </ul>
             </div>
             <div className="bg-accent-danger/5 border border-accent-danger/20 rounded-lg p-4">
               <div className="text-xs font-semibold text-accent-danger uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5" /> Kelemahan
+                <Activity className="w-3.5 h-3.5" /> Kelemahan ({insightsForPanel.weaknesses.length})
               </div>
               <ul className="text-sm text-text-secondary space-y-1.5 list-disc list-inside">
-                {marketInsights.weaknesses.map((w, i) => <li key={i}>{w}</li>)}
+                {insightsForPanel.weaknesses.map((w, i) => <li key={i} className="leading-relaxed">{w}</li>)}
               </ul>
             </div>
             <div className="bg-accent-primary/5 border border-accent-primary/20 rounded-lg p-4">
               <div className="text-xs font-semibold text-accent-primary uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <Target className="w-3.5 h-3.5" /> Rekomendasi
+                <Target className="w-3.5 h-3.5" /> Rekomendasi ({insightsForPanel.recommendations.length})
               </div>
               <ul className="text-sm text-text-secondary space-y-1.5 list-disc list-inside">
-                {marketInsights.recommendations.map((r, i) => <li key={i}>{r}</li>)}
+                {insightsForPanel.recommendations.map((r, i) => <li key={i} className="leading-relaxed">{r}</li>)}
               </ul>
             </div>
           </div>
@@ -485,7 +496,7 @@ export default function AccountPage() {
           <SectionHeader
             icon={BarChart3}
             title="Grafik Modern — Pertumbuhan Akun"
-            subtitle="Jumlah post dan total likes per bulan (dual-line)"
+            subtitle="Jumlah post (kiri) dan total likes (kanan) per bulan — domain auto supaya bulan kecil tetap terbaca"
           />
           <div className="h-64 mt-2">
             <ResponsiveContainer width="100%" height="100%">
@@ -502,15 +513,15 @@ export default function AccountPage() {
                 </defs>
                 <CartesianGrid stroke="#27272a" strokeDasharray="3 3" />
                 <XAxis dataKey="month" stroke="#71717a" fontSize={10} />
-                <YAxis yAxisId="left" stroke="#71717a" fontSize={11} />
-                <YAxis yAxisId="right" orientation="right" stroke="#71717a" fontSize={11} />
+                <YAxis yAxisId="left" stroke="#71717a" fontSize={11} domain={['auto', 'auto']} allowDataOverflow={false} />
+                <YAxis yAxisId="right" orientation="right" stroke="#71717a" fontSize={11} domain={['auto', 'auto']} allowDataOverflow={false} />
                 <Tooltip
                   contentStyle={{ background: '#1f1f1f', border: '1px solid #3f3f46', borderRadius: 8 }}
                   formatter={(v, name) => [formatNumber(v), name]}
                 />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Area yAxisId="left" type="monotone" dataKey="postCount" name="Jumlah Post" stroke="#3b82f6" fill="url(#colorPosts)" strokeWidth={2} />
-                <Area yAxisId="right" type="monotone" dataKey="totalLikeCount" name="Total Suka" stroke="#ec4899" fill="url(#colorLikes)" strokeWidth={2} />
+                <Area yAxisId="left" type="monotone" dataKey="postCount" name="Jumlah Post" stroke="#3b82f6" fill="url(#colorPosts)" strokeWidth={2} connectNulls />
+                <Area yAxisId="right" type="monotone" dataKey="totalLikeCount" name="Total Suka" stroke="#ec4899" fill="url(#colorLikes)" strokeWidth={2} connectNulls />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -661,24 +672,25 @@ export default function AccountPage() {
             <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
               <Award className="w-4 h-4 text-accent-primary" />
               Account Health Score
+              <PlatformIcon platform={account?.platform} className="w-3.5 h-3.5 ml-1" />
             </h3>
             <div className="flex items-center gap-6 flex-wrap">
               <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-bold border-2 ${
-                healthScore.score >= 80 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' :
-                healthScore.score >= 65 ? 'bg-sky-500/10 text-sky-500 border-sky-500/30' :
-                healthScore.score >= 50 ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30' :
-                healthScore.score >= 35 ? 'bg-orange-500/10 text-orange-500 border-orange-500/30' :
+                (healthScore.score ?? 0) >= 80 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' :
+                (healthScore.score ?? 0) >= 65 ? 'bg-sky-500/10 text-sky-500 border-sky-500/30' :
+                (healthScore.score ?? 0) >= 50 ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30' :
+                (healthScore.score ?? 0) >= 35 ? 'bg-orange-500/10 text-orange-500 border-orange-500/30' :
                 'bg-rose-500/10 text-rose-500 border-rose-500/30'
               }`}>
-                {healthScore.grade}
+                {healthScore.grade ?? '—'}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-3xl font-bold text-text-primary tabular-nums">{healthScore.score}<span className="text-base text-text-muted">/100</span></div>
+                <div className="text-3xl font-bold text-text-primary tabular-nums">{Number.isFinite(healthScore.score) ? healthScore.score : 0}<span className="text-base text-text-muted">/100</span></div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-[11px]">
-                  <HealthBar label="Engagement" value={healthScore.breakdown.engagement} />
-                  <HealthBar label="Konsistensi" value={healthScore.breakdown.consistency} />
-                  <HealthBar label="Pertumbuhan" value={healthScore.breakdown.growth} />
-                  <HealthBar label="Diversitas" value={healthScore.breakdown.diversity} />
+                  <HealthBar label="Engagement" value={healthScore.breakdown?.engagement ?? 0} />
+                  <HealthBar label="Konsistensi" value={healthScore.breakdown?.consistency ?? 0} />
+                  <HealthBar label="Pertumbuhan" value={healthScore.breakdown?.growth ?? 0} />
+                  <HealthBar label="Diversitas" value={healthScore.breakdown?.diversity ?? 0} />
                 </div>
               </div>
               {lastViral && (

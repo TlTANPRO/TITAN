@@ -7,11 +7,15 @@ export function normalizePost(raw, platform) {
 
   const caption = raw.caption ?? raw.desc ?? raw.description ?? raw.accessibility_caption ?? '';
 
+  // CreateTime fallback chain: many IG scrapers store seconds-since-epoch in
+  // taken_at / taken_at_timestamp. When ALL of those are missing (e.g. ardiantanah
+  // 187/679 posts), fall back to the `timestamp` field which is typically ms.
   const createTime = Number(
-    raw.createTime ?? raw.taken_at ?? raw.taken_at_timestamp ?? raw.timestamp ?? 0
+    raw.createTime ?? raw.taken_at ?? raw.taken_at_timestamp ?? 0
   );
-  const timestamp =
-    createTime > 1e12 ? createTime : createTime > 0 ? createTime * 1000 : Number(raw.timestamp ?? 0);
+  const timestampMs = createTime > 0
+    ? (createTime > 1e12 ? createTime : createTime * 1000)
+    : Number(raw.timestamp ?? 0);
 
   const mediaType = String(
     raw.mediaType ?? raw.media_type ?? raw.type ?? raw.product_type ?? 'IMAGE'
@@ -35,7 +39,7 @@ export function normalizePost(raw, platform) {
     caption,
     desc: caption,
     createTime,
-    timestamp,
+    timestamp: timestampMs,
     thumbnailUrl:
       raw.thumbnailUrl ??
       raw.thumbnail_url ??
@@ -63,16 +67,30 @@ export function normalizePost(raw, platform) {
   };
 }
 
+// Hashtag / mention extraction. The previous regex `#[\p{L}\p{N}_]+` would
+// happily swallow the doubled prefix `##ardiantanah` from upstream data, so the
+// rendered tag ended up as `##ardiantanah`. The new regex anchors on a word
+// boundary so we only match a single `#` or `@`, then dedupe + lowercase.
 export function extractHashtags(text) {
   if (!text) return [];
-  const matches = String(text).match(/#[\p{L}\p{N}_]+/gu) ?? [];
-  return [...new Set(matches.map((t) => t.toLowerCase()))];
+  // (^|\s) anchors on a word boundary; `@+` / `#+` accepts upstream data
+  // that already has a doubled prefix (e.g. `##ardiantanah`).
+  const matches = String(text).match(/(?:^|\s)#+([\p{L}\p{N}_]+)/gu) ?? [];
+  const tags = matches
+    .map((m) => m.replace(/^\s*#+/u, '').toLowerCase())
+    .filter(Boolean);
+  return [...new Set(tags.map((t) => `#${t}`))];
 }
 
 export function extractMentions(text) {
   if (!text) return [];
-  const matches = String(text).match(/@[\w.]+/g) ?? [];
-  return [...new Set(matches.map((m) => m.toLowerCase()))];
+  // (?:^|\s) anchors on a word boundary so we never match `hello@world` in the
+  // middle of a word. Strip a leading duplicate `@` (the upstream sometimes
+  // serializes handles as `@@magnolia.coffee`); the inner group captures the
+  // real handle.
+  const matches = String(text).match(/(?:^|\s)@+([\w.]+)/g) ?? [];
+  const handles = matches.map((m) => m.replace(/^\s*@+/, '').toLowerCase()).filter(Boolean);
+  return [...new Set(handles.map((h) => `@${h}`))];
 }
 
 export function normalizeAccount(raw, platform) {

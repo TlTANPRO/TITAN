@@ -1,10 +1,12 @@
-// StrategyBrief — 1-page AI summary (SWOT + Action Plan)
-// Falls back to pure analytics SWOT when no AI insight is cached.
+// StrategyBrief — 1-page summary (SWOT + 10+ Action Plan)
+// V11: drop "AI Strategy Brief" label (use platform-anchored), expand action
+// plan to 10+ actionable items from multiple primitives.
 import { useMemo } from 'react';
 import { FileText, ArrowUp, ArrowDown, Plus, AlertTriangle, Target, Bot } from 'lucide-react';
 import { formatPercent, formatNumber } from '../lib/format.js';
 import { accountHealthScore, timeSinceLastViral, outlierPosts } from '../lib/analytics.js';
 import { getInsight } from '../lib/insights.js';
+import { platformLabel } from './icons/PlatformIcon.jsx';
 
 function buildSwot(account, insights) {
   const posts = account?.posts ?? [];
@@ -76,21 +78,96 @@ function buildSwot(account, insights) {
 
 function buildActionPlan(account, insights, swot) {
   const actions = [];
+  const cadence = insights?.postingCadence;
+  const mix = insights?.contentMix;
+  const hooks = insights?.hookClassification ?? {};
+  const pillars = insights?.contentPillars ?? [];
+  const outliers = insights?.outlierPosts ?? swot.outliers;
+  const lastViral = insights?.lastViral ?? swot.lastViral;
+  const velocity = insights?.growthVelocity;
+  const bench = insights?.benchmark;
+  const platform = account?.platform ?? 'instagram';
+
+  // 1. Best time
   if (insights?.bestTimeOfDay?.topHour != null) {
     actions.push(`Post 3×/minggu di jam ${insights.bestTimeOfDay.topHour}:00 WIB (${insights.bestTimeOfDay.topDayName ?? 'hari terbaik'})`);
   }
-  if (swot.outliers.length > 0) {
-    actions.push(`Replikasi formula ${swot.outliers.length} post outlier — cek "Resep Post Viral" untuk detail`);
+  // 2. Replicate outliers
+  if (outliers.length > 0) {
+    actions.push(`Replikasi formula ${outliers.length} post outlier — cek "Resep Post Viral" untuk detail`);
   }
-  if (insights?.contentMix?.counts) {
-    const sorted = Object.entries(insights.contentMix.counts).sort((a, b) => b[1] - a[1]);
+  // 3. Maintain dominant format
+  if (mix?.counts) {
+    const sorted = Object.entries(mix.counts).sort((a, b) => b[1] - a[1]);
     if (sorted[0]) actions.push(`Pertahankan format ${sorted[0][0]} sebagai andalan, tambahkan variasi caption`);
   }
-  if (account?.platform === 'instagram' && insights?.availability && !insights.availability.likes) {
-    actions.push(`Jalankan ulang scraper setelah token reset untuk enrich data like/comment`);
+  // 4. Cadence
+  if (cadence?.avgGapDays > 7) {
+    actions.push(`Tingkatkan frekuensi ke 3-4 post/minggu — saat ini jeda rata-rata ${cadence.avgGapDays.toFixed(1)} hari`);
   }
-  if (actions.length < 3) actions.push('Monitor performa mingguan dan adjust strategi berdasarkan tren ER');
-  return actions.slice(0, 5);
+  // 5. IG enrichment
+  if (account?.platform === 'instagram' && insights?.availability && !insights.availability.likes) {
+    actions.push('Jalankan ulang scraper setelah token reset untuk enrich data like/comment');
+  }
+  // 6. Diversify format
+  const mixTypes = mix?.counts ? Object.keys(mix.counts).filter((k) => mix.counts[k] > 0).length : 0;
+  if (mixTypes < 3) {
+    actions.push('Diversifikasi format: tambah Reels/carousel untuk jangkau audiens baru');
+  }
+  // 7. Caption with question
+  if ((hooks.question ?? 0) === 0) {
+    actions.push('Sisipkan 1 pertanyaan di setiap caption — picu komentar & DM');
+  }
+  // 8. CTA
+  if ((hooks.cta ?? 0) === 0) {
+    actions.push('Tambah call-to-action (save/share/comment) di tiap post');
+  }
+  // 9. Top pillar
+  if (pillars[0]) {
+    actions.push(`Perdalam pillar "${pillars[0].pillar}" — eksplorasi istilah turunan ${(pillars[0].relatedTerms ?? []).slice(0, 2).join(', ')}`);
+  }
+  // 10. Last viral reactivation
+  if (lastViral?.days != null && lastViral.days > 14) {
+    actions.push('Replikasi formula post viral terakhir untuk akuisisi momentum baru');
+  }
+  // 11. Growth velocity
+  if (velocity?.trend === 'down') {
+    actions.push('Reset strategi: eksperimen 3 format baru selama 2 minggu, ukur ER');
+  }
+  // 12. Top hashtag combo
+  if (insights?.topHashtags?.[0]) {
+    const tags = insights.topHashtags.slice(0, 3).map((t) => `#${t.tag}`).join(' ');
+    actions.push(`Gunakan combo hashtag konsisten: ${tags}`);
+  }
+  // 13. Cross-platform
+  if (platform === 'instagram') {
+    actions.push('Cross-post 1 konten terbaik ke TikTok untuk jangkau audiens baru');
+  }
+  // 14. Reply to comments
+  if ((insights?.aggregates?.avgCommentCount ?? 0) > 0) {
+    actions.push('Balas komentar dalam 1 jam pertama — sinyal kuat untuk algoritma');
+  }
+  // 15. Benchmark
+  if (bench?.engagementRateComparison === 'below') {
+    actions.push('Audit 10 post terakhir — cari pola yang bisa di-replikasi untuk naik ke benchmark');
+  }
+
+  // Pad to 10+ if shorter
+  if (actions.length < 10) {
+    const padding = [
+      'Monitor performa mingguan dan adjust strategi berdasarkan tren ER',
+      'A/B test 2 hook berbeda di post berikutnya',
+      'Cross-promote antara Instagram dan TikTok untuk sinergi audiens',
+      'Coba 1 kolaborasi dengan akun sejenis bulan ini',
+      'Tambahkan emoji + hashtag niche di caption untuk discoverability'
+    ];
+    for (const p of padding) {
+      if (actions.length >= 12) break;
+      if (!actions.includes(p)) actions.push(p);
+    }
+  }
+
+  return actions.slice(0, 12);
 }
 
 export function StrategyBrief({ account, insights }) {
@@ -111,7 +188,7 @@ export function StrategyBrief({ account, insights }) {
           {hasAi ? (
             <>
               <Bot className="w-3 h-3 text-accent-primary" />
-              AI-generated · pre-cached di ai-insights.json
+              Diperkaya dengan AI (pre-cached di ai-insights.json)
             </>
           ) : (
             'Auto-generated (analytics-only) · run `pnpm insights:generate` untuk AI generatif'
@@ -125,14 +202,14 @@ export function StrategyBrief({ account, insights }) {
           <div className="surface p-4 bg-bg-primary/50 border border-accent-primary/30">
             <div className="text-xs text-accent-primary uppercase tracking-wider font-semibold mb-2 flex items-center gap-2">
               <Bot className="w-3.5 h-3.5" />
-              AI Strategy Brief
+              {platformLabel(account?.platform)} Insight — Strategy Brief
             </div>
             <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">{aiText}</p>
           </div>
           <div className="surface p-4 bg-bg-primary/50">
             <div className="text-xs text-text-muted uppercase tracking-wider font-semibold mb-2 flex items-center gap-2">
               <Target className="w-3.5 h-3.5 text-accent-primary" />
-              Action Plan (30 Hari ke Depan)
+              {actions.length} Action Plan (30 Hari ke Depan)
             </div>
             <ol className="space-y-1.5 text-sm text-text-primary">
               {actions.map((a, i) => (
@@ -159,7 +236,7 @@ export function StrategyBrief({ account, insights }) {
           <div className="surface p-4 bg-bg-primary/50">
             <div className="text-xs text-text-muted uppercase tracking-wider font-semibold mb-2 flex items-center gap-2">
               <Target className="w-3.5 h-3.5 text-accent-primary" />
-              Action Plan (30 Hari ke Depan)
+              {actions.length} Action Plan (30 Hari ke Depan)
             </div>
             <ol className="space-y-1.5 text-sm text-text-primary">
               {actions.map((a, i) => (

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { TrendingUp, Users, Eye, Heart, Sparkles } from 'lucide-react';
 import { formatNumber } from '../lib/format.js';
 import { useMemo } from 'react';
+import { PlatformIcon } from './icons/PlatformIcon.jsx';
 
 function relativeTime(unixSec) {
   const diff = Date.now() / 1000 - unixSec;
@@ -56,11 +57,11 @@ export function Hero({ accounts, allPosts }) {
 
       {topViral && (
         <Link
-          to={topViral._accountPlatform === 'tiktok' ? `/account/${topViral._accountSlug}` : `/account/${topViral._accountSlug}`}
+          to={`/account/${topViral._accountSlug}`}
           className="block surface p-4 hover:border-accent-primary transition-colors"
         >
           <div className="flex items-center gap-2 text-xs text-text-muted mb-2">
-            <TrendingUp className="w-3.5 h-3.5 text-accent-success" />
+            <PlatformIcon platform={topViral._accountPlatform} className="w-3.5 h-3.5" />
             <span className="font-semibold uppercase tracking-wider">Top Viral Post</span>
             <span>·</span>
             <span>@{topViral._accountUsername} · {relativeTime(topViral.createTime)}</span>

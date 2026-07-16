@@ -1,0 +1,126 @@
+# TITAN incremental scraper — runs daily at 16:00 UTC = 23:00 WIB
+#
+# Cron: '0 16 * * *' → 16:00 UTC = 23:00 WIB
+# Why 23:00 WIB: outside ENSEMBLEDATA/Jina rate-limit peak hours; finished
+# before staff check the dashboard at 06:00 WIB the next morning.
+#
+# Required GitHub repo Secrets:
+#   - GH_PAT (Personal Access Token with `workflow` scope, for git push)
+#   - TITAN_ENSEMBLEDATA_TOKEN, TITAN_JINA_API_KEY (scraper API tokens)
+#   - (Optional) TITAN_GH_REPO, TITAN_GH_OWNER for self-reference
+#
+# Behavior:
+#   1. Checkout (with PAT auth so we can push back)
+#   2. Setup Node 20
+#   3. Run scrape-incremental.mjs (only fetches posts newer than latestTimestamp)
+#   4. Run validate-merge.mjs (dedup, sanity check)
+#   5. Run generate-data.mjs (regenerate accounts-full.json + analytics)
+#   6. If anything changed → git add + commit + push
+#   7. If no changes → exit early (saves CI minutes)
+#
+# Cost: ~20 /media/info calls per day (vs ~1500 for full-scrape). 99% savings.
+
+name: TITAN Incremental Refresh
+
+on:
+  schedule:
+    - cron: '0 16 * * *' # 16:00 UTC = 23:00 WIB
+  workflow_dispatch:       # manual trigger from GH UI
+    inputs:
+      platform:
+        description: 'Platform to scrape'
+        required: false
+        default: 'all'
+        type: choice
+        options: [all, ig, tt]
+      days:
+        description: 'Lookback window in days'
+        required: false
+        default: '7'
+      prune:
+        description: 'Prune posts older than window'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['true', 'false']
+
+permissions:
+  contents: write  # needed for git push
+
+jobs:
+  incremental:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # GH PAT (set in repo Secrets → Actions → New repository secret)
+      GH_PAT: ${{ secrets.GH_PAT }}
+      # Scraper API keys (also Secrets)
+      TITAN_ENSEMBLEDATA_TOKEN: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
+      TITAN_JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
+    steps:
+      - name: Checkout repo (with PAT)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run incremental scraper
+        id: scrape
+        run: |
+          PLATFORM="${{ inputs.platform || 'all' }}"
+          DAYS="${{ inputs.days || '7' }}"
+          PRUNE="${{ inputs.prune || 'false' }}"
+          echo "Platform=$PLATFORM days=$DAYS prune=$PRUNE"
+          node scripts/scrape-incremental.mjs --platform=$PLATFORM --days=$DAYS $([ "$PRUNE" = "true" ] && echo "--prune")
+        continue-on-error: false
+
+      - name: Validate and merge
+        if: success()
+        run: node scripts/validate-merge.mjs
+
+      - name: Regenerate data
+        if: success()
+        run: node scripts/generate-data.mjs
+
+      - name: Check for changes
+        id: changes
+        if: success()
+        run: |
+          if git diff --quiet HEAD -- public/data/accounts-full.json scripts/scraped/ 2>/dev/null; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No data changes — skipping commit"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Data changed — will commit"
+          fi
+
+      - name: Commit and push
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "titan-bot"
+          git config user.email "titan-bot@users.noreply.github.com"
+          git add public/data/accounts-full.json scripts/scraped/
+          # Count new posts
+          NEW=$(git diff --cached --numstat | wc -l)
+          git commit -m "chore(data): incremental refresh $(date -u +%Y-%m-%dT%H:%M:%SZ) — $NEW files changed"
+          git push
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### Incremental refresh summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Trigger: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Time (UTC): $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "- Changed: ${{ steps.changes.outputs.changed || 'unknown' }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.changes.outputs.changed }}" = "true" ]; then
+            echo "- Files updated: \`accounts-full.json\` + scraped JSONs" >> $GITHUB_STEP_SUMMARY
+          fi

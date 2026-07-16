@@ -3,10 +3,10 @@
 // missing or fails, we render a colored brand-icon tile — never a letter.
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, AlertTriangle } from 'lucide-react';
+import { BadgeCheck, AlertTriangle } from 'lucide-react';
 import { proxiedImage } from '../lib/imageProxy.js';
 import { formatCompact, formatPercent } from '../lib/format.js';
-import { TtIcon } from './icons/TtIcon.jsx';
+import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
 
 function StatPill({ label, value, accent, hint }) {
   return (
@@ -112,23 +112,26 @@ export default function ProfileHeader({ account }) {
                 : 'bg-black'
             }`}
           >
-            {isIG ? (
-              <Instagram className="w-10 h-10 text-white" />
-            ) : (
-              <TtIcon className="w-10 h-10 text-white" />
-            )}
+            <PlatformIcon platform={account.platform} className="w-10 h-10 text-white" />
           </div>
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <h1 className="text-2xl font-bold text-text-primary">@{account.username}</h1>
-            {account.isVerified && <span className="text-accent-primary text-sm">✓ Terverifikasi</span>}
+            <h1 className="text-2xl font-bold text-text-primary flex items-center gap-1.5">
+              <PlatformIcon platform={account.platform} className="w-5 h-5" />
+              @{account.username}
+            </h1>
+            {account.isVerified && (
+              <span className="inline-flex items-center gap-1 chip bg-accent-primary/10 text-accent-primary text-[10px]">
+                <BadgeCheck className="w-3 h-3" /> Terverifikasi
+              </span>
+            )}
             <span className={`chip ${isIG ? 'bg-accent-instagram/10 text-accent-instagram' : 'bg-accent-tiktok/10 text-accent-tiktok'}`}>
-              {isIG ? 'Instagram' : 'TikTok'}
+              {platformLabel(account.platform)}
             </span>
             {availability.message && (
               <span className="chip bg-accent-warning/10 text-accent-warning text-[10px]" title={availability.message}>
-                ⚠️ Data Terbatas
+                <AlertTriangle className="w-3 h-3" /> Data Terbatas
               </span>
             )}
           </div>

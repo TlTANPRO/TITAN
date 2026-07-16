@@ -302,6 +302,252 @@ async function handleAvatarProxy(request, env) {
   }
 }
 
+// ============ /refresh (V11) — trigger GitHub Actions workflow ============
+// Cloudflare Workers can't spawn subprocesses, so we dispatch a workflow run
+// via the GitHub Actions API. The action then re-scrapes data and pushes
+// the resulting JSON back to the repo (which the GitHub Pages site picks up).
+//
+// Required env: GH_PAT (Personal Access Token with `workflow` scope).
+// Required vars (set as Worker vars, NOT secrets): GH_OWNER, GH_REPO, GH_WORKFLOW
+const REFRESH_JOB_TTL_MS = 30 * 60 * 1000; // 30 min
+const refreshJobs = new Map(); // jobId -> { status, startedAt, lastChecked, conclusion, logsUrl }
+
+async function handleRefresh(request, env, ctx) {
+  if (!env.GH_PAT || !env.GH_OWNER || !env.GH_REPO || !env.GH_WORKFLOW) {
+    return json({
+      error: 'Refresh not configured',
+      hint: 'Set Worker env vars: GH_PAT, GH_OWNER, GH_REPO, GH_WORKFLOW. See cloudflare-worker/README.md.',
+      fallback: 'client side: reload accounts-full.json?bust=Date.now()'
+    }, 503);
+  }
+
+  let body = {};
+  try { body = await request.json(); } catch {}
+  const platforms = Array.isArray(body.platforms) && body.platforms.length > 0
+    ? body.platforms
+    : ['instagram', 'tiktok'];
+
+  const jobId = crypto.randomUUID();
+  const now = Date.now();
+  refreshJobs.set(jobId, { status: 'queued', startedAt: now, lastChecked: now, conclusion: null, logsUrl: null });
+
+  // Fire-and-forget: dispatch workflow, then client polls /refresh-status
+  if (ctx && typeof ctx.waitUntil === 'function') {
+    ctx.waitUntil(dispatchWorkflow(env, jobId, platforms));
+  } else {
+    // Fallback: run inline (without ctx, setTimeout polling still works in isolate)
+    dispatchWorkflow(env, jobId, platforms);
+  }
+
+  return json({
+    jobId,
+    status: 'queued',
+    statusUrl: `/refresh-status?jobId=${jobId}`,
+    platforms,
+    queuedAt: new Date(now).toISOString()
+  }, 202);
+}
+
+async function dispatchWorkflow(env, jobId, platforms) {
+  const job = refreshJobs.get(jobId);
+  if (!job) return;
+  job.status = 'in_progress';
+  job.lastChecked = Date.now();
+  try {
+    const url = `https://api.github.com/repos/${env.GH_OWNER}/${env.GH_REPO}/actions/workflows/${env.GH_WORKFLOW}/dispatches`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': `Bearer ${env.GH_PAT}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+        'Content-Type': 'application/json',
+        'User-Agent': 'titan-worker-refresh'
+      },
+      body: JSON.stringify({
+        ref: 'main',
+        inputs: { platforms: platforms.join(',') }
+      })
+    });
+    if (!res.ok) {
+      const t = await res.text().catch(() => '');
+      job.status = 'failed';
+      job.conclusion = `GitHub API ${res.status}: ${t.slice(0, 200)}`;
+      return;
+    }
+    // Poll workflow run list to surface conclusion
+    await pollWorkflowRun(env, jobId);
+  } catch (e) {
+    job.status = 'failed';
+    job.conclusion = e.message;
+  }
+}
+
+async function pollWorkflowRun(env, jobId) {
+  if (!refreshJobs.has(jobId)) return;
+  const start = Date.now();
+  const interval = 8000; // 8s between polls
+  while (Date.now() - start < REFRESH_JOB_TTL_MS) {
+    await new Promise((r) => setTimeout(r, interval));
+    if (!refreshJobs.has(jobId)) return; // cleaned up
+    const j = refreshJobs.get(jobId);
+    j.lastChecked = Date.now();
+    try {
+      const listUrl = `https://api.github.com/repos/${env.GH_OWNER}/${env.GH_REPO}/actions/workflows/${env.GH_WORKFLOW}/runs?per_page=1`;
+      const res = await fetch(listUrl, {
+        headers: {
+          'Accept': 'application/vnd.github+json',
+          'Authorization': `Bearer ${env.GH_PAT}`,
+          'X-GitHub-Api-Version': '2022-11-28',
+          'User-Agent': 'titan-worker-refresh'
+        }
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const run = data.workflow_runs?.[0];
+      if (!run) continue;
+      j.logsUrl = run.html_url;
+      if (run.status === 'completed') {
+        j.status = run.conclusion === 'success' ? 'success' : 'failed';
+        j.conclusion = run.conclusion;
+        return;
+      }
+    } catch {
+      // keep polling
+    }
+  }
+  const job = refreshJobs.get(jobId);
+  if (job) {
+    job.status = 'failed';
+    job.conclusion = 'Timed out after 30 minutes';
+  }
+}
+
+async function handleRefreshStatus(request) {
+  const url = new URL(request.url);
+  const jobId = url.searchParams.get('jobId');
+  if (!jobId) return json({ error: 'Missing jobId' }, 400);
+  const job = refreshJobs.get(jobId);
+  if (!job) return json({ error: 'Unknown jobId', jobId }, 404);
+
+  // Garbage collect: drop jobs older than 1 hour
+  const cutoff = Date.now() - 60 * 60 * 1000;
+  for (const [id, j] of refreshJobs.entries()) {
+    if (j.startedAt < cutoff) refreshJobs.delete(id);
+  }
+
+  return json({
+    jobId,
+    status: job.status,
+    conclusion: job.conclusion,
+    startedAt: new Date(job.startedAt).toISOString(),
+    lastChecked: new Date(job.lastChecked).toISOString(),
+    logsUrl: job.logsUrl
+  });
+}
+
+// ============ /account-meta (V11) — list accounts for topbar popover ============
+// Returns a minimal list of accounts from accounts-full.json (cached at edge).
+async function handleAccountMeta(request, env) {
+  const origin = env.PUBLIC_DATA_URL || 'https://tltanpro.github.io/TITAN';
+  try {
+    const res = await fetch(`${origin}/accounts-full.json`, {
+      cf: { cacheTtl: 300, cacheEverything: true }
+    });
+    if (!res.ok) return json({ error: `Upstream ${res.status}` }, 502);
+    const data = await res.json();
+    const accounts = Array.isArray(data) ? data : data.accounts ?? [];
+    const slim = accounts.map((a) => ({
+      slug: a.slug,
+      username: a.username,
+      platform: a.platform,
+      followerCount: a.followerCount,
+      avatarUrl: a.avatarUrl,
+      postCount: a.postCount ?? a.posts?.length ?? 0
+    }));
+    return json({ accounts: slim, count: slim.length, generatedAt: new Date().toISOString() });
+  } catch (e) {
+    return json({ error: e.message }, 502);
+  }
+}
+
+// ============ /soft-refresh (V11) — just re-fetch + report metadata ============
+// The default behavior: read accounts-full.json (with cache-bust) and return
+// metadata so the client can confirm the data is fresh. No scraping, no GH
+// API calls, no tokens consumed. This is what the topbar button should call.
+async function handleSoftRefresh(request, env) {
+  const origin = env.PUBLIC_DATA_URL || 'https://tltanpro.github.io/TITAN';
+  try {
+    // cache: 'no-store' on Cloudflare side via cf.cacheTtl: 0
+    const res = await fetch(`${origin}/accounts-full.json?_=${Date.now()}`, {
+      cf: { cacheTtl: 0, cacheEverything: false }
+    });
+    if (!res.ok) return json({ error: `Upstream ${res.status}` }, 502);
+    const data = await res.json();
+    const accounts = Array.isArray(data) ? data : data.accounts ?? [];
+    const generatedAt = data.generatedAt ?? data.metadata?.generatedAt ?? null;
+    const lastModified = res.headers.get('Last-Modified');
+    return json({
+      ok: true,
+      accountCount: accounts.length,
+      totalPosts: accounts.reduce((acc, a) => acc + (a.posts?.length ?? a.postCount ?? 0), 0),
+      generatedAt,
+      lastModified,
+      source: origin,
+      // Hint to client: use this as the cache-bust target
+      reloadUrl: '/data/accounts-full.json',
+      triggeredAt: new Date().toISOString()
+    });
+  } catch (e) {
+    return json({ error: e.message }, 502);
+  }
+}
+
+// ============ /hard-refresh (V11) — full scrape via GH Actions ============
+// Auth: requires Authorization: Bearer <password> matching env.HARD_REFRESH_PASSWORD
+// This is a protected endpoint — only used for /settings page after login.
+// For cron-based incremental refresh, prefer .github/workflows/incremental.yml
+// (no auth, runs on schedule, costs only the GH Actions minutes).
+async function handleHardRefresh(request, env, ctx) {
+  // Auth check
+  const auth = request.headers.get('Authorization') ?? '';
+  const expected = env.HARD_REFRESH_PASSWORD ?? '';
+  if (!expected) {
+    return json({ error: 'Hard refresh not configured. Set Worker secret HARD_REFRESH_PASSWORD.' }, 503);
+  }
+  if (auth !== `Bearer ${expected}`) {
+    return json({ error: 'Invalid credentials' }, 401);
+  }
+
+  if (!env.GH_PAT || !env.GH_OWNER || !env.GH_REPO || !env.GH_WORKFLOW) {
+    return json({ error: 'GH workflow not configured. See wrangler.toml [vars].' }, 503);
+  }
+
+  let body = {};
+  try { body = await request.json(); } catch {}
+  const platforms = Array.isArray(body.platforms) && body.platforms.length > 0
+    ? body.platforms
+    : ['instagram', 'tiktok'];
+
+  const jobId = crypto.randomUUID();
+  const now = Date.now();
+  refreshJobs.set(jobId, { status: 'queued', startedAt: now, lastChecked: now, conclusion: null, logsUrl: null });
+
+  if (ctx && typeof ctx.waitUntil === 'function') {
+    ctx.waitUntil(dispatchWorkflow(env, jobId, platforms));
+  } else {
+    dispatchWorkflow(env, jobId, platforms);
+  }
+
+  return json({
+    jobId,
+    status: 'queued',
+    statusUrl: `/refresh-status?jobId=${jobId}`,
+    platforms,
+    queuedAt: new Date(now).toISOString()
+  }, 202);
+}
+
 // ============ Helpers ============
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -414,8 +660,28 @@ export default {
 
     const url = new URL(request.url);
     const path = url.pathname;
+
+    // V11: /avatar (GET), /refresh (POST, deprecated→hard), /refresh-status (GET),
+    //      /account-meta (GET), /soft-refresh (POST, default topbar behavior),
+    //      /hard-refresh (POST, auth-protected)
     if (request.method === 'GET' && (path.startsWith('/avatar') || path === '/avatar')) {
       return handleAvatarProxy(request, env);
+    }
+    if (request.method === 'POST' && path === '/refresh') {
+      // Backward-compat: treat old /refresh as hard refresh (was the only option in V10)
+      return handleHardRefresh(request, env, ctx);
+    }
+    if (request.method === 'POST' && path === '/hard-refresh') {
+      return handleHardRefresh(request, env, ctx);
+    }
+    if (request.method === 'POST' && path === '/soft-refresh') {
+      return handleSoftRefresh(request, env);
+    }
+    if (request.method === 'GET' && path === '/refresh-status') {
+      return handleRefreshStatus(request);
+    }
+    if (request.method === 'GET' && path === '/account-meta') {
+      return handleAccountMeta(request, env);
     }
 
     if (request.method !== 'POST') {
@@ -494,5 +760,28 @@ export default {
       details: errors,
       hint: 'Cek env vars Worker (GOOGLE_KEYS, OPENROUTER_API_KEYS, COHERE_KEYS). Chain: google → openrouter(free) → cohere.'
     }, 502);
+  },
+
+  // ============ V11: scheduled handler (cron backup) ============
+  // Configure in wrangler.toml: [triggers] crons = ["0 16 * * *"]  → 23:00 WIB
+  // This is a backup for .github/workflows/incremental.yml. If GH Actions
+  // fails, the Worker will still trigger a hard refresh.
+  async scheduled(event, env, ctx) {
+    console.log(`[scheduled] cron fired at ${new Date().toISOString()}`);
+    if (!env.GH_PAT || !env.GH_OWNER || !env.GH_REPO || !env.GH_WORKFLOW) {
+      console.log('[scheduled] GH workflow not configured, skipping');
+      return;
+    }
+    const jobId = `cron-${event.scheduledTime}-${crypto.randomUUID().slice(0, 8)}`;
+    const now = Date.now();
+    refreshJobs.set(jobId, {
+      status: 'queued',
+      startedAt: now,
+      lastChecked: now,
+      conclusion: null,
+      logsUrl: null,
+      trigger: 'scheduled'
+    });
+    ctx.waitUntil(dispatchWorkflow(env, jobId, ['instagram', 'tiktok']));
   }
 };

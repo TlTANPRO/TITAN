@@ -7,11 +7,14 @@ import {
 import { BarChart3 } from 'lucide-react';
 import { performanceByMonth } from '../lib/analytics.js';
 
+// Mapping: UI metric label → performanceByMonth field.
+// V10 had this as `key: 'er'` but performanceByMonth returns `avgEngagementRate`,
+// so the chart was always empty. V11 maps each metric to its real field name.
 const METRICS = {
-  ER: { key: 'er', label: 'Engagement Rate (%)', color: 'er' },
-  likes: { key: 'likes', label: 'Avg Likes', color: 'likes' },
-  views: { key: 'views', label: 'Avg Views', color: 'views' },
-  posts: { key: 'count', label: 'Posts per Month', color: 'posts' }
+  ER: { key: 'avgEngagementRate', label: 'Engagement Rate (%)', color: 'er' },
+  likes: { key: 'avgLikeCount', label: 'Avg Likes', color: 'likes' },
+  views: { key: 'avgViewCount', label: 'Avg Views', color: 'views' },
+  posts: { key: 'postCount', label: 'Posts per Month', color: 'posts' }
 };
 
 const RANGES = {
@@ -31,7 +34,12 @@ function buildTimelineData(accounts, metric, rangeSec) {
 
   // Build per-account per-month series
   const perAccount = accounts.map((acc) => {
-    const filtered = (acc.posts ?? []).filter((p) => p.createTime >= cutoff);
+    // Filter by createTime (seconds) for the date range — keeps posts inside the window.
+    // performanceByMonth reads `p.timestamp` (ms) so we also set it from createTime.
+    const filtered = (acc.posts ?? []).filter((p) => p.createTime >= cutoff).map((p) => ({
+      ...p,
+      timestamp: p.timestamp ?? p.createTime * 1000
+    }));
     const perf = performanceByMonth(filtered, acc.followerCount ?? 0);
     return { slug: acc.slug, username: acc.username, platform: acc.platform, data: perf };
   });
@@ -72,7 +80,9 @@ export function CrossAccountTimeline({ accounts }) {
   if (data.length === 0) {
     return (
       <div className="surface p-6 text-center text-text-muted text-sm">
-        Belum ada data time-series.
+        <BarChart3 className="w-5 h-5 mx-auto mb-2 opacity-50" />
+        Belum ada data time-series untuk rentang ini.
+        <div className="text-xs mt-1">Coba rentang lebih panjang (1y) atau periksa apakah data IG sudah di-enrich.</div>
       </div>
     );
   }
@@ -114,7 +124,7 @@ export function CrossAccountTimeline({ accounts }) {
         <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" opacity={0.4} />
           <XAxis dataKey="month" stroke="var(--text-muted)" tick={{ fontSize: 10 }} />
-          <YAxis stroke="var(--text-muted)" tick={{ fontSize: 10 }} />
+          <YAxis stroke="var(--text-muted)" tick={{ fontSize: 10 }} domain={['auto', 'auto']} allowDataOverflow={false} />
           <Tooltip
             contentStyle={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-default)', borderRadius: 8, fontSize: 12 }}
             labelStyle={{ color: 'var(--text-primary)' }}

@@ -1,8 +1,9 @@
 // LiveActivityFeed — latest 10 posts across all 9 accounts, ticking relative time
 import { Link } from 'react-router-dom';
-import { Clock, Heart, Eye, MessageCircle } from 'lucide-react';
+import { Heart, Eye, MessageCircle } from 'lucide-react';
 import { formatNumber } from '../lib/format.js';
 import { useEffect, useState } from 'react';
+import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
 
 const DAY_NAMES_ID = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
@@ -33,23 +34,25 @@ export function LiveActivityFeed({ posts }) {
   return (
     <div className="surface divide-y divide-border-subtle">
       {posts.map((p) => {
-        const d = new Date(p.createTime * 1000);
+        const d = new Date((p.timestamp ?? p.createTime * 1000) || 0);
         return (
           <Link
             key={p._accountSlug + '-' + p.id}
             to={`/account/${p._accountSlug}`}
             className="flex items-start gap-3 p-3 hover:bg-bg-tertiary/50 transition-colors"
           >
-            <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-pink-500 to-yellow-500 flex items-center justify-center text-white text-xs font-bold">
-              {p._accountPlatform === 'instagram' ? 'IG' : 'TT'}
+            <div className="flex-shrink-0 w-9 h-9 rounded-full bg-bg-tertiary flex items-center justify-center border border-border-subtle">
+              <PlatformIcon platform={p._accountPlatform} className="w-4 h-4" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 text-xs text-text-muted">
                 <span className="font-semibold text-text-primary">@{p._accountUsername}</span>
                 <span>·</span>
-                <span>{DAY_NAMES_ID[d.getDay()]} {d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
+                <span className="hidden sm:inline">{platformLabel(p._accountPlatform)}</span>
                 <span>·</span>
-                <span className="text-accent-primary font-medium">{relativeTime(p.createTime, now)}</span>
+                <span className="hidden md:inline">{DAY_NAMES_ID[d.getDay()]} {d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
+                <span className="md:hidden">{relativeTime(p.createTime, now)}</span>
+                <span className="hidden md:inline text-accent-primary font-medium">{relativeTime(p.createTime, now)}</span>
               </div>
               <div className="text-sm text-text-secondary line-clamp-1 mt-0.5">{p.caption || '(tanpa caption)'}</div>
               <div className="flex items-center gap-3 mt-1 text-[11px] text-text-muted tabular-nums">

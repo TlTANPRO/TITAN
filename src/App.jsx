@@ -8,6 +8,7 @@ import { MemoryProvider } from './lib/memory/MemoryProvider.jsx';
 const Home = lazy(() => import('./routes/Home.jsx'));
 const AccountPage = lazy(() => import('./routes/AccountPage.jsx'));
 const NotFound = lazy(() => import('./routes/NotFound.jsx'));
+const SettingsPage = lazy(() => import('./routes/SettingsPage.jsx'));
 
 function PageLoader() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/account/:slug" element={<AccountPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

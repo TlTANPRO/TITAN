@@ -2,18 +2,22 @@
 // Custom SVG (no recharts) for full control over animation + lightweight
 import { useMemo, useState } from 'react';
 import { Layers } from 'lucide-react';
+import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
+import { formatCompact } from '../lib/format.js';
 
 const PLATFORM_COLORS = {
-  instagram: '#ec4899',
-  tiktok: '#06b6d4'
+  instagram: '#E1306C',
+  tiktok: '#00f2ea'
 };
 
+// V11: professional palette — pink (REEL IG), violet (VIDEO), blue (IMAGE),
+// amber (CAROUSEL), slate (OTHER). Less saturated than V10's neon mix.
 const MEDIA_COLORS = {
   REEL: '#ec4899',
-  VIDEO: '#a855f7',
+  VIDEO: '#8b5cf6',
   IMAGE: '#3b82f6',
   CAROUSEL_ALBUM: '#f59e0b',
-  OTHER: '#6b7280'
+  OTHER: '#64748b'
 };
 
 function buildSunburstData(accounts) {
@@ -147,18 +151,18 @@ export function ContentSunburst({ accounts }) {
           {byPlatform.map((platform) => (
             <div key={platform.name}>
               <div className="flex items-center gap-2 mb-1.5">
-                <div className="w-3 h-3 rounded" style={{ backgroundColor: PLATFORM_COLORS[platform.name] }} />
+                <PlatformIcon platform={platform.name} className="w-3.5 h-3.5" />
                 <span className="font-semibold text-text-primary uppercase tracking-wider">
-                  {platform.name === 'instagram' ? 'Instagram' : 'TikTok'}
+                  {platformLabel(platform.name)}
                 </span>
-                <span className="text-text-muted ml-auto tabular-nums">{platform.count} ({Math.round(platform.count / total * 100)}%)</span>
+                <span className="text-text-muted ml-auto tabular-nums">{formatCompact(platform.count)} ({Math.round(platform.count / total * 100)}%)</span>
               </div>
               <div className="space-y-1 pl-5">
                 {[...platform.types.entries()].sort((a, b) => b[1] - a[1]).map(([type, count]) => (
                   <div key={type} className="flex items-center gap-1.5 text-[11px]">
-                    <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: MEDIA_COLORS[type] ?? '#6b7280' }} />
+                    <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: MEDIA_COLORS[type] ?? '#64748b' }} />
                     <span className="text-text-secondary flex-1">{type}</span>
-                    <span className="text-text-muted tabular-nums">{count}</span>
+                    <span className="text-text-muted tabular-nums">{formatCompact(count)}</span>
                   </div>
                 ))}
               </div>
@@ -168,7 +172,7 @@ export function ContentSunburst({ accounts }) {
             <div className="surface p-2 text-text-secondary">
               <div className="font-semibold text-text-primary">{hover.name}</div>
               <div className="text-[10px] uppercase tracking-wider">
-                {hover.count} posts ({Math.round(hover.count / total * 100)}%)
+                {formatCompact(hover.count)} posts ({Math.round(hover.count / total * 100)}%)
               </div>
             </div>
           )}
@@ -176,10 +180,4 @@ export function ContentSunburst({ accounts }) {
       </div>
     </div>
   );
-}
-
-function formatCompact(n) {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
-  return String(n);
 }

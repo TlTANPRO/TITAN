@@ -5,7 +5,19 @@ compatibility_date = "2024-09-01"
 # Deploy: npx wrangler deploy
 # (Worker free tier: 100k requests/day)
 
-# Secrets — set via `wrangler secret put OPENROUTER_API_KEY`
+# Secrets — set via `wrangler secret put OPENROUTER_API_KEY` and `wrangler secret put GH_PAT`
 # DO NOT put real keys in this file
 [vars]
 ALLOWED_ORIGIN = "https://tltanpro.github.io"
+# V11: GitHub Actions workflow trigger for manual /hard-refresh
+# Set the secret `GH_PAT` via: wrangler secret put GH_PAT
+# PAT must have `workflow` scope. Vars below are public-ish (no secrets).
+GH_OWNER = "tltanpro"
+GH_REPO = "TITAN"
+GH_WORKFLOW = "scrape.yml"
+# Where to fetch the slim account list for the topbar popover
+PUBLIC_DATA_URL = "https://tltanpro.github.io/TITAN"
+# V11: daily backup cron at 16:00 UTC = 23:00 WIB
+# Triggers /hard-refresh if GH Actions workflow hasn't run by then
+[triggers]
+crons = ["0 16 * * *"]

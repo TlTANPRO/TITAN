@@ -70,6 +70,34 @@ export function topByMetric(posts, key, n = 5) {
   return [...posts].sort((a, b) => (b[key] ?? 0) - (a[key] ?? 0)).slice(0, n);
 }
 
+// V11: top performers across 4 metrics (views / likes / comments / shares).
+// Used by the new "Top Performers" section on the Home dashboard.
+export function topByMetricExtended(posts, n = 3) {
+  return {
+    byViews: topByMetric(posts, 'viewCount', n),
+    byLikes: topByMetric(posts, 'likeCount', n),
+    byComments: topByMetric(posts, 'commentCount', n),
+    byShares: topByMetric(posts, 'shareCount', n)
+  };
+}
+
+// V11: hashtags / mentions with display-ready strings (no double `##` / `@@`).
+// normalize.js already strips the doubling, so this is mostly a typed wrapper
+// that returns `{ tag, count, display }` for UI consumption.
+export function normalizedHashtags(posts, n = 10) {
+  return topHashtags(posts, n).map(({ tag, count }) => {
+    const stripped = String(tag).replace(/^#+/, '').toLowerCase();
+    return { tag: stripped, count, display: `#${stripped}` };
+  });
+}
+
+export function normalizedMentions(posts, n = 10) {
+  return topMentions(posts, n).map(({ mention, count }) => {
+    const stripped = String(mention).replace(/^@+/, '').toLowerCase();
+    return { handle: stripped, count, display: `@${stripped}` };
+  });
+}
+
 export function performanceTiers(posts) {
   const counts = { viral: 0, tinggi: 0, bagus: 0, rataRata: 0, rendah: 0 };
   if (posts.length === 0) return counts;
@@ -241,6 +269,157 @@ export function marketInsights(agg, benchmark, tiers) {
   if (strengths.length === 0) strengths.push('Data cukup untuk dianalisis lebih lanjut.');
   if (weaknesses.length === 0) weaknesses.push('Tidak ada kelemahan signifikan pada sampel.');
   if (recs.length === 0) recs.push('Pertahankan strategi dan pantau metrik secara berkala.');
+  return { strengths, weaknesses, recommendations: recs };
+}
+
+// V11: extended market insights — generates 10+ strengths, weaknesses, and
+// recommendations by mining multiple analytics primitives (mix, cadence, viral
+// last-hit, content pillars, hook classification, top hashtags). Used by the
+// per-account "Insight & Rekomendasi" panel when AI text is missing.
+export function marketInsightsExtended(account, insights) {
+  const strengths = [];
+  const weaknesses = [];
+  const recs = [];
+
+  const agg = insights?.aggregates ?? {};
+  const bench = insights?.benchmark ?? {};
+  const tiers = insights?.tiers ?? {};
+  const mix = insights?.contentMix ?? {};
+  const cadence = insights?.postingCadence ?? {};
+  const lastViral = insights?.lastViral ?? {};
+  const hooks = insights?.hookClassification ?? {};
+  const pillars = insights?.contentPillars ?? [];
+  const topTags = insights?.topHashtags ?? [];
+  const velocity = insights?.growthVelocity ?? {};
+  const availability = insights?.availability ?? {};
+
+  const total = (tiers.viral ?? 0) + (tiers.tinggi ?? 0) + (tiers.bagus ?? 0) + (tiers.rataRata ?? 0) + (tiers.rendah ?? 0);
+  const highPct = total > 0 ? ((tiers.viral ?? 0) + (tiers.tinggi ?? 0)) / total : 0;
+  const lowPct = total > 0 ? (tiers.rendah ?? 0) / total : 0;
+
+  // --- STRENGTHS (10+ candidates) ---
+  if ((agg.engagementRate ?? 0) > (bench.engagementRateBenchmark ?? 0)) {
+    strengths.push(`ER ${(agg.engagementRate ?? 0).toFixed(2)}% di atas benchmark ${(bench.engagementRateBenchmark ?? 0).toFixed(2)}% — akun ini punya audiens yang engaged.`);
+  }
+  if ((agg.postsPerWeek ?? 0) >= (bench.postingFrequencyBenchmark ?? 0)) {
+    strengths.push(`Konsistensi ${(agg.postsPerWeek ?? 0).toFixed(1)} post/minggu sudah memenuhi standar — algoritma memberi sinyal positif.`);
+  }
+  if (highPct >= 0.3) {
+    strengths.push(`${Math.round(highPct * 100)}% post masuk kategori tinggi/viral — formula konten terbukti bekerja.`);
+  }
+  if ((cadence.score ?? 0) >= 70) {
+    strengths.push(`Cadence score ${cadence.score}/100 — jeda antar post konsisten, audiens tahu kapan menantikan konten.`);
+  }
+  if (lastViral?.days !== null && lastViral?.days !== undefined && lastViral.days <= 14) {
+    strengths.push(`Post viral terakhir ${lastViral.days} hari lalu — momentum masih panas.`);
+  }
+  const mixCount = Object.values(mix.counts ?? {}).filter((v) => v > 0).length;
+  if (mixCount >= 3) {
+    strengths.push(`Diversifikasi format ${mixCount} tipe (${Object.entries(mix.counts ?? {}).filter(([, v]) => v > 0).map(([k]) => k).join(', ')}) — tidak tergantung satu format saja.`);
+  }
+  if ((hooks.question ?? 0) > 0 && (hooks.question ?? 0) / Math.max(total, 1) >= 0.2) {
+    strengths.push(`${hooks.question} caption berisi pertanyaan — memicu komentar & DM, sinyal kuat untuk algoritma.`);
+  }
+  if (pillars[0]) {
+    strengths.push(`Pillar konten "${pillars[0].pillar}" muncul konsisten — niche positioning jelas.`);
+  }
+  if (topTags[0]) {
+    strengths.push(`Hashtag "${topTags[0].tag}" muncul di ${topTags[0].count} post — topikal, layak dipertahankan.`);
+  }
+  if (velocity?.trend === 'up') {
+    strengths.push(`Tren ER naik (slope ${(velocity.slope ?? 0).toFixed(3)}) — momentum positif bulan-ke-bulan.`);
+  }
+  if ((mix.counts?.REEL ?? 0) > 0 && (mix.counts?.REEL ?? 0) / Math.max(total, 1) >= 0.4) {
+    strengths.push(`${Math.round(((mix.counts.REEL ?? 0) / Math.max(total, 1)) * 100)}% konten Reel — format dengan reach organik tertinggi di 2026.`);
+  }
+  if (availability?.isEnriched) {
+    strengths.push('Data like & komentar tersedia — analisis engagement akurat.');
+  }
+
+  // --- WEAKNESSES (10+ candidates) ---
+  if ((agg.engagementRate ?? 0) < (bench.engagementRateBenchmark ?? 0)) {
+    weaknesses.push(`ER ${(agg.engagementRate ?? 0).toFixed(2)}% di bawah benchmark ${(bench.engagementRateBenchmark ?? 0).toFixed(2)}% — perlu format & caption yang lebih engaging.`);
+  }
+  if ((agg.postsPerWeek ?? 0) < (bench.postingFrequencyBenchmark ?? 0)) {
+    weaknesses.push(`Frekuensi ${(agg.postsPerWeek ?? 0).toFixed(1)} post/minggu di bawah standar ${bench.postingFrequencyBenchmark ?? 0} — algoritma menurunkan jangkauan.`);
+  }
+  if (lowPct >= 0.4) {
+    weaknesses.push(`${Math.round(lowPct * 100)}% post berkategori rendah — kualitas belum konsisten, perlu audit tema & format.`);
+  }
+  if (mixCount <= 1) {
+    weaknesses.push(`Hanya ${mixCount} format konten yang digunakan — rentan fatigue audiens.`);
+  }
+  if (lastViral?.days !== null && lastViral?.days !== undefined && lastViral.days > 30) {
+    weaknesses.push(`Tidak ada post viral dalam ${lastViral.days} hari terakhir — perlu eksperimen formula baru.`);
+  }
+  if ((hooks.cta ?? 0) === 0) {
+    weaknesses.push('Tidak ada caption dengan call-to-action eksplisit — peluang konversi ke komen/save terlewat.');
+  }
+  if ((cadence.score ?? 0) < 50) {
+    weaknesses.push(`Cadence score ${cadence.score ?? 0}/100 — posting tidak teratur, audiens tidak punya ekspektasi.`);
+  }
+  if (topTags.length === 0) {
+    weaknesses.push('Belum ada hashtag konsisten — discoverability organik rendah.');
+  }
+  if (velocity?.trend === 'down') {
+    weaknesses.push(`Tren ER turun (slope ${(velocity.slope ?? 0).toFixed(3)}) — butuh reset strategi atau eksperimen format.`);
+  }
+  if ((agg.avgCommentCount ?? 0) < (agg.avgLikeCount ?? 0) * 0.01) {
+    weaknesses.push('Rasio komen/like < 1% — caption kurang memicu diskusi, hanya like pasif.');
+  }
+  if (availability?.isEstimated) {
+    weaknesses.push('Data like/komentar tidak lengkap karena scraper belum lewat enrichment — analisis ER terbatas.');
+  }
+  if (account?.followerCount > 0 && (account.followerCount < 1000) && (agg.engagementRate ?? 0) < 1) {
+    weaknesses.push('Akun baru dengan ER rendah — audiens belum terbentuk, perlu konsistensi 4-8 minggu.');
+  }
+
+  // --- RECOMMENDATIONS (10+ actionable) ---
+  if ((agg.postsPerWeek ?? 0) < 3) {
+    recs.push('Tingkatkan frekuensi menjadi minimal 3-4 post/minggu dengan mix foto, Reels, dan carousel.');
+  }
+  if (mixCount < 3) {
+    recs.push('Diversifikasi format: tambah Reels untuk reach, carousel untuk save, foto untuk estetika feed.');
+  }
+  if ((hooks.question ?? 0) === 0) {
+    recs.push('Tambah 1 pertanyaan di setiap caption — "Kamu lebih suka A atau B?" memicu komentar.');
+  }
+  if ((hooks.cta ?? 0) === 0) {
+    recs.push('Sisipkan call-to-action: "Save untuk nanti", "Tag teman", "Kirim ke DM" untuk naikkan engagement rate.');
+  }
+  if (pillars[0] && pillars[0].relatedTerms?.[0]) {
+    recs.push(`Perdalam pillar "${pillars[0].pillar}" — eksplorasi istilah turunan seperti "${pillars[0].relatedTerms.join(', ')}".`);
+  }
+  if (lastViral?.days !== null && lastViral?.days !== undefined && lastViral.days > 14) {
+    recs.push('Replikasi formula post viral terakhir — topik, format, jam posting, dan gaya caption.');
+  }
+  if (velocity?.trend === 'down') {
+    recs.push('Reset strategi: eksperimen 3 format baru selama 2 minggu, ukur ER, double-down pada yang terbaik.');
+  }
+  if (topTags[0]) {
+    recs.push(`Gunakan kombinasi 5-8 hashtag: ${topTags.slice(0, 3).map((t) => t.tag).join(' ')} (campuran niche & medium).`);
+  }
+  if ((agg.avgCommentCount ?? 0) < (agg.avgLikeCount ?? 0) * 0.02) {
+    recs.push('Balas setiap komentar dalam 1 jam pertama — algoritma menilai interaksi 2-arah sebagai sinyal engagement.');
+  }
+  if (bench?.likesPerFollowerComparison === 'below') {
+    recs.push('Like per follower di bawah benchmark — coba konten yang lebih "save-worthy" (tips, checklist, before-after).');
+  }
+  if (availability?.isEstimated) {
+    recs.push('Jalankan re-scrape dengan enrichment /media/info untuk IG agar data like & komen lengkap.');
+  }
+  if (account?.platform === 'instagram' && (mix.counts?.REEL ?? 0) / Math.max(total, 1) < 0.3) {
+    recs.push('Naikkan proporsi Reels ke minimal 30% — IG 2026 memberi reach 2-3x lebih besar untuk Reel vs foto.');
+  }
+  if (account?.platform === 'tiktok' && (cadence.score ?? 0) < 60) {
+    recs.push('TikTok rewarding konsistensi harian — coba 1 post/hari selama 2 minggu, ukur dampaknya.');
+  }
+
+  // Ensure minimum counts
+  if (strengths.length === 0) strengths.push('Data cukup untuk dianalisis lebih lanjut.');
+  if (weaknesses.length === 0) weaknesses.push('Tidak ada kelemahan signifikan pada sampel.');
+  if (recs.length === 0) recs.push('Pertahankan strategi dan pantau metrik secara berkala.');
+
   return { strengths, weaknesses, recommendations: recs };
 }
 
@@ -585,13 +764,20 @@ export function accountHealthScore(account) {
   // --- Growth component (20% weight) — based on growthVelocity slope ---
   const vel = growthVelocity(posts, followerCount);
   // velocity.trend is "up" | "flat" | "down". Convert to 0-100.
+  // Use actual monthly data (recentAvg/earlyAvg are NOT returned by growthVelocity)
+  // to avoid NaN. Fall back to last-vs-first non-zero month.
   let growth = 50;
-  if (vel?.trend === 'up') {
-    const monthlyGrowth = vel.recentAvg - vel.earlyAvg;
-    growth = Math.min(100, Math.max(50, 50 + Math.round(monthlyGrowth * 5)));
+  const months = vel?.monthly ?? [];
+  if (months.length >= 2) {
+    const recent = months[months.length - 1]?.avgEngagementRate ?? 0;
+    const early = months[0]?.avgEngagementRate ?? 0;
+    const delta = recent - early;
+    if (delta > 0) growth = Math.min(100, Math.max(50, 50 + Math.round(delta * 50)));
+    else if (delta < 0) growth = Math.max(0, Math.min(50, 50 + Math.round(delta * 50)));
+  } else if (vel?.trend === 'up') {
+    growth = 70;
   } else if (vel?.trend === 'down') {
-    const monthlyDrop = vel.earlyAvg - vel.recentAvg;
-    growth = Math.max(0, Math.min(50, 50 - Math.round(monthlyDrop * 5)));
+    growth = 30;
   }
 
   // --- Diversity component (15% weight) — contentMix balance ---
@@ -970,6 +1156,7 @@ export function computeAllInsights(account) {
     durationAnalysis: durationAnalysis(posts, followerCount),
     yearlySummary: yearlySummary(posts, followerCount),
     marketInsights: marketInsights(aggregates, benchmark, tiers),
+    marketInsightsExtended: marketInsightsExtended(enrichedAccount, null), // placeholder; below we rebuild with full insights
     growthPotential: growthPotential(aggregates, benchmark, tiers),
     // 10 new
     bestTimeOfDay: bestTimeOfDay(posts),
@@ -986,6 +1173,13 @@ export function computeAllInsights(account) {
     viralRecipe: viralPostRecipe(outlierPosts(posts).map((o) => o.post)),
     contentCalendar: contentCalendarRecommendation(posts, platform),
     heatmapByMediaType: postingHeatmapByMediaType(posts),
-    lastViral: timeSinceLastViral(posts)
+    lastViral: timeSinceLastViral(posts),
+    topByMetricExtended: topByMetricExtended(posts, 3),
+    normalizedHashtags: normalizedHashtags(posts),
+    normalizedMentions: normalizedMentions(posts)
   };
+  // Now rebuild the extended market insights with the full insights object so
+  // it can see topHashtags, contentPillars, hookClassification, etc.
+  result.marketInsightsExtended = marketInsightsExtended(enrichedAccount, result);
+  return result;
 }
