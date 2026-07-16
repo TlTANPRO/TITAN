@@ -14,6 +14,35 @@ function formatRelative(ts) {
   return `${Math.floor(diff / 86400000)}d`;
 }
 
+// Minimal markdown for assistant messages: **bold**, *italic*, `code`.
+// Inline-only — no headings, no lists. Keeps it safe (no dangerouslySetInnerHTML).
+// Renders as <strong>/<em>/<code> via React elements; no string injection.
+function renderInlineMarkdown(text) {
+  if (!text) return null;
+  // Tokenize: split on markdown markers, keep markers as separate tokens
+  // Pattern: **...** | *...* | `...`
+  const parts = [];
+  let i = 0;
+  let key = 0;
+  const re = /(\*\*[^*\n]+?\*\*|\*[^*\n]+?\*|`[^`\n]+?`)/g;
+  let last = 0;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+    const tok = m[0];
+    if (tok.startsWith('**')) {
+      parts.push(<strong key={key++}>{tok.slice(2, -2)}</strong>);
+    } else if (tok.startsWith('`')) {
+      parts.push(<code key={key++} className="px-1 py-0.5 rounded bg-bg-tertiary text-text-primary text-[0.85em] font-mono">{tok.slice(1, -1)}</code>);
+    } else {
+      parts.push(<em key={key++}>{tok.slice(1, -1)}</em>);
+    }
+    last = m.index + tok.length;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return parts;
+}
+
 // Detect /account/:slug route and capture the slug
 function useCurrentAccountSlug() {
   const [slug, setSlug] = useState(null);
@@ -169,7 +198,9 @@ export default function ChatPanel() {
                       : 'bg-bg-elevated text-text-primary rounded-bl-sm border border-border-subtle'
                   }`}
                 >
-                  {m.content || (m.role === 'assistant' && isStreaming && i === messages.length - 1 ? '…' : '')}
+                  {m.content
+                    ? (m.role === 'assistant' ? renderInlineMarkdown(m.content) : m.content)
+                    : (m.role === 'assistant' && isStreaming && i === messages.length - 1 ? '…' : '')}
                 </div>
                 <div className="text-[10px] text-text-muted mt-1 px-1">{formatRelative(m.ts)}</div>
               </div>
