@@ -1,0 +1,11 @@
+name = "titan-llm-proxy"
+main = "src/index.js"
+compatibility_date = "2024-09-01"
+
+# Deploy: npx wrangler deploy
+# (Worker free tier: 100k requests/day)
+
+# Secrets — set via `wrangler secret put OPENROUTER_API_KEY`
+# DO NOT put real keys in this file
+[vars]
+ALLOWED_ORIGIN = "https://tltanpro.github.io"

@@ -1,0 +1,16 @@
+{
+  "name": "cloudflare-worker",
+  "version": "1.0.0",
+  "description": "Holds all LLM API keys server-side. The browser only ever talks to this Worker, never directly to upstream providers. Setting `VITE_LLM_PROXY_URL` to this Worker's URL puts the app in **fully automatic** mode — users do not enter any API keys.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "wrangler": "^4.110.0"
+  }
+}
