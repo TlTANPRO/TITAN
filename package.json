@@ -6,6 +6,7 @@
   "description": "TITAN — Social Media Marketing Intelligence Dashboard",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/copy-data-to-public.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "scrape:ig": "node scripts/scrape-ig.mjs",

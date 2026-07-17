@@ -269,13 +269,46 @@ export async function fetchUrl(url) {
   if (!url || !/^https?:\/\//i.test(url)) {
     return { ok: false, error: 'Invalid URL' };
   }
+
+  // Primary: route via Cloudflare Worker Jina read action (no CORS, server-side fetch).
+  const proxyUrl = import.meta.env.VITE_LLM_PROXY_URL;
+  if (proxyUrl) {
+    try {
+      const res = await fetch(proxyUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Titan-Action': 'read',
+        },
+        body: JSON.stringify({ url }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const inner = data?.data ?? data;
+        const content = inner?.data?.content || inner?.content || '';
+        const title = inner?.data?.title || inner?.title || '';
+        if (content || title) {
+          return {
+            ok: true,
+            content: (title ? `Title: ${title}\n\n` : '') + String(content).slice(0, 8000),
+            url,
+            source: 'worker-jina',
+          };
+        }
+      }
+    } catch (err) {
+      if (typeof console !== 'undefined') console.log('[TITAN-FETCH] Worker Jina err:', err.message);
+    }
+  }
+
+  // Fallback: allorigins CORS proxy (often 520/522 — last resort only).
   try {
     const res = await fetch(PROXY + encodeURIComponent(url));
     if (!res.ok) {
       return { ok: false, error: `HTTP ${res.status}` };
     }
     const text = await res.text();
-    return { ok: true, content: text.slice(0, 8000), url };
+    return { ok: true, content: text.slice(0, 8000), url, source: 'allorigins' };
   } catch (err) {
     return { ok: false, error: err.message };
   }

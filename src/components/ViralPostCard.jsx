@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Eye, Heart, MessageCircle, Play, TrendingUp } from 'lucide-react';
 import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
 import { formatNumber, formatCompact } from '../lib/format.js';
+import { proxiedImage } from '../lib/imageProxy.js';
 
 function relativeTime(timestamp) {
   if (!timestamp) return '';
@@ -52,7 +53,7 @@ export function ViralPostCard({ post, rank }) {
       <div className="relative aspect-square bg-bg-tertiary rounded overflow-hidden">
         {post.thumbnailUrl ? (
           <img
-            src={post.thumbnailUrl}
+            src={proxiedImage(post.thumbnailUrl, 320)}
             alt=""
             loading="lazy"
             className="w-full h-full object-cover"

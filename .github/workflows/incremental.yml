@@ -95,7 +95,8 @@ jobs:
         id: changes
         if: success()
         run: |
-          if git diff --quiet HEAD -- public/data/accounts-full.json scripts/scraped/ 2>/dev/null; then
+          # V11: data lives in src/data/accounts-full.json (Vite-bundled), not public/data/
+          if git diff --quiet HEAD -- src/data/accounts-full.json scripts/scraped/ 2>/dev/null; then
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "No data changes — skipping commit"
           else
@@ -108,7 +109,7 @@ jobs:
         run: |
           git config user.name "titan-bot"
           git config user.email "titan-bot@users.noreply.github.com"
-          git add public/data/accounts-full.json scripts/scraped/
+          git add src/data/accounts-full.json scripts/scraped/
           # Count new posts
           NEW=$(git diff --cached --numstat | wc -l)
           git commit -m "chore(data): incremental refresh $(date -u +%Y-%m-%dT%H:%M:%SZ) — $NEW files changed"

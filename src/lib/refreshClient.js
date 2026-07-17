@@ -14,8 +14,9 @@
 //   - .github/workflows/incremental.yml OR Worker scheduled event
 //   - User doesn't click anything — data is fresh by morning
 //
-// Fallback: if Worker is unreachable, refreshClient always re-fetches
-// /data/accounts-full.json?bust=Date.now() directly from the static site.
+// Fallback: if Worker is unreachable, refreshClient re-imports the Vite-bundled
+// JSON via dataStore.reload(). The data itself only changes after a new build
+// (Vite hashes the chunk), so users should hard-reload the page after a deploy.
 
 import { reload as dataStoreReload } from './dataStore.js';
 
@@ -24,10 +25,6 @@ const HARD_REFRESH_PASSWORD = import.meta.env.VITE_HARD_REFRESH_PASSWORD ?? '';
 const DEFAULT_TIMEOUT_MS = 30_000;
 const POLL_INTERVAL_MS = 5_000;
 const POLL_TIMEOUT_MS = 10 * 60_000; // 10 minutes (hard refresh can be slower)
-
-function getAccountsUrl() {
-  return `/data/accounts-full.json?bust=${Date.now()}`;
-}
 
 async function fetchWithTimeout(url, options = {}, timeout = DEFAULT_TIMEOUT_MS) {
   const controller = new AbortController();
@@ -154,28 +151,20 @@ export async function triggerRefresh(platforms = ['instagram', 'tiktok']) {
   return triggerSoftRefresh();
 }
 
-// ============ Fallback (Worker unreachable) ============
+// ============ Fallback (Worker unreachable OR Vite-bundled data path) ============
+// V11 design: accounts-full.json is bundled via Vite import, not served as a static
+// file. When Worker /soft-refresh is unreachable, we cannot fetch the JSON from a URL
+// (the /data/accounts-full.json path 404s). Instead, ask the dataStore to re-import
+// the JSON chunk — the actual "fresh" version lives in the next deployed bundle anyway.
 async function localCacheBust(reason) {
   try {
-    const res = await fetch(getAccountsUrl(), { cache: 'no-store' });
-    if (res.ok) {
-      const data = await res.json();
-      if (data?.accounts && Array.isArray(data.accounts)) {
-        await dataStoreReload();
-        return {
-          ok: true,
-          message: `Local cache refresh (${reason ?? 'fallback'})`,
-          accountCount: data.accounts.length,
-          totalPosts: data.accounts.reduce((acc, a) => acc + (a.posts?.length ?? 0), 0),
-          generatedAt: data.generatedAt ?? null,
-          fallback: true
-        };
-      }
-    }
     await dataStoreReload();
+    const accounts = (await import('./dataStore.js')).getAllAccounts();
     return {
       ok: true,
-      message: `Reload lokal (${reason ?? 'fallback'})`,
+      message: `Reload lokal (${reason ?? 'fallback'}) — data akan refresh setelah redeploy`,
+      accountCount: accounts.length,
+      totalPosts: accounts.reduce((acc, a) => acc + (a.posts?.length ?? 0), 0),
       fallback: true
     };
   } catch (err) {
