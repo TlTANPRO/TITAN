@@ -20,7 +20,8 @@ scripts/scraped-15jul-backup/
 
 # generated data
 src/data/accounts-full.json
-public/data/accounts-full.json  # prebuild copy (vite will copy to dist/data/ anyway)
+# prebuild copy (vite will copy to dist/data/ anyway)
+public/data/accounts-full.json
 
 # logs
 *.log
