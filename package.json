@@ -19,7 +19,10 @@
     "insights:generate": "node scripts/generate-ai-insights.mjs",
     "insights:briefing": "node scripts/generate-ai-insights.mjs briefing=1",
     "pipeline": "node scripts/scrape-ig.mjs && node scripts/scrape-tt.mjs && node scripts/validate-merge.mjs && node scripts/generate-data.mjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "deploy": "node scripts/deploy.mjs",
+    "deploy:dry": "node scripts/deploy.mjs --dry-run",
+    "deploy:nopush": "node scripts/deploy.mjs --skip-push"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -38,7 +41,6 @@
     "tailwindcss": "^3.4.13",
     "typescript": "^5.6.2",
     "vite": "^5.4.8",
-    "vite-plugin-pwa": "^0.20.5",
     "vitest": "^2.1.2",
     "dotenv": "^16.4.5"
   }

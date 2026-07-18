@@ -42,3 +42,11 @@ Thumbs.db
 
 # pwa
 dev-dist/
+
+# backup (temporary, for safe pre-simplify rollback)
+BACKUP-*/
+
+# deploy-generated root files (rebuilt by scripts/deploy.mjs from dist/)
+# These ARE committed to git because gh-pages serves from root, but
+# the canonical source is dist/. If you need to rebuild, run `pnpm run deploy`.
+# (kept tracked intentionally — see scripts/deploy.mjs)
