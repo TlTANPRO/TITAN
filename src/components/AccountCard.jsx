@@ -1,21 +1,18 @@
-// AccountCard — single account tile. Uses the real profile photo via the
-// Worker /avatar proxy. If the photo URL is missing OR fails to load, we
-// render a colored brand-icon tile (IG or TT) — never a letter fallback.
-import { useState } from 'react';
+// AccountCard — single account tile. Uses the real profile photo via
+// <ProxiedAvatar> (which routes IG/TT Akamai-protected URLs browser-direct
+// and other CDNs through Worker /avatar). On load failure, falls back to a
+// brand-icon tile (IG or TT) — never a letter.
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Instagram, Calendar, AlertTriangle } from 'lucide-react';
+import { Calendar, AlertTriangle, Instagram } from 'lucide-react';
 import { formatNumber, formatPercent, relativeTime } from '../lib/format.js';
-import { proxiedImage } from '../lib/imageProxy.js';
+import { ProxiedAvatar } from './ProxiedAvatar.jsx';
 import { TtIcon } from './icons/TtIcon.jsx';
 
 export default function AccountCard({ account }) {
   const isIG = account.platform === 'instagram';
-  const [avatarFailed, setAvatarFailed] = useState(false);
-  const showImg = account.avatarUrl && !avatarFailed;
-  const PlatformIcon = isIG ? Instagram : TtIcon;
-  const accentColor = isIG ? 'text-accent-instagram' : 'text-accent-tiktok';
   const isLimited = account.availability && !account.availability.hasRealData;
+  const PlatformIcon = isIG ? Instagram : TtIcon;
 
   return (
     <motion.div
@@ -41,24 +38,7 @@ export default function AccountCard({ account }) {
 
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            {showImg ? (
-              <img
-                src={proxiedImage(account.avatarUrl)}
-                alt={account.username}
-                onError={() => setAvatarFailed(true)}
-                className="w-12 h-12 rounded-full object-cover bg-bg-tertiary flex-shrink-0"
-              />
-            ) : (
-              <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  isIG
-                    ? 'bg-gradient-to-br from-pink-500 via-red-500 to-yellow-500'
-                    : 'bg-black'
-                }`}
-              >
-                <PlatformIcon className={`w-6 h-6 ${isIG ? 'text-white' : 'text-white'}`} />
-              </div>
-            )}
+            <ProxiedAvatar account={account} size={48} className="rounded-full" />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
                 <h3 className="font-semibold text-text-primary truncate">@{account.username}</h3>

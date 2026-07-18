@@ -1,13 +1,14 @@
 // AccountHealthGrid — 9 cards grouped by platform (IG first, then TT), each
 // with health score breakdown (engagement, consistency, growth, diversity).
-// Uses real profile photos via Worker /avatar proxy; falls back to PlatformIcon
-// (no letter "E" — that was the V10 bug). The Grade badge uses color-coded
+// Uses <ProxiedAvatar> for profile photos (browser-direct for IG/TT Akamai
+// CDN, Worker /avatar for other). On load failure, falls back to brand-icon
+// tile (no letter "E" — that was the V10 bug). Grade badge uses color-coded
 // background, not a giant letter tile.
 import { Link } from 'react-router-dom';
 import { Heart, Eye, MessageCircle, Share2 } from 'lucide-react';
 import { formatNumber, formatPercent } from '../lib/format.js';
 import { performanceByMonth } from '../lib/analytics.js';
-import { proxiedImage } from '../lib/imageProxy.js';
+import { ProxiedAvatar } from './ProxiedAvatar.jsx';
 import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
 
 const GRADE_COLORS = {
@@ -19,35 +20,7 @@ const GRADE_COLORS = {
 };
 
 function AccountAvatar({ account }) {
-  if (!account.avatarUrl) {
-    return (
-      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-bg-tertiary flex items-center justify-center border border-border-subtle">
-        <PlatformIcon platform={account.platform} className="w-5 h-5" />
-      </div>
-    );
-  }
-  return (
-    <img
-      src={proxiedImage(account.avatarUrl, 80)}
-      alt={`@${account.username}`}
-      loading="lazy"
-      onError={(e) => {
-        // Replace with brand icon tile on load failure — never a letter.
-        const fallback = document.createElement('div');
-        fallback.className = 'flex-shrink-0 w-10 h-10 rounded-full bg-bg-tertiary flex items-center justify-center border border-border-subtle';
-        const wrapper = document.createElement('div');
-        wrapper.className = 'w-5 h-5';
-        wrapper.innerHTML = account.platform === 'tiktok'
-          ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V8.62a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.05Z"/></svg>'
-          : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.74 3.74 0 0 1-1.38-.9 3.74 3.74 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.21 15.58 2.2 15.2 2.2 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.21 8.8 2.2 12 2.2Zm0 1.8c-3.15 0-3.5.01-4.74.07-1.07.05-1.65.23-2.04.38-.51.2-.88.44-1.27.83-.39.39-.63.76-.83 1.27-.15.39-.33.97-.38 2.04C2.68 8.5 2.67 8.85 2.67 12s.01 3.5.07 4.74c.05 1.07.23 1.65.38 2.04.2.51.44.88.83 1.27.39.39.76.63 1.27.83.39.15.97.33 2.04.38 1.24.06 1.59.07 4.74.07s3.5-.01 4.74-.07c1.07-.05 1.65-.23 2.04-.38.51-.2.88-.44 1.27-.83.39-.39.63-.76.83-1.27.15-.39.33-.97.38-2.04.06-1.24.07-1.59.07-4.74s-.01-3.5-.07-4.74c-.05-1.07-.23-1.65-.38-2.04a3.42 3.42 0 0 0-.83-1.27 3.42 3.42 0 0 0-1.27-.83c-.39-.15-.97-.33-2.04-.38C15.5 4.01 15.15 4 12 4Zm0 3.07A4.93 4.93 0 1 1 7.07 12 4.93 4.93 0 0 1 12 7.07Z"/></svg>';
-        fallback.appendChild(wrapper);
-        if (e.currentTarget.parentNode) {
-          e.currentTarget.parentNode.replaceChild(fallback, e.currentTarget);
-        }
-      }}
-      className="flex-shrink-0 w-10 h-10 rounded-full object-cover bg-bg-tertiary"
-    />
-  );
+  return <ProxiedAvatar account={account} size={40} className="" />;
 }
 
 function MiniSparkline({ data, color = 'var(--accent-primary)' }) {

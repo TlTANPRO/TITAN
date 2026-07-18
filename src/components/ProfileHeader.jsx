@@ -1,10 +1,10 @@
 // ProfileHeader — large profile section for a single account.
-// Uses the real profile photo via the Worker /avatar proxy. If the URL is
-// missing or fails, we render a colored brand-icon tile — never a letter.
-import { useState } from 'react';
+// Uses <ProxiedAvatar> for the profile photo (browser-direct for IG/TT
+// Akamai CDN, Worker /avatar for other). Falls back to a colored brand-icon
+// tile on load failure — never a letter.
 import { Link } from 'react-router-dom';
 import { BadgeCheck, AlertTriangle } from 'lucide-react';
-import { proxiedImage } from '../lib/imageProxy.js';
+import { ProxiedAvatar } from './ProxiedAvatar.jsx';
 import { formatCompact, formatPercent } from '../lib/format.js';
 import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
 
@@ -60,8 +60,6 @@ function resolveValue(metric, availability, isIG, aggregates) {
 
 export default function ProfileHeader({ account }) {
   const isIG = account.platform === 'instagram';
-  const [avatarFailed, setAvatarFailed] = useState(false);
-  const showImg = account.avatarUrl && !avatarFailed;
   const aggregates = account.aggregates ?? null;
   const availability = account.availability ?? {
     likes: true,
@@ -97,24 +95,7 @@ export default function ProfileHeader({ account }) {
         ← Kembali ke daftar akun
       </Link>
       <div className="flex items-start gap-5 flex-wrap">
-        {showImg ? (
-          <img
-            src={proxiedImage(account.avatarUrl)}
-            alt={account.username}
-            onError={() => setAvatarFailed(true)}
-            className="w-20 h-20 rounded-full object-cover bg-bg-tertiary flex-shrink-0"
-          />
-        ) : (
-          <div
-            className={`w-20 h-20 rounded-full flex items-center justify-center flex-shrink-0 ${
-              isIG
-                ? 'bg-gradient-to-br from-pink-500 via-red-500 to-yellow-500'
-                : 'bg-black'
-            }`}
-          >
-            <PlatformIcon platform={account.platform} className="w-10 h-10 text-white" />
-          </div>
-        )}
+        <ProxiedAvatar account={account} size={80} className="rounded-full" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <h1 className="text-2xl font-bold text-text-primary flex items-center gap-1.5">
