@@ -127,6 +127,10 @@ export function normalizeAccount(raw, platform) {
     verified: Boolean(a.verified ?? a.is_verified ?? a.isVerified),
     isPrivate: Boolean(a.isPrivate ?? a.is_private),
     externalUrl: a.externalUrl ?? a.external_url ?? '',
+    // V16: pass through localAvatar (path to committed photo file in
+    // assets/avatars/{slug}.{ext}) so ProxiedAvatar can render the real
+    // photo instead of fetching session-bound CDN URLs.
+    localAvatar: a.localAvatar ?? '',
     scrapedAt: raw.scrapedAt ?? new Date().toISOString(),
     posts: Array.isArray(raw.posts) ? raw.posts.map((p) => normalizePost(p, platform)).filter(Boolean) : []
   };
