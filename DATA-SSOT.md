@@ -219,12 +219,13 @@ if (newVal > existingVal) existingPost.likeCount = newVal;
 
 | File Script | Platform | Method | Use When |
 |-------------|----------|--------|----------|
-| `scrape-ig.mjs` | IG | ENSEMBLEDATA `/user/posts` + `/media/info` | Initial full-scrape, saveCount |
+| `scrape-ig.mjs` | IG | ENSEMBLEDATA `/user/posts` + `/post/details` | Initial full-scrape, likeCount/commentCount/viewCount per post |
 | `scrape-ig-free.mjs` | IG | `/clips/user/` + `/feed/user/` | Backup if ENSEMBLEDATA exhausted |
 | `scrape-tt.mjs` | TT | ENSEMBLEDATA `/user/posts` + `/video/posts` | Initial full-scrape |
 | `scrape-tt-free.mjs` | TT | TikWM direct | Backup if ENSEMBLEDATA exhausted |
 | `scrape-incremental.mjs` | Both | Incremental (only new posts since lastTimestamp) | Daily cron, no waste |
 | `enrich-ig-android-feed.mjs` | IG | `/feed/user/` paginated | Best FREE IG enrichment |
+| `enrich-ig-postdetails.mjs` | IG | ENSEMBLEDATA `/post/details` per shortcode | Fill like/comment/view for IG posts still=0 (MAX merge) |
 | `enrich-ig-android-info.mjs` | IG | `/media/{shortcode}/info/` | ❌ 403 login_required — SKIP |
 | `enrich-ig-ytdlp.mjs` | IG | yt-dlp Python subprocess | VIDEO/REEL only, ~80% success |
 | `enrich-tt-tikwm.mjs` | TT | TikWM direct | Best FREE TT enrichment |

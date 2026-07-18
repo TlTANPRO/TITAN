@@ -234,13 +234,15 @@ async function fetchIgPosts(userId, depth, tokenPool) {
 }
 
 /**
- * Enrich IG posts with /media/info per post.
+ * Enrich IG posts with /post/details per post.
  * /user/posts tidak return likeCount, commentCount, viewCount — kita fetch per post
  * untuk dapat data real (bukan estimasi).
  *
- * Quota: 1 call per post. Untuk 4 akun × ~380 post = ~1520 call (~9% daily quota).
- * ENSEMBLEDATA /media/info endpoint: GET /apis/instagram/media/info?code=SHORTCODE&token=X
- * Returns: { data: { like_count, comment_count, view_count, play_count, ... } }
+ * Quota: 1 call per post. Untuk 4 akun × ~545 post = ~2180 call.
+ * ENSEMBLEDATA /post/details endpoint: GET /apis/instagram/post/details?code=SHORTCODE&token=X
+ * Returns: { data: { edge_media_preview_like.count, edge_media_to_comment.count,
+ *                     video_play_count, video_view_count, ... } }
+ * Catatan: saveCount TIDAK di-expose (hanya `viewer_has_saved` boolean).
  */
 async function enrichIgMediaInfo(posts, tokenPool, { skip = false, onProgress = null } = {}) {
   if (skip) {
@@ -260,29 +262,26 @@ async function enrichIgMediaInfo(posts, tokenPool, { skip = false, onProgress = 
       continue;
     }
     try {
-      const r = await ensembledataFetch('instagram', '/media/info', { code: post.shortcode }, tokenPool);
+      const r = await ensembledataFetch('instagram', '/post/details', { code: post.shortcode }, tokenPool);
       const data = r?.data;
-      // Response shape: data bisa object { like_count, comment_count, view_count } atau array
-      let media = null;
-      if (Array.isArray(data)) {
-        media = data[0];
-      } else if (data) {
-        media = data.media ?? data.items?.[0] ?? data;
-      }
-      if (media && typeof media === 'object') {
-        // Map various field names
-        if (typeof media.like_count === 'number') post.likeCount = media.like_count;
-        else if (typeof media.likeCount === 'number') post.likeCount = media.likeCount;
-        if (typeof media.comment_count === 'number') post.commentCount = media.comment_count;
-        else if (typeof media.commentCount === 'number') post.commentCount = media.commentCount;
-        // View count: IG Reels punya play_count / view_count
-        if (typeof media.view_count === 'number') post.viewCount = media.view_count;
-        else if (typeof media.viewCount === 'number') post.viewCount = media.viewCount;
-        else if (typeof media.play_count === 'number') post.viewCount = media.play_count;
-        else if (typeof media.playCount === 'number') post.viewCount = media.playCount;
-        // Save count (some IG posts have it)
-        if (typeof media.save_count === 'number') post.saveCount = media.save_count;
-        else if (typeof media.saveCount === 'number') post.saveCount = media.saveCount;
+      // Response shape: data is object with GraphQL edges
+      if (data && typeof data === 'object') {
+        // Like count: edge_media_preview_like.count (GraphQL)
+        const likeEdge = data.edge_media_preview_like;
+        if (likeEdge && typeof likeEdge === 'object' && typeof likeEdge.count === 'number' && likeEdge.count > (post.likeCount || 0)) {
+          post.likeCount = likeEdge.count;
+        }
+        // Comment count: edge_media_to_comment.count
+        const cmtEdge = data.edge_media_to_comment;
+        if (cmtEdge && typeof cmtEdge === 'object' && typeof cmtEdge.count === 'number' && cmtEdge.count > (post.commentCount || 0)) {
+          post.commentCount = cmtEdge.count;
+        }
+        // View count: prefer video_play_count > video_view_count
+        const playCount = data.video_play_count ?? data.video_view_count;
+        if (typeof playCount === 'number' && playCount > (post.viewCount || 0)) {
+          post.viewCount = playCount;
+        }
+        // Save count TIDAK di-expose di /post/details — skip
         successCount++;
       } else {
         failCount++;
@@ -291,7 +290,7 @@ async function enrichIgMediaInfo(posts, tokenPool, { skip = false, onProgress = 
       failCount++;
       // Don't spam logs — failures are common (private posts, deleted, etc.)
       if (failCount <= 3) {
-        console.warn(`[IG] /media/info failed for ${post.shortcode}: ${err.message.slice(0, 60)}`);
+        console.warn(`[IG] /post/details failed for ${post.shortcode}: ${err.message.slice(0, 60)}`);
       }
     }
     enriched.push(post);
@@ -348,7 +347,7 @@ async function scrapeAccount(account, tokenPool) {
   }
   deduped.sort((a, b) => b.timestamp - a.timestamp);
 
-  // Enrich with /media/info per post (1 call per post — adds like/comment/view counts)
+  // Enrich with /post/details per post (1 call per post — adds like/comment/view counts)
   // Skip jika --no-enrich flag aktif
   const enrichedPosts = await enrichIgMediaInfo(deduped, tokenPool, { skip: skipEnrich });
 
@@ -381,7 +380,7 @@ async function main() {
 
   // CLI flags (parity with scrape-tt.mjs):
   //   node scrape-ig.mjs --force                → re-scrape even if file exists
-  //   node scrape-ig.mjs --no-enrich            → skip /media/info enrichment (faster, no like/comment/view data)
+  //   node scrape-ig.mjs --no-enrich            → skip /post/details enrichment (faster, no like/comment/view data)
   //   node scrape-ig.mjs only=ig-majangmejeng_   → scrape just one account
   const args = process.argv.slice(2);
   const onlySlug = args.find((a) => a.startsWith('only='))?.split('=')[1];
