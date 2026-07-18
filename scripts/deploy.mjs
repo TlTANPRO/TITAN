@@ -73,22 +73,25 @@ async function main() {
   console.log('  TITAN V17 — Single Deploy');
   console.log('============================================');
 
-  // Step 0: clean root deploy artifacts FIRST so Vite doesn't pick them up.
-  // The root index.html/script tags from the previous deploy have hardcoded
-  // chunk hashes that would conflict with the new build.
-  console.log('\n[0/6] Clean root deploy artifacts (so Vite build is clean)...');
-  for (const f of ['index.html', 'accounts-full.json', 'sw.js', 'registerSW.js', 'user-profile.json']) {
-    await fs.rm(path.join(ROOT, f), { force: true });
-  }
-  // workbox-*.js (legacy, from old PWA)
-  const rootEntries = await fs.readdir(ROOT);
-  for (const e of rootEntries) {
-    if (e.startsWith('workbox-') && e.endsWith('.js')) {
-      await fs.rm(path.join(ROOT, e), { force: true });
+  // Step 0: clean OLD chunk hashes in root assets/ (NOT the whole assets/ dir).
+  // The root assets/ contains both:
+  //   - source assets/avatars/ (real photos, downloaded by scrape-avatars.mjs)
+  //   - deployed chunk hashes (AccountPage-XXX.js, index-XXX.js, etc.)
+  // We only want to delete the chunk hashes, not the source avatars.
+  console.log('\n[0/6] Clean old chunk hashes in root assets/ (preserve assets/avatars/)...');
+  const assetsDir = path.join(ROOT, 'assets');
+  if (await fs.stat(assetsDir).then(() => true).catch(() => false)) {
+    const assetsEntries = await fs.readdir(assetsDir, { withFileTypes: true });
+    for (const entry of assetsEntries) {
+      if (entry.isDirectory() && entry.name === 'avatars') {
+        // KEEP avatars/ — these are source photos
+        continue;
+      }
+      // Delete old chunk hashes, css, etc.
+      await fs.rm(path.join(assetsDir, entry.name), { recursive: true, force: true });
+      console.log(`  rm assets/${entry.name}`);
     }
   }
-  await rmrf(path.join(ROOT, 'assets'));
-  console.log('  root deploy artifacts cleaned');
 
   // Step 1: ensure data is fresh (regenerate from scraped JSONs)
   console.log('\n[1/6] Regenerate accounts-full.json from scraped data...');
