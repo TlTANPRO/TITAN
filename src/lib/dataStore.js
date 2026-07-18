@@ -73,14 +73,22 @@ export function getAccountBySlug(slug) {
 }
 
 // Latest N posts across ALL accounts, sorted by createTime DESC
-// Each post augmented with _accountSlug so caller knows which account it came from
+// Each post augmented with _accountSlug / _accountUsername / _accountPlatform so
+// caller can render account-aware UI (avatar, link, etc.) without re-lookup.
 export function getLatestPosts(n = 10) {
   if (!_accounts) return [];
   const all = [];
   for (const acc of _accounts) {
     for (const p of acc.posts ?? []) {
       if (p.createTime > 0) {
-        all.push({ ...p, _accountSlug: acc.slug, _accountUsername: acc.username, _accountPlatform: acc.platform });
+        all.push({
+          ...p,
+          _accountSlug: acc.slug,
+          _accountUsername: acc.username,
+          _accountPlatform: acc.platform,
+          _accountLocalAvatar: acc.localAvatar ?? '',
+          _accountDisplayName: acc.displayName ?? ''
+        });
       }
     }
   }

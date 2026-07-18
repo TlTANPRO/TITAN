@@ -1,9 +1,13 @@
-// LiveActivityFeed — latest 10 posts across all 9 accounts, ticking relative time
+// LiveActivityFeed — latest 10 posts across all 9 accounts, ticking relative time.
+// Each post row shows the real account avatar (via <ProxiedAvatar>) — not the
+// platform icon. The data layer (getLatestPosts) attaches _accountLocalAvatar
+// so this component doesn't need a separate account lookup.
 import { Link } from 'react-router-dom';
 import { Heart, Eye, MessageCircle } from 'lucide-react';
 import { formatNumber } from '../lib/format.js';
 import { useEffect, useState } from 'react';
-import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
+import { platformLabel } from './icons/PlatformIcon.jsx';
+import { ProxiedAvatar } from './ProxiedAvatar.jsx';
 
 const DAY_NAMES_ID = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
@@ -41,9 +45,15 @@ export function LiveActivityFeed({ posts }) {
             to={`/account/${p._accountSlug}`}
             className="flex items-start gap-3 p-3 hover:bg-bg-tertiary/50 transition-colors"
           >
-            <div className="flex-shrink-0 w-9 h-9 rounded-full bg-bg-tertiary flex items-center justify-center border border-border-subtle">
-              <PlatformIcon platform={p._accountPlatform} className="w-4 h-4" />
-            </div>
+            <ProxiedAvatar
+              account={{
+                platform: p._accountPlatform,
+                username: p._accountUsername,
+                localAvatar: p._accountLocalAvatar
+              }}
+              size={36}
+              className=""
+            />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 text-xs text-text-muted">
                 <span className="font-semibold text-text-primary">@{p._accountUsername}</span>

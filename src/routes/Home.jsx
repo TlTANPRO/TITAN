@@ -11,8 +11,8 @@ import { WeeklyBriefing } from '../components/WeeklyBriefing.jsx';
 import { CombinedHeatmap } from '../components/CombinedHeatmap.jsx';
 import { EnhancedTable } from '../components/EnhancedTable.jsx';
 import { ViralPostCard } from '../components/ViralPostCard.jsx';
+import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { Trophy, TrendingUp, Activity, Sparkles, Heart, MessageCircle, Eye } from 'lucide-react';
-import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
 import { formatNumber, formatPercent } from '../lib/format.js';
 import { dataAvailability, topByMetric } from '../lib/analytics.js';
 import { weeklyTopViral } from '../lib/weeklyRecap.js';
@@ -55,7 +55,7 @@ function TopPerformersCard({ title, icon, accounts, metricKey, suffix }) {
             <span className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold border ${RANK_COLORS[i] ?? RANK_COLORS[2]}`}>
               {i + 1}
             </span>
-            <PlatformIcon platform={a.platform} className="w-3.5 h-3.5 flex-shrink-0" />
+            <ProxiedAvatar account={a} size={28} className="" />
             <a href={`/account/${a.slug}`} className="text-sm font-medium text-text-primary hover:text-accent-primary truncate flex-1">
               @{a.username}
             </a>

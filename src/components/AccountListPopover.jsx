@@ -1,9 +1,11 @@
 // AccountListPopover — dropdown popup grouped by platform (IG + TT).
 // Anchored under the trigger button, scrollable, click-row navigates to /account/:slug.
 // Used by TopbarActions in both Home and AccountPage.
+// Each row shows the real account avatar via <ProxiedAvatar> — not the platform icon.
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
+import { ProxiedAvatar } from './ProxiedAvatar.jsx';
 import { formatNumber, formatPercent } from '../lib/format.js';
 import { X } from 'lucide-react';
 
@@ -88,7 +90,7 @@ export function AccountListPopover({ accounts, onClose }) {
                         onClick={onClose}
                         className="flex items-center gap-3 px-4 py-2.5 hover:bg-bg-tertiary transition-colors"
                       >
-                        <PlatformIcon platform={a.platform} className="w-5 h-5 flex-shrink-0" />
+                        <ProxiedAvatar account={a} size={32} className="" />
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-medium text-text-primary truncate">
                             @{a.username}
