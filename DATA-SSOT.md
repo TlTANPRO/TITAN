@@ -289,6 +289,30 @@ User requirement: "sampai setiap postingan ada itu semua"
 
 ---
 
-*Last updated: 18 Jul 2026 by TITAN V11 enrichment phase*
-*Bundle live: `accounts-full-CeUaw6bJ.js`*
-*Commits: `2072936` (data) + `8a37efc` (bundle deploy)*
+## 12. V13 Coverage Update (18 Jul 2026 sore)
+
+**Bundle live**: `accounts-full-CtaJGBiW.js` (7.15 MB)
+**Commit**: `83862f2` (root `index.html` Vite fix)
+**V12 prior**: `accounts-full-CjZssuwy.js` (commit `df14473`)
+
+**Total 4,099 posts, 9 akun** (post-V13 enrichment):
+
+| Field | Zeros | Coverage |
+|-------|-------|----------|
+| `likeCount=0`   | 353 (8.6%)   | 91.4% |
+| `viewCount=0`   | 848 (20.7%)  | 79.3% (IG IMAGE 720 + tt kosong 128) |
+| `commentCount=0`| 1,983 (48.4%) | 51.6% (TT permanent mostly) |
+| `saveCount=0`   | 3,097 (75.6%) | 24.4% (IG API limit, mostly IMAGE) |
+
+**Yang terisi V13 vs V11** (delta):
+- likeCount=0: 402 → 353 (delta −49, yt-dlp 48 IG + TikWM 1)
+- viewCount=0: 853 → 848 (delta −5, yt-dlp 5 IG)
+- commentCount=0: 1,985 → 1,983 (delta −2, TikWM tt-ardiantanahmenjawab 2)
+- shareCount=0: 918 → 863 (delta −55, TikWM)
+- saveCount=0: 3,098 → 3,097 (delta −1)
+
+**Critical fix V13.1** (commit `83862f2`): root `index.html` masih Vite source template yang ref ke `/src/main.jsx` (dev mode), sekarang di-overwrite dengan `dist/index.html` Vite-generated. **Dashboard root tidak buka sebelumnya karena script src 404.**
+
+*Last updated: 18 Jul 2026 by TITAN V13 enrichment phase*
+*Bundle live: `accounts-full-CtaJGBiW.js`*
+*Commits: `e97ce51` (V13 data) + `83862f2` (V13.1 index.html fix)*
