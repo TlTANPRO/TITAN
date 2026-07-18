@@ -1,0 +1,136 @@
+{
+  "generatedAt": "2026-07-18",
+  "purpose": "baseline field gap before free-method enrichment",
+  "totals": {
+    "total": 4099,
+    "like0": 697,
+    "view0": 2772,
+    "cmt0": 1988,
+    "save0": 3098,
+    "overall_pct_nonZero": {
+      "like": 83.0,
+      "view": 32.4,
+      "cmt": 51.5,
+      "save": 24.4
+    }
+  },
+  "accounts": [
+    {
+      "slug": "ig-ardiantanah",
+      "platform": "instagram",
+      "total": 679,
+      "likeCount_zero": 60,
+      "viewCount_zero": 52,
+      "commentCount_zero": 252,
+      "saveCount_zero": 679,
+      "likeCount_pct": 91.2,
+      "viewCount_pct": 92.3,
+      "commentCount_pct": 62.9,
+      "saveCount_pct": 0.0
+    },
+    {
+      "slug": "ig-majangmejeng_",
+      "platform": "instagram",
+      "total": 575,
+      "likeCount_zero": 311,
+      "viewCount_zero": 432,
+      "commentCount_zero": 350,
+      "saveCount_zero": 575,
+      "likeCount_pct": 45.9,
+      "viewCount_pct": 24.9,
+      "commentCount_pct": 39.1,
+      "saveCount_pct": 0.0
+    },
+    {
+      "slug": "ig-nisyanandaa",
+      "platform": "instagram",
+      "total": 390,
+      "likeCount_zero": 149,
+      "viewCount_zero": 218,
+      "commentCount_zero": 74,
+      "saveCount_zero": 390,
+      "likeCount_pct": 61.8,
+      "viewCount_pct": 44.1,
+      "commentCount_pct": 81.0,
+      "saveCount_pct": 0.0
+    },
+    {
+      "slug": "ig-syahfalahproperti",
+      "platform": "instagram",
+      "total": 536,
+      "likeCount_zero": 148,
+      "viewCount_zero": 151,
+      "commentCount_zero": 308,
+      "saveCount_zero": 536,
+      "likeCount_pct": 72.4,
+      "viewCount_pct": 71.8,
+      "commentCount_pct": 42.5,
+      "saveCount_pct": 0.0
+    },
+    {
+      "slug": "tt-ardian.tanah",
+      "platform": "tiktok",
+      "total": 353,
+      "likeCount_zero": 0,
+      "viewCount_zero": 353,
+      "commentCount_zero": 155,
+      "saveCount_zero": 126,
+      "likeCount_pct": 100.0,
+      "viewCount_pct": 0.0,
+      "commentCount_pct": 56.1,
+      "saveCount_pct": 64.3
+    },
+    {
+      "slug": "tt-ardiantanahmenjawab",
+      "platform": "tiktok",
+      "total": 477,
+      "likeCount_zero": 28,
+      "viewCount_zero": 477,
+      "commentCount_zero": 339,
+      "saveCount_zero": 319,
+      "likeCount_pct": 94.1,
+      "viewCount_pct": 0.0,
+      "commentCount_pct": 28.9,
+      "saveCount_pct": 33.1
+    },
+    {
+      "slug": "tt-itsnisyananda",
+      "platform": "tiktok",
+      "total": 163,
+      "likeCount_zero": 0,
+      "viewCount_zero": 163,
+      "commentCount_zero": 9,
+      "saveCount_zero": 8,
+      "likeCount_pct": 100.0,
+      "viewCount_pct": 0.0,
+      "commentCount_pct": 94.5,
+      "saveCount_pct": 95.1
+    },
+    {
+      "slug": "tt-majangmejeng_",
+      "platform": "tiktok",
+      "total": 515,
+      "likeCount_zero": 1,
+      "viewCount_zero": 515,
+      "commentCount_zero": 247,
+      "saveCount_zero": 227,
+      "likeCount_pct": 99.8,
+      "viewCount_pct": 0.0,
+      "commentCount_pct": 52.0,
+      "saveCount_pct": 55.9
+    },
+    {
+      "slug": "tt-syahfalahproperti",
+      "platform": "tiktok",
+      "total": 411,
+      "likeCount_zero": 0,
+      "viewCount_zero": 411,
+      "commentCount_zero": 254,
+      "saveCount_zero": 238,
+      "likeCount_pct": 100.0,
+      "viewCount_pct": 0.0,
+      "commentCount_pct": 38.2,
+      "saveCount_pct": 42.1
+    }
+  ]
+}
