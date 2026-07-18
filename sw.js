@@ -1,1 +1,18 @@
-if(!self.define){let s,e={};const n=(n,i)=>(n=new URL(n+".js",i).href,e[n]||new Promise(e=>{if("document"in self){const s=document.createElement("script");s.src=n,s.onload=e,document.head.appendChild(s)}else s=n,importScripts(n),e()}).then(()=>{let s=e[n];if(!s)throw new Error(`Module ${n} didn’t register its module`);return s}));self.define=(i,r)=>{const l=s||("document"in self?document.currentScript.src:"")||location.href;if(e[l])return;let t={};const o=s=>n(s,l),u={module:{uri:l},exports:t,require:o};e[l]=Promise.all(i.map(s=>u[s]||o(s))).then(s=>(r(...s),t))}}define(["./workbox-9c191d2f"],function(s){"use strict";self.skipWaiting();self.addEventListener("activate",e=>e.waitUntil(self.clients.claim()));s.precacheAndRoute([{url:"registerSW.js",revision:"183b7fd913d91473d598e3fadb605df0"},{url:"index.html",revision:"6f20c98830c58a9a6c3d48c66ae09d3d"},{url:"assets/weeklyRecap-BHBmb9tH.js",revision:null},{url:"assets/SettingsPage-Ch_nd7nl.js",revision:null},{url:"assets/refreshClient-CG_F2Z_8.js",revision:null},{url:"assets/recharts-vendor-Cbqfx9wW.js",revision:null},{url:"assets/react-vendor-Bu_eaPkG.js",revision:null},{url:"assets/NotFound-7vZ197L6.js",revision:null},{url:"assets/index-CZobzaJo.js",revision:null},{url:"assets/index-BdrUrAi6.css",revision:null},{url:"assets/icons-vendor-B71Qb5am.js",revision:null},{url:"assets/Home-DEZCSl5K.js",revision:null},{url:"assets/ai-insights-Bq-vAtZO.js",revision:null},{url:"assets/accounts-full-CA2zkdVD.js",revision:null},{url:"assets/AccountPage-C7CeNWRw.js",revision:null},{url:"favicon.svg",revision:"d0289dff3e82c19146a3756db7857e44"},{url:"manifest.webmanifest",revision:"0747705b3d74cc869d8d793f0dbb9201"}],{}),s.cleanupOutdatedCaches(),s.registerRoute(new s.NavigationRoute(s.createHandlerBoundToURL("index.html")))});
+// V16.2 — PWA OFF. No-op service worker that unregisters itself on install.
+// Replaces V15.x PWA SW that aggressively precached chunks and caused
+// stale-content issues (V15.1 SW kept serving V15.1 chunks after V16 deploy).
+// The dashboard doesn't need offline-first PWA — plain HTTP cache is fine.
+self.addEventListener('install', () => {
+  self.skipWaiting();
+});
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    Promise.all([
+      // Unregister this SW so it stops controlling the page
+      self.registration.unregister(),
+      // Claim any open clients briefly, then they'll fall back to no SW
+      self.clients.claim(),
+    ])
+  );
+});
+// No fetch handler — let everything go to network

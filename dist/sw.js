@@ -1,1 +1,18 @@
-if(!self.define){let s,e={};const i=(i,n)=>(i=new URL(i+".js",n).href,e[i]||new Promise(e=>{if("document"in self){const s=document.createElement("script");s.src=i,s.onload=e,document.head.appendChild(s)}else s=i,importScripts(i),e()}).then(()=>{let s=e[i];if(!s)throw new Error(`Module ${i} didn’t register its module`);return s}));self.define=(n,r)=>{const l=s||("document"in self?document.currentScript.src:"")||location.href;if(e[l])return;let t={};const o=s=>i(s,l),u={module:{uri:l},exports:t,require:o};e[l]=Promise.all(n.map(s=>u[s]||o(s))).then(s=>(r(...s),t))}}define(["./workbox-9c191d2f"],function(s){"use strict";self.skipWaiting(),self.addEventListener("activate",e=>e.waitUntil(self.clients.claim())),self.addEventListener("message",e=>{e.data&&"SKIP_WAITING"===e.data.type&&self.skipWaiting()}),s.precacheAndRoute([{url:"registerSW.js",revision:"183b7fd913d91473d598e3fadb605df0"},{url:"index.html",revision:"62a4e318da07c0c744539dc88c6144cd"},{url:"assets/weeklyRecap-Drcz5iQW.js",revision:null},{url:"assets/SettingsPage-CaWYhQyf.js",revision:null},{url:"assets/refreshClient-10EsOqjw.js",revision:null},{url:"assets/recharts-vendor-Cbqfx9wW.js",revision:null},{url:"assets/react-vendor-Bu_eaPkG.js",revision:null},{url:"assets/NotFound-DB6iX5Po.js",revision:null},{url:"assets/index-BHOwCThI.js",revision:null},{url:"assets/index-BdrUrAi6.css",revision:null},{url:"assets/icons-vendor-B71Qb5am.js",revision:null},{url:"assets/Home-D_33vv9z.js",revision:null},{url:"assets/ai-insights-Bq-vAtZO.js",revision:null},{url:"assets/accounts-full-CtaJGBiW.js",revision:null},{url:"assets/AccountPage-0KsQLQWv.js",revision:null},{url:"favicon.svg",revision:"d0289dff3e82c19146a3756db7857e44"},{url:"manifest.webmanifest",revision:"0747705b3d74cc869d8d793f0dbb9201"}],{}),s.cleanupOutdatedCaches(),s.registerRoute(new s.NavigationRoute(s.createHandlerBoundToURL("index.html")))});
+// V16.2 — PWA OFF. No-op service worker that unregisters itself on install.
+// Replaces V15.x PWA SW that aggressively precached chunks and caused
+// stale-content issues (V15.1 SW kept serving V15.1 chunks after V16 deploy).
+// The dashboard doesn't need offline-first PWA — plain HTTP cache is fine.
+self.addEventListener('install', () => {
+  self.skipWaiting();
+});
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    Promise.all([
+      // Unregister this SW so it stops controlling the page
+      self.registration.unregister(),
+      // Claim any open clients briefly, then they'll fall back to no SW
+      self.clients.claim(),
+    ])
+  );
+});
+// No fetch handler — let everything go to network
