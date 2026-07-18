@@ -1,0 +1,123 @@
+{
+  "totalPosts": 4066,
+  "capturedAt": "2026-07-18",
+  "accounts": [
+    {
+      "slug": "ig-majangmejeng_",
+      "username": "majangmejeng_",
+      "platform": "instagram",
+      "postCount": 575,
+      "latestTimestamp": 1783951755000,
+      "likeCountZero": 311,
+      "viewCountZero": 432,
+      "followerCount": 2398,
+      "scrapedAt": "2026-07-15T05:25:24.887Z",
+      "lastFreeEnrichAt": "2026-07-15T05:25:24.889Z",
+      "daysSinceLatest": 4.6
+    },
+    {
+      "slug": "ig-syahfalahproperti",
+      "username": "syahfalahproperti",
+      "platform": "instagram",
+      "postCount": 536,
+      "latestTimestamp": 1783945430000,
+      "likeCountZero": 148,
+      "viewCountZero": 151,
+      "followerCount": 1673,
+      "scrapedAt": "2026-07-15T05:26:43.801Z",
+      "lastFreeEnrichAt": "2026-07-15T05:26:43.801Z",
+      "daysSinceLatest": 4.7
+    },
+    {
+      "slug": "ig-nisyanandaa",
+      "username": "nisyanandaa",
+      "platform": "instagram",
+      "postCount": 390,
+      "latestTimestamp": 1783828519000,
+      "likeCountZero": 149,
+      "viewCountZero": 218,
+      "followerCount": 134211,
+      "scrapedAt": "2026-07-15T05:27:47.847Z",
+      "lastFreeEnrichAt": "2026-07-15T05:27:47.847Z",
+      "daysSinceLatest": 6.0
+    },
+    {
+      "slug": "ig-ardiantanah",
+      "username": "ardiantanah",
+      "platform": "instagram",
+      "postCount": 679,
+      "latestTimestamp": 1783927661000,
+      "likeCountZero": 60,
+      "viewCountZero": 52,
+      "followerCount": 3918,
+      "scrapedAt": "2026-07-15T05:29:07.236Z",
+      "lastFreeEnrichAt": "2026-07-15T05:29:07.236Z",
+      "daysSinceLatest": 4.9
+    },
+    {
+      "slug": "tt-majangmejeng_",
+      "username": "majangmejeng_",
+      "platform": "tiktok",
+      "postCount": 493,
+      "latestTimestamp": 1784025600000,
+      "likeCountZero": 1,
+      "viewCountZero": 493,
+      "followerCount": 17910,
+      "scrapedAt": "2026-07-15T05:47:19.590Z",
+      "lastFreeEnrichAt": "2026-07-15T05:47:19.591Z",
+      "daysSinceLatest": 3.8
+    },
+    {
+      "slug": "tt-syahfalahproperti",
+      "username": "syahfalahproperti",
+      "platform": "tiktok",
+      "postCount": 407,
+      "latestTimestamp": 1783925209000,
+      "likeCountZero": 0,
+      "viewCountZero": 407,
+      "followerCount": 1144,
+      "scrapedAt": "2026-07-15T05:47:33.721Z",
+      "lastFreeEnrichAt": "2026-07-15T05:47:33.721Z",
+      "daysSinceLatest": 4.9
+    },
+    {
+      "slug": "tt-ardian.tanah",
+      "username": "ardian.tanah",
+      "platform": "tiktok",
+      "postCount": 353,
+      "latestTimestamp": 1783753650000,
+      "likeCountZero": 0,
+      "viewCountZero": 353,
+      "followerCount": 9907,
+      "scrapedAt": "2026-07-15T05:47:52.859Z",
+      "lastFreeEnrichAt": "2026-07-15T05:47:52.859Z",
+      "daysSinceLatest": 6.9
+    },
+    {
+      "slug": "tt-ardiantanahmenjawab",
+      "username": "ardiantanahmenjawab",
+      "platform": "tiktok",
+      "postCount": 470,
+      "latestTimestamp": 1780590617000,
+      "likeCountZero": 28,
+      "viewCountZero": 470,
+      "followerCount": 5306,
+      "scrapedAt": "2026-07-15T05:48:06.905Z",
+      "lastFreeEnrichAt": "2026-07-15T05:48:06.905Z",
+      "daysSinceLatest": 43.5
+    },
+    {
+      "slug": "tt-itsnisyananda",
+      "username": "itsnisyananda",
+      "platform": "tiktok",
+      "postCount": 163,
+      "latestTimestamp": 1781690900000,
+      "likeCountZero": 0,
+      "viewCountZero": 163,
+      "followerCount": 32472,
+      "scrapedAt": "2026-07-15T05:48:28.237Z",
+      "lastFreeEnrichAt": "2026-07-15T05:48:28.237Z",
+      "daysSinceLatest": 30.8
+    }
+  ]
+}

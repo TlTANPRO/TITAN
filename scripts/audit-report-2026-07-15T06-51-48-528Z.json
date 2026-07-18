@@ -1,0 +1,157 @@
+{
+  "timestamp": "2026-07-15T06:51:48.667Z",
+  "totalPosts": 4066,
+  "uniqueIds": 4066,
+  "duplicatesFound": 0,
+  "fieldErrors": 0,
+  "perAccountFieldErrors": {
+    "ig-ardiantanah": 0,
+    "ig-majangmejeng_": 0,
+    "ig-nisyanandaa": 0,
+    "ig-syahfalahproperti": 0,
+    "tt-ardian.tanah": 0,
+    "tt-ardiantanahmenjawab": 0,
+    "tt-itsnisyananda": 0,
+    "tt-majangmejeng_": 0,
+    "tt-syahfalahproperti": 0
+  },
+  "coverage": {
+    "ig-ardiantanah": {
+      "total": 679,
+      "likeCount": 0.2916053019145803,
+      "commentCount": 0.6288659793814433,
+      "viewCount": 0.9234167893961709,
+      "shareCount": 0,
+      "saveCount": 0
+    },
+    "ig-majangmejeng_": {
+      "total": 575,
+      "likeCount": 0.4591304347826087,
+      "commentCount": 0.391304347826087,
+      "viewCount": 0.24869565217391304,
+      "shareCount": 0,
+      "saveCount": 0
+    },
+    "ig-nisyanandaa": {
+      "total": 390,
+      "likeCount": 0.48205128205128206,
+      "commentCount": 0.8102564102564103,
+      "viewCount": 0.441025641025641,
+      "shareCount": 0,
+      "saveCount": 0
+    },
+    "ig-syahfalahproperti": {
+      "total": 536,
+      "likeCount": 0.2574626865671642,
+      "commentCount": 0.4253731343283582,
+      "viewCount": 0.7182835820895522,
+      "shareCount": 0,
+      "saveCount": 0
+    },
+    "tt-ardian.tanah": {
+      "total": 353,
+      "likeCount": 1,
+      "commentCount": 0.5609065155807366,
+      "viewCount": 1,
+      "shareCount": 0.5552407932011332,
+      "saveCount": 0.6430594900849859
+    },
+    "tt-ardiantanahmenjawab": {
+      "total": 470,
+      "likeCount": 0.9404255319148936,
+      "commentCount": 0.2872340425531915,
+      "viewCount": 1,
+      "shareCount": 0.39787234042553193,
+      "saveCount": 0.32978723404255317
+    },
+    "tt-itsnisyananda": {
+      "total": 163,
+      "likeCount": 1,
+      "commentCount": 0.9447852760736196,
+      "viewCount": 1,
+      "shareCount": 0.754601226993865,
+      "saveCount": 0.950920245398773
+    },
+    "tt-majangmejeng_": {
+      "total": 493,
+      "likeCount": 0.9979716024340771,
+      "commentCount": 0.5212981744421906,
+      "viewCount": 1,
+      "shareCount": 0.5334685598377282,
+      "saveCount": 0.5618661257606491
+    },
+    "tt-syahfalahproperti": {
+      "total": 407,
+      "likeCount": 1,
+      "commentCount": 0.3857493857493858,
+      "viewCount": 1,
+      "shareCount": 0.4987714987714988,
+      "saveCount": 0.4250614250614251
+    }
+  },
+  "accounts": {
+    "ig-ardiantanah": {
+      "platform": "instagram",
+      "username": "ardiantanah",
+      "totalPosts": 679,
+      "followerCount": 3918,
+      "postCount": 877
+    },
+    "ig-majangmejeng_": {
+      "platform": "instagram",
+      "username": "majangmejeng_",
+      "totalPosts": 575,
+      "followerCount": 2398,
+      "postCount": 345
+    },
+    "ig-nisyanandaa": {
+      "platform": "instagram",
+      "username": "nisyanandaa",
+      "totalPosts": 390,
+      "followerCount": 134211,
+      "postCount": 216
+    },
+    "ig-syahfalahproperti": {
+      "platform": "instagram",
+      "username": "syahfalahproperti",
+      "totalPosts": 536,
+      "followerCount": 1673,
+      "postCount": 824
+    },
+    "tt-ardian.tanah": {
+      "platform": "tiktok",
+      "username": "ardian.tanah",
+      "totalPosts": 353,
+      "followerCount": 9907,
+      "postCount": 359
+    },
+    "tt-ardiantanahmenjawab": {
+      "platform": "tiktok",
+      "username": "ardiantanahmenjawab",
+      "totalPosts": 470,
+      "followerCount": 5306,
+      "postCount": 492
+    },
+    "tt-itsnisyananda": {
+      "platform": "tiktok",
+      "username": "itsnisyananda",
+      "totalPosts": 163,
+      "followerCount": 32472,
+      "postCount": 163
+    },
+    "tt-majangmejeng_": {
+      "platform": "tiktok",
+      "username": "majangmejeng_",
+      "totalPosts": 493,
+      "followerCount": 17910,
+      "postCount": 524
+    },
+    "tt-syahfalahproperti": {
+      "platform": "tiktok",
+      "username": "syahfalahproperti",
+      "totalPosts": 407,
+      "followerCount": 1144,
+      "postCount": 410
+    }
+  }
+}

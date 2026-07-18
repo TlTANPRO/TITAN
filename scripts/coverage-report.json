@@ -1,0 +1,461 @@
+{
+  "generatedAt": "2026-07-15T15:19:23.147Z",
+  "accounts": [
+    {
+      "slug": "ig-majangmejeng_",
+      "platform": "instagram",
+      "total": 575,
+      "likePct": 45.9,
+      "commentPct": 39.1,
+      "viewPct": 24.9,
+      "sharePct": 0,
+      "savePct": 0,
+      "byType": {
+        "REEL": {
+          "count": 143,
+          "likePct": 100,
+          "viewPct": 100,
+          "commentPct": 48.3
+        },
+        "IMAGE": {
+          "count": 368,
+          "likePct": 15.5,
+          "viewPct": 0,
+          "commentPct": 34.8
+        },
+        "CAROUSEL_ALBUM": {
+          "count": 64,
+          "likePct": 100,
+          "viewPct": 0,
+          "commentPct": 43.8
+        }
+      },
+      "enrichment": {
+        "totalPosts": 576,
+        "durationMs": 74265,
+        "isDummy": false,
+        "enriched": true,
+        "enrichmentSource": "i.instagram.com",
+        "newPostsAdded": 263,
+        "metricsUpgraded": 1,
+        "enrichedLikeCount": 265,
+        "enrichedViewCount": 144,
+        "enrichedCommentCount": 226,
+        "auditAt": "2026-07-15T14:22:28.793Z",
+        "auditCoverage": {
+          "total": 575,
+          "likeCount": 0.4591304347826087,
+          "commentCount": 0.391304347826087,
+          "viewCount": 0.24869565217391304,
+          "shareCount": 0,
+          "saveCount": 0
+        },
+        "lastYtdlpEnrichAt": "2026-07-15T12:55:47.288Z",
+        "ytdlpAttempted": 0,
+        "ytdlpSuccess": 0,
+        "ytdlpFailed": 0,
+        "ytdlpUpgraded": 0,
+        "lastAndroidFeedEnrichAt": "2026-07-15T14:07:31.550Z",
+        "androidFeedAttempted": 1,
+        "androidFeedUpgraded": 0,
+        "androidFeedRateLimited": false
+      }
+    },
+    {
+      "slug": "ig-syahfalahproperti",
+      "platform": "instagram",
+      "total": 536,
+      "likePct": 72.4,
+      "commentPct": 42.5,
+      "viewPct": 71.8,
+      "sharePct": 0,
+      "savePct": 0,
+      "byType": {
+        "REEL": {
+          "count": 107,
+          "likePct": 100,
+          "viewPct": 100,
+          "commentPct": 58.9
+        },
+        "VIDEO": {
+          "count": 280,
+          "likePct": 92.1,
+          "viewPct": 99.3,
+          "commentPct": 48.9
+        },
+        "IMAGE": {
+          "count": 139,
+          "likePct": 9.4,
+          "viewPct": 0,
+          "commentPct": 17.3
+        },
+        "CAROUSEL_ALBUM": {
+          "count": 10,
+          "likePct": 100,
+          "viewPct": 0,
+          "commentPct": 40
+        }
+      },
+      "enrichment": {
+        "totalPosts": 598,
+        "durationMs": 76881,
+        "isDummy": false,
+        "enriched": true,
+        "enrichmentSource": "i.instagram.com",
+        "newPostsAdded": 168,
+        "metricsUpgraded": 7,
+        "enrichedLikeCount": 177,
+        "enrichedViewCount": 445,
+        "enrichedCommentCount": 273,
+        "auditAt": "2026-07-15T14:22:28.809Z",
+        "auditCoverage": {
+          "total": 536,
+          "likeCount": 0.7238805970149254,
+          "commentCount": 0.4253731343283582,
+          "viewCount": 0.7182835820895522,
+          "shareCount": 0,
+          "saveCount": 0
+        },
+        "lastYtdlpEnrichAt": "2026-07-15T14:09:43.486Z",
+        "ytdlpAttempted": 272,
+        "ytdlpSuccess": 250,
+        "ytdlpFailed": 22,
+        "ytdlpUpgraded": 250
+      }
+    },
+    {
+      "slug": "ig-nisyanandaa",
+      "platform": "instagram",
+      "total": 390,
+      "likePct": 61.8,
+      "commentPct": 81,
+      "viewPct": 44.1,
+      "sharePct": 0,
+      "savePct": 0,
+      "byType": {
+        "REEL": {
+          "count": 117,
+          "likePct": 100,
+          "viewPct": 99.1,
+          "commentPct": 77.8
+        },
+        "VIDEO": {
+          "count": 58,
+          "likePct": 100,
+          "viewPct": 96.6,
+          "commentPct": 81
+        },
+        "IMAGE": {
+          "count": 173,
+          "likePct": 13.9,
+          "viewPct": 0,
+          "commentPct": 80.9
+        },
+        "CAROUSEL_ALBUM": {
+          "count": 42,
+          "likePct": 100,
+          "viewPct": 0,
+          "commentPct": 90.5
+        }
+      },
+      "enrichment": {
+        "totalPosts": 390,
+        "durationMs": 61998,
+        "isDummy": false,
+        "enriched": true,
+        "enrichmentSource": "i.instagram.com",
+        "newPostsAdded": 178,
+        "metricsUpgraded": 31,
+        "enrichedLikeCount": 188,
+        "enrichedViewCount": 172,
+        "enrichedCommentCount": 316,
+        "auditAt": "2026-07-15T14:22:28.803Z",
+        "auditCoverage": {
+          "total": 390,
+          "likeCount": 0.617948717948718,
+          "commentCount": 0.8102564102564103,
+          "viewCount": 0.441025641025641,
+          "shareCount": 0,
+          "saveCount": 0
+        },
+        "lastYtdlpEnrichAt": "2026-07-15T12:53:29.656Z",
+        "ytdlpAttempted": 53,
+        "ytdlpSuccess": 53,
+        "ytdlpFailed": 0,
+        "ytdlpUpgraded": 53,
+        "lastAndroidFeedEnrichAt": "2026-07-15T14:07:32.146Z",
+        "androidFeedAttempted": 1,
+        "androidFeedUpgraded": 0,
+        "androidFeedRateLimited": false
+      }
+    },
+    {
+      "slug": "ig-ardiantanah",
+      "platform": "instagram",
+      "total": 679,
+      "likePct": 91.2,
+      "commentPct": 62.9,
+      "viewPct": 92.3,
+      "sharePct": 0,
+      "savePct": 0,
+      "byType": {
+        "REEL": {
+          "count": 176,
+          "likePct": 100,
+          "viewPct": 100,
+          "commentPct": 68.2
+        },
+        "VIDEO": {
+          "count": 456,
+          "likePct": 94.3,
+          "viewPct": 98.9,
+          "commentPct": 60.5
+        },
+        "IMAGE": {
+          "count": 39,
+          "likePct": 12.8,
+          "viewPct": 0,
+          "commentPct": 59
+        },
+        "CAROUSEL_ALBUM": {
+          "count": 8,
+          "likePct": 100,
+          "viewPct": 0,
+          "commentPct": 100
+        }
+      },
+      "enrichment": {
+        "totalPosts": 693,
+        "durationMs": 77373,
+        "isDummy": false,
+        "enriched": true,
+        "enrichmentSource": "i.instagram.com",
+        "newPostsAdded": 0,
+        "metricsUpgraded": 45,
+        "enrichedLikeCount": 204,
+        "enrichedViewCount": 640,
+        "enrichedCommentCount": 437,
+        "auditAt": "2026-07-15T14:22:28.783Z",
+        "auditCoverage": {
+          "total": 679,
+          "likeCount": 0.9116347569955817,
+          "commentCount": 0.6288659793814433,
+          "viewCount": 0.9234167893961709,
+          "shareCount": 0,
+          "saveCount": 0
+        },
+        "lastYtdlpEnrichAt": "2026-07-15T12:46:42.551Z",
+        "ytdlpAttempted": 447,
+        "ytdlpSuccess": 421,
+        "ytdlpFailed": 26,
+        "ytdlpUpgraded": 421,
+        "lastAndroidFeedEnrichAt": "2026-07-15T14:07:32.424Z",
+        "androidFeedAttempted": 1,
+        "androidFeedUpgraded": 0,
+        "androidFeedRateLimited": false
+      }
+    },
+    {
+      "slug": "tt-majangmejeng_",
+      "platform": "tiktok",
+      "total": 493,
+      "likePct": 99.8,
+      "commentPct": 52.1,
+      "viewPct": 0,
+      "sharePct": 54.6,
+      "savePct": 56.2,
+      "byType": {
+        "VIDEO": {
+          "count": 223,
+          "likePct": 100,
+          "viewPct": 0,
+          "commentPct": 71.3
+        },
+        "IMAGE": {
+          "count": 270,
+          "likePct": 99.6,
+          "viewPct": 0,
+          "commentPct": 36.3
+        }
+      },
+      "enrichment": {
+        "totalPosts": 493,
+        "durationMs": 10729,
+        "isDummy": false,
+        "enriched": true,
+        "enrichmentSource": "tikwm.com (via Jina proxy)",
+        "newPostsAdded": 0,
+        "metricsUpgraded": 11,
+        "auditAt": "2026-07-15T14:22:28.832Z",
+        "auditCoverage": {
+          "total": 493,
+          "likeCount": 0.9979716024340771,
+          "commentCount": 0.5212981744421906,
+          "viewCount": 1,
+          "shareCount": 0.5456389452332657,
+          "saveCount": 0.5618661257606491
+        },
+        "lastTikwmEnrichAt": "2026-07-15T11:48:25.929Z",
+        "tikwmAttempted": 328,
+        "tikwmSuccess": 328,
+        "tikwmFailed": 0,
+        "tikwmUpgraded": 328
+      }
+    },
+    {
+      "slug": "tt-syahfalahproperti",
+      "platform": "tiktok",
+      "total": 407,
+      "likePct": 100,
+      "commentPct": 38.6,
+      "viewPct": 0,
+      "sharePct": 49.9,
+      "savePct": 42.5,
+      "byType": {
+        "VIDEO": {
+          "count": 13,
+          "likePct": 100,
+          "viewPct": 0,
+          "commentPct": 92.3
+        }
+      },
+      "enrichment": {
+        "totalPosts": 407,
+        "durationMs": 11099,
+        "isDummy": false,
+        "enriched": true,
+        "enrichmentSource": "tikwm.com (via Jina proxy)",
+        "newPostsAdded": 0,
+        "metricsUpgraded": 13,
+        "auditAt": "2026-07-15T14:22:28.848Z",
+        "auditCoverage": {
+          "total": 407,
+          "likeCount": 1,
+          "commentCount": 0.3857493857493858,
+          "viewCount": 1,
+          "shareCount": 0.4987714987714988,
+          "saveCount": 0.4250614250614251
+        }
+      }
+    },
+    {
+      "slug": "tt-ardian.tanah",
+      "platform": "tiktok",
+      "total": 353,
+      "likePct": 100,
+      "commentPct": 56.1,
+      "viewPct": 0,
+      "sharePct": 55.5,
+      "savePct": 64.3,
+      "byType": {
+        "VIDEO": {
+          "count": 8,
+          "likePct": 100,
+          "viewPct": 0,
+          "commentPct": 100
+        }
+      },
+      "enrichment": {
+        "totalPosts": 353,
+        "durationMs": 16105,
+        "isDummy": false,
+        "enriched": true,
+        "enrichmentSource": "tikwm.com (via Jina proxy)",
+        "newPostsAdded": 0,
+        "metricsUpgraded": 8,
+        "auditAt": "2026-07-15T14:22:28.818Z",
+        "auditCoverage": {
+          "total": 353,
+          "likeCount": 1,
+          "commentCount": 0.5609065155807366,
+          "viewCount": 1,
+          "shareCount": 0.5552407932011332,
+          "saveCount": 0.6430594900849859
+        }
+      }
+    },
+    {
+      "slug": "tt-ardiantanahmenjawab",
+      "platform": "tiktok",
+      "total": 470,
+      "likePct": 94,
+      "commentPct": 28.7,
+      "viewPct": 0,
+      "sharePct": 39.8,
+      "savePct": 33,
+      "byType": {
+        "VIDEO": {
+          "count": 5,
+          "likePct": 100,
+          "viewPct": 0,
+          "commentPct": 40
+        }
+      },
+      "enrichment": {
+        "totalPosts": 470,
+        "durationMs": 11031,
+        "isDummy": false,
+        "enriched": true,
+        "enrichmentSource": "tikwm.com (via Jina proxy)",
+        "newPostsAdded": 3,
+        "metricsUpgraded": 2,
+        "auditAt": "2026-07-15T14:22:28.823Z",
+        "auditCoverage": {
+          "total": 470,
+          "likeCount": 0.9404255319148936,
+          "commentCount": 0.2872340425531915,
+          "viewCount": 1,
+          "shareCount": 0.39787234042553193,
+          "saveCount": 0.32978723404255317
+        }
+      }
+    },
+    {
+      "slug": "tt-itsnisyananda",
+      "platform": "tiktok",
+      "total": 163,
+      "likePct": 100,
+      "commentPct": 94.5,
+      "viewPct": 0,
+      "sharePct": 75.5,
+      "savePct": 95.1,
+      "byType": {
+        "VIDEO": {
+          "count": 146,
+          "likePct": 100,
+          "viewPct": 0,
+          "commentPct": 93.8
+        },
+        "IMAGE": {
+          "count": 17,
+          "likePct": 100,
+          "viewPct": 0,
+          "commentPct": 100
+        }
+      },
+      "enrichment": {
+        "totalPosts": 163,
+        "durationMs": 18308,
+        "isDummy": false,
+        "enriched": true,
+        "enrichmentSource": "tikwm.com (via Jina proxy)",
+        "newPostsAdded": 0,
+        "metricsUpgraded": 6,
+        "auditAt": "2026-07-15T14:22:28.830Z",
+        "auditCoverage": {
+          "total": 163,
+          "likeCount": 1,
+          "commentCount": 0.9447852760736196,
+          "viewCount": 1,
+          "shareCount": 0.754601226993865,
+          "saveCount": 0.950920245398773
+        },
+        "lastTikwmEnrichAt": "2026-07-15T07:37:47.417Z",
+        "tikwmAttempted": 48,
+        "tikwmSuccess": 48,
+        "tikwmFailed": 0,
+        "tikwmUpgraded": 48
+      }
+    }
+  ]
+}
