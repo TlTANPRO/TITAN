@@ -4,6 +4,10 @@
 # Why 23:00 WIB: outside ENSEMBLEDATA/Jina rate-limit peak hours; finished
 # before staff check the dashboard at 06:00 WIB the next morning.
 #
+# V16: also re-scrapes 9 profile avatars (assets/avatars/*) via the
+# `facebookexternalhit/1.1` UA. URLs valid 1-2 days; daily refresh keeps
+# the dashboard showing real profile photos instead of brand-icon tiles.
+#
 # Required GitHub repo Secrets:
 #   - GH_PAT (Personal Access Token with `workflow` scope, for git push)
 #   - TITAN_ENSEMBLEDATA_TOKEN, TITAN_JINA_API_KEY (scraper API tokens)
@@ -13,12 +17,14 @@
 #   1. Checkout (with PAT auth so we can push back)
 #   2. Setup Node 20
 #   3. Run scrape-incremental.mjs (only fetches posts newer than latestTimestamp)
-#   4. Run validate-merge.mjs (dedup, sanity check)
-#   5. Run generate-data.mjs (regenerate accounts-full.json + analytics)
-#   6. If anything changed → git add + commit + push
-#   7. If no changes → exit early (saves CI minutes)
+#   4. Run scrape-avatars.mjs (re-scrape 9 profile photos via facebookexternalhit)
+#   5. Run validate-merge.mjs (dedup, sanity check)
+#   6. Run generate-data.mjs (regenerate accounts-full.json + analytics)
+#   7. If anything changed → git add + commit + push
+#   8. If no changes → exit early (saves CI minutes)
 #
-# Cost: ~20 /media/info calls per day (vs ~1500 for full-scrape). 99% savings.
+# Cost: ~20 /media/info calls + 9 og:image fetches per day
+#       (vs ~1500 for full-scrape). 99% savings.
 
 name: TITAN Incremental Refresh
 
@@ -83,6 +89,13 @@ jobs:
           node scripts/scrape-incremental.mjs --platform=$PLATFORM --days=$DAYS $([ "$PRUNE" = "true" ] && echo "--prune")
         continue-on-error: false
 
+      # V16: re-scrape 9 profile avatars via facebookexternalhit/1.1 UA.
+      # Keeps `oe`/`x-expires` fresh (URLs valid 1-2 days) so dashboard
+      # always shows real profile photos, not brand-icon tiles.
+      - name: Scrape fresh avatars
+        if: success()
+        run: node scripts/scrape-avatars.mjs
+
       - name: Validate and merge
         if: success()
         run: node scripts/validate-merge.mjs
@@ -95,13 +108,13 @@ jobs:
         id: changes
         if: success()
         run: |
-          # V11: data lives in src/data/accounts-full.json (Vite-bundled), not public/data/
-          if git diff --quiet HEAD -- src/data/accounts-full.json scripts/scraped/ 2>/dev/null; then
+          # V16: also detect avatar file changes (assets/avatars/*.jpg|webp|jpeg)
+          if git diff --quiet HEAD -- src/data/accounts-full.json scripts/scraped/ assets/avatars/ 2>/dev/null; then
             echo "changed=false" >> $GITHUB_OUTPUT
-            echo "No data changes — skipping commit"
+            echo "No data or avatar changes — skipping commit"
           else
             echo "changed=true" >> $GITHUB_OUTPUT
-            echo "Data changed — will commit"
+            echo "Data or avatars changed — will commit"
           fi
 
       - name: Commit and push
@@ -109,10 +122,9 @@ jobs:
         run: |
           git config user.name "titan-bot"
           git config user.email "titan-bot@users.noreply.github.com"
-          git add src/data/accounts-full.json scripts/scraped/
-          # Count new posts
+          git add src/data/accounts-full.json scripts/scraped/ assets/avatars/
           NEW=$(git diff --cached --numstat | wc -l)
-          git commit -m "chore(data): incremental refresh $(date -u +%Y-%m-%dT%H:%M:%SZ) — $NEW files changed"
+          git commit -m "chore(data+avatar): incremental refresh $(date -u +%Y-%m-%dT%H:%M:%SZ) — $NEW files changed"
           git push
 
       - name: Summary
@@ -123,5 +135,5 @@ jobs:
           echo "- Time (UTC): $(date -u)" >> $GITHUB_STEP_SUMMARY
           echo "- Changed: ${{ steps.changes.outputs.changed || 'unknown' }}" >> $GITHUB_STEP_SUMMARY
           if [ "${{ steps.changes.outputs.changed }}" = "true" ]; then
-            echo "- Files updated: \`accounts-full.json\` + scraped JSONs" >> $GITHUB_STEP_SUMMARY
+            echo "- Files updated: \`accounts-full.json\` + scraped JSONs + assets/avatars/" >> $GITHUB_STEP_SUMMARY
           fi
