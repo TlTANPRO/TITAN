@@ -51,18 +51,23 @@ export function ViralPostCard({ post, rank }) {
       </div>
 
       <div className="relative aspect-square bg-bg-tertiary rounded overflow-hidden">
-        {post.thumbnailUrl ? (
-          <img
-            src={proxiedImage(post.thumbnailUrl, 320)}
-            alt=""
-            loading="lazy"
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-              e.currentTarget.nextElementSibling?.classList.remove('hidden');
-            }}
-          />
-        ) : null}
+        {(() => {
+          // proxiedImage() returns '' for IG/TT session-bound URLs.
+          // Skip the <img> entirely so the placeholder gradient shows.
+          const thumbSrc = proxiedImage(post.thumbnailUrl, 320);
+          return thumbSrc ? (
+            <img
+              src={thumbSrc}
+              alt=""
+              loading="lazy"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+          ) : null;
+        })()}
         <div
           className={`${post.thumbnailUrl ? 'hidden' : ''} absolute inset-0 flex items-center justify-center bg-gradient-to-br from-bg-tertiary to-bg-primary`}
         >
