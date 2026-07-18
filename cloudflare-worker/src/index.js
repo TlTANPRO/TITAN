@@ -260,6 +260,9 @@ async function fetchSocialOG(url) {
 }
 
 // ============ Image proxy (avatar/etc) ============
+// Multi-strategy fetch: try direct CDN with browser UA, fall back to weserv.nl
+// (free image proxy that handles IG/TT CDN edge cases like expired signatures,
+// Akamai bot detection, missing referer).
 async function handleAvatarProxy(request, env) {
   const url = new URL(request.url);
   const target = url.searchParams.get('url');
@@ -270,36 +273,82 @@ async function handleAvatarProxy(request, env) {
     return json({ error: 'Missing or invalid url param' }, 400);
   }
 
-  try {
-    const res = await fetch(target, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-      },
-      redirect: 'follow',
-      cf: { cacheTtl: 86400, cacheEverything: true },
-    });
+  // Derive referer from URL host (IG → instagram.com, TT → tiktok.com)
+  const referer = /tiktok/i.test(target)
+    ? 'https://www.tiktok.com/'
+    : /instagram|fbcdn/i.test(target)
+    ? 'https://www.instagram.com/'
+    : 'https://www.google.com/';
 
-    if (!res.ok) {
-      return new Response(`Upstream ${res.status}`, { status: 502, headers: CORS });
+  // Strategy list: try in order, return first success
+  const strategies = [
+    // 1. Direct CDN with browser UA + referer (most reliable for fresh URLs)
+    async () => {
+      const res = await fetch(target, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Referer': referer,
+        },
+        redirect: 'follow',
+        cf: { cacheTtl: 86400, cacheEverything: true },
+      });
+      return res;
+    },
+    // 2. Mobile UA (often bypasses Akamai bot detection)
+    async () => {
+      const res = await fetch(target, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1',
+          'Accept': 'image/avif,image/webp,image/*,*/*;q=0.8',
+          'Referer': referer,
+        },
+        redirect: 'follow',
+        cf: { cacheTtl: 86400, cacheEverything: true },
+      });
+      return res;
+    },
+    // 3. weserv.nl (free, no rate limit, handles expired signatures + bot detection)
+    async () => {
+      // weserv format: https://images.weserv.nl/?url=<encoded url>&w=&h=&fit=cover&output=jpg
+      const weservUrl = `https://images.weserv.nl/?url=${encodeURIComponent(target)}&w=${w}&h=${h}&fit=cover&output=jpg`;
+      const res = await fetch(weservUrl, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; TITAN/1.0)' },
+        redirect: 'follow',
+        cf: { cacheTtl: 86400, cacheEverything: true },
+      });
+      return res;
+    },
+  ];
+
+  let lastStatus = 502;
+  for (let i = 0; i < strategies.length; i++) {
+    try {
+      const res = await strategies[i]();
+      if (res.ok) {
+        const contentType = res.headers.get('Content-Type') || 'image/jpeg';
+        const headers = {
+          'Content-Type': contentType,
+          'Cache-Control': 'public, max-age=86400, immutable',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, OPTIONS',
+          'Cross-Origin-Resource-Policy': 'cross-origin',
+          'X-Titan-Size-W': String(w),
+          'X-Titan-Size-H': String(h),
+          'X-Titan-Strategy': String(i + 1),
+        };
+        return new Response(res.body, { status: 200, headers });
+      }
+      lastStatus = res.status;
+    } catch (e) {
+      // try next strategy
     }
-
-    const contentType = res.headers.get('Content-Type') || 'image/jpeg';
-    const headers = {
-      'Content-Type': contentType,
-      'Cache-Control': 'public, max-age=86400, immutable',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Cross-Origin-Resource-Policy': 'cross-origin',
-      'X-Titan-Size-W': String(w),
-      'X-Titan-Size-H': String(h),
-    };
-
-    return new Response(res.body, { status: 200, headers });
-  } catch (e) {
-    return json({ error: `Avatar fetch failed: ${e.message}` }, 502);
   }
+  return new Response(`Avatar fetch failed (tried 3 strategies, last=${lastStatus})`, {
+    status: 502,
+    headers: CORS,
+  });
 }
 
 // ============ /refresh (V11) — trigger GitHub Actions workflow ============
