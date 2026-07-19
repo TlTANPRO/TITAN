@@ -227,8 +227,8 @@ export function GrowthStrategy({ insights, account }) {
               />
               <Legend wrapperStyle={{ fontSize: 10 }} />
               <ReferenceLine y={projection[0]?.baseline} stroke="var(--text-muted)" strokeDasharray="3 3" label={{ value: 'Baseline', fontSize: 9, position: 'insideTopRight', fill: 'var(--text-muted)' }} />
-              <Line type="monotone" dataKey="projected" name="Proyeksi ER" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
-              <Line type="monotone" dataKey="baseline" name="Baseline" stroke="#6b7280" strokeWidth={1} strokeDasharray="4 4" dot={false} />
+              <Line type="monotone" dataKey="projected" name="Proyeksi ER" stroke="oklch(0.65 0.16 160)" strokeWidth={2} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="baseline" name="Baseline" stroke="oklch(0.50 0.005 280)" strokeWidth={1} strokeDasharray="4 4" dot={false} />
             </LineChart>
           </ResponsiveContainer>
           {velocity?.trend && (

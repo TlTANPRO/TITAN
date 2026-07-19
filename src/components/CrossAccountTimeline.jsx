@@ -25,8 +25,18 @@ const RANGES = {
   all: null
 };
 
-// Distinct color palette for 9 accounts
-const COLORS = ['#ec4899', '#06b6d4', '#a855f7', '#f59e0b', '#10b981', '#3b82f6', '#f43f5e', '#14b8a6', '#f97316'];
+// V24.2: oklch palette for 9 accounts
+const COLORS = [
+  'oklch(0.65 0.22 350)',  // pink
+  'oklch(0.65 0.16 200)',  // cyan
+  'oklch(0.58 0.22 280)',  // purple
+  'oklch(0.75 0.16 75)',   // amber
+  'oklch(0.65 0.16 160)',  // emerald
+  'oklch(0.65 0.20 250)',  // blue
+  'oklch(0.62 0.22 25)',   // red
+  'oklch(0.65 0.16 195)',  // teal
+  'oklch(0.68 0.18 50)'    // orange
+];
 
 function buildTimelineData(accounts, metric, rangeSec) {
   const now = Date.now() / 1000;

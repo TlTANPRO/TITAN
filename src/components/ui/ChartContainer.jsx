@@ -2,27 +2,34 @@
 import { ResponsiveContainer } from 'recharts';
 import { useEffect, useState } from 'react';
 
-// Read CSS variable at runtime so chart colors adapt to theme
+// V24.2: oklch fallbacks (used only if CSS var read returns empty)
 function useChartColors() {
   const [colors, setColors] = useState({
-    grid: '#27272a',
-    text: '#a1a1aa',
-    bg: '#141414',
-    border: '#3f3f46',
-    primary: '#3b82f6',
-    palette: ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4']
+    grid: 'oklch(0.25 0.005 280)',
+    text: 'oklch(0.75 0.005 280)',
+    bg: 'oklch(0.18 0 0)',
+    border: 'oklch(0.40 0.005 280)',
+    primary: 'oklch(0.65 0.20 250)',
+    palette: [
+      'oklch(0.65 0.20 250)',
+      'oklch(0.65 0.16 160)',
+      'oklch(0.75 0.16 75)',
+      'oklch(0.65 0.22 350)',
+      'oklch(0.58 0.22 280)',
+      'oklch(0.65 0.16 200)'
+    ]
   });
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const root = getComputedStyle(document.documentElement);
     setColors({
-      grid: root.getPropertyValue('--border-subtle').trim() || '#27272a',
-      text: root.getPropertyValue('--text-secondary').trim() || '#a1a1aa',
-      bg: root.getPropertyValue('--bg-surface').trim() || '#141414',
-      border: root.getPropertyValue('--border-default').trim() || '#3f3f46',
-      primary: root.getPropertyValue('--accent-primary').trim() || '#3b82f6',
+      grid: root.getPropertyValue('--border-subtle').trim() || 'oklch(0.25 0.005 280)',
+      text: root.getPropertyValue('--text-secondary').trim() || 'oklch(0.75 0.005 280)',
+      bg: root.getPropertyValue('--bg-surface').trim() || 'oklch(0.18 0 0)',
+      border: root.getPropertyValue('--border-default').trim() || 'oklch(0.40 0.005 280)',
+      primary: root.getPropertyValue('--accent-primary').trim() || 'oklch(0.65 0.20 250)',
       palette: [1, 2, 3, 4, 5, 6].map((i) =>
-        root.getPropertyValue(`--chart-${i}`).trim() || '#3b82f6'
+        root.getPropertyValue(`--chart-${i}`).trim() || 'oklch(0.65 0.20 250)'
       )
     });
   }, []);
@@ -48,13 +55,18 @@ export function ChartContainer({ children, height = 300, className = '', onClick
 
 export function getChartColors() {
   if (typeof window === 'undefined') {
-    return { grid: '#27272a', text: '#a1a1aa', bg: '#141414', primary: '#3b82f6' };
+    return {
+      grid: 'oklch(0.25 0.005 280)',
+      text: 'oklch(0.75 0.005 280)',
+      bg: 'oklch(0.18 0 0)',
+      primary: 'oklch(0.65 0.20 250)'
+    };
   }
   const root = getComputedStyle(document.documentElement);
   return {
-    grid: root.getPropertyValue('--border-subtle').trim() || '#27272a',
-    text: root.getPropertyValue('--text-secondary').trim() || '#a1a1aa',
-    bg: root.getPropertyValue('--bg-surface').trim() || '#141414',
-    primary: root.getPropertyValue('--accent-primary').trim() || '#3b82f6'
+    grid: root.getPropertyValue('--border-subtle').trim() || 'oklch(0.25 0.005 280)',
+    text: root.getPropertyValue('--text-secondary').trim() || 'oklch(0.75 0.005 280)',
+    bg: root.getPropertyValue('--bg-surface').trim() || 'oklch(0.18 0 0)',
+    primary: root.getPropertyValue('--accent-primary').trim() || 'oklch(0.65 0.20 250)'
   };
 }

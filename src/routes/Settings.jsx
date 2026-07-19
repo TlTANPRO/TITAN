@@ -1,19 +1,22 @@
-// V21: /settings — Settings page (General, Data, Accounts, AI, About sections).
+// V21: /settings — Settings page (General, Tampilan, Data, Accounts, AI, About sections).
 // Vertical tabs layout. Hard refresh behind simple password gate.
+// V24.1: added Tampilan (Display) section with --app-text-scale toggle.
 import { useState } from 'react';
-import { Settings as SettingsIcon, Database, Users, Bot, Info, ShieldAlert, KeyRound } from 'lucide-react';
+import { Settings as SettingsIcon, Palette, Database, Users, Bot, Info, ShieldAlert, KeyRound, Type } from 'lucide-react';
 import { useAccounts } from '../hooks/useAccount.js';
 import { FreshnessBadge } from '../components/ui/FreshnessBadge.jsx';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PlatformIcon, platformLabel } from '../components/icons/PlatformIcon.jsx';
 import { triggerHardRefresh } from '../lib/refreshClient.js';
+import { useTextScale, TEXT_SCALE_OPTIONS } from '../hooks/useTextScale.js';
 import { formatNumber } from '../lib/format.js';
 
 const SECTIONS = [
   { id: 'general', label: 'General', icon: SettingsIcon },
+  { id: 'display', label: 'Tampilan', icon: Palette },
   { id: 'data', label: 'Data & Refresh', icon: Database },
   { id: 'accounts', label: 'Accounts', icon: Users },
-  { id: 'ai', label: 'AI', icon: Bot },
+  { id: 'ai', label: 'Insight', icon: Bot },
   { id: 'about', label: 'About', icon: Info }
 ];
 
@@ -26,6 +29,7 @@ export default function Settings() {
   });
   const [hardRefreshPassword, setHardRefreshPassword] = useState('');
   const [hardRefreshStatus, setHardRefreshStatus] = useState(null);
+  const { scale: textScale, setScale: setTextScale } = useTextScale();
 
   const saveUserName = () => {
     if (typeof window !== 'undefined') {
@@ -92,6 +96,46 @@ export default function Settings() {
                     className="flex-1 px-3 py-1.5 text-sm bg-bg-tertiary border border-border-subtle rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-primary"
                   />
                   <button onClick={saveUserName} className="btn-primary !px-4 !py-1.5 text-sm">Simpan</button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {activeSection === 'display' && (
+            <>
+              <h2 className="text-lg font-bold text-text-primary">Tampilan</h2>
+              <p className="text-xs text-text-muted">Sesuaikan tampilan dashboard dengan preferensi Anda.</p>
+              <div>
+                <label className="text-xs font-semibold text-text-muted uppercase tracking-wider flex items-center gap-1.5">
+                  <Type className="w-3 h-3" />
+                  Ukuran teks
+                </label>
+                <p className="text-[11px] text-text-muted mt-0.5 mb-2">
+                  Mempengaruhi semua teks di seluruh aplikasi. Disimpan otomatis.
+                </p>
+                <div className="grid grid-cols-4 gap-1.5" role="radiogroup" aria-label="Ukuran teks">
+                  {TEXT_SCALE_OPTIONS.map((o) => (
+                    <button
+                      key={o.value}
+                      type="button"
+                      role="radio"
+                      aria-checked={textScale === o.value}
+                      onClick={() => setTextScale(o.value)}
+                      className={`
+                        flex flex-col items-center gap-1 py-2.5 px-2 rounded-md text-xs font-medium border transition-colors
+                        ${textScale === o.value
+                          ? 'bg-accent-primary/10 border-accent-primary/40 text-accent-primary'
+                          : 'bg-bg-tertiary border-border-subtle text-text-secondary hover:border-border-default'
+                        }
+                      `}
+                    >
+                      <span style={{ fontSize: `${o.ratio}rem`, lineHeight: 1.2 }} className="font-semibold">Aa</span>
+                      <span className="text-[10px] uppercase tracking-wider">{o.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-3 surface p-3 text-xs text-text-secondary">
+                  Preview: Teks di ukuran <span className="font-semibold text-text-primary">{TEXT_SCALE_OPTIONS.find((o) => o.value === textScale)?.label}</span> — angka dan layout akan menyesuaikan otomatis.
                 </div>
               </div>
             </>

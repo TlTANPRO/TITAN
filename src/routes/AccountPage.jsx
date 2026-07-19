@@ -10,6 +10,7 @@ import { useAccount, useAccountInsights } from '../hooks/useAccount.js';
 import SkeletonCard, { Skeleton } from '../components/SkeletonCard.jsx';
 import SkeletonChart from '../components/SkeletonChart.jsx';
 import { Tabs } from '../components/ui/Tabs.jsx';
+import { SectionLabel } from '../components/ui/SectionLabel.jsx';
 import { AccountOverview } from '../components/account/AccountOverview.jsx';
 import { AccountContent } from '../components/account/AccountContent.jsx';
 import { AccountPatterns } from '../components/account/AccountPatterns.jsx';
@@ -18,6 +19,16 @@ import { AccountBenchmark } from '../components/account/AccountBenchmark.jsx';
 
 const TAB_KEYS = ['overview', 'content', 'patterns', 'insights', 'benchmark'];
 const DEFAULT_TAB = 'overview';
+
+// V24.3: each tab gets a numbered SectionLabel matching Home bento pattern (01-08).
+// Accent: cyan for live data, pink for content, accent for primary, purple for insights.
+const TAB_LABELS = {
+  overview: { number: '01', title: 'Ringkasan Akun', accent: 'accent' },
+  content: { number: '02', title: 'Konten', accent: 'pink' },
+  patterns: { number: '03', title: 'Pola & Waktu', accent: 'cyan' },
+  insights: { number: '04', title: 'Insight & Rekomendasi', accent: 'purple' },
+  benchmark: { number: '05', title: 'Benchmark Industri', accent: 'emerald' }
+};
 
 export default function AccountPage() {
   const { slug } = useParams();
@@ -92,6 +103,8 @@ export default function AccountPage() {
       </nav>
 
       <Tabs value={activeTab} onChange={handleTabChange} items={tabItems} />
+
+      <SectionLabel {...TAB_LABELS[activeTab]} />
 
       <div role="tabpanel" id={`tabpanel-${activeTab}`} aria-labelledby={`tab-${activeTab}`}>
         {activeTab === 'overview' && <AccountOverview account={account} insights={insights} />}

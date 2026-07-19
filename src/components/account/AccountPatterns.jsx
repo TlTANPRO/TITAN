@@ -28,7 +28,7 @@ export function AccountPatterns({ insights }) {
           <div className="space-y-3 text-sm">
             <div className="flex justify-between border-b border-border-subtle/50 pb-2">
               <span className="text-text-secondary">Skor Konsistensi</span>
-              <span className="font-bold text-text-primary tabular-nums">{postingCadence.score}/100</span>
+              <span className="font-semibold text-text-primary tabular-nums">{postingCadence.score}/100</span>
             </div>
             <div className="flex justify-between border-b border-border-subtle/50 pb-2">
               <span className="text-text-secondary">Rata-rata Jeda</span>
@@ -56,14 +56,14 @@ export function AccountPatterns({ insights }) {
         <div className="h-56 mt-2">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={performanceByDayOfWeek}>
-              <CartesianGrid stroke="#27272a" strokeDasharray="3 3" />
-              <XAxis dataKey="day" stroke="#71717a" fontSize={11} />
-              <YAxis stroke="#71717a" fontSize={11} />
+              <CartesianGrid stroke="var(--border-subtle)" strokeDasharray="3 3" />
+              <XAxis dataKey="day" stroke="var(--text-muted)" fontSize={11} />
+              <YAxis stroke="var(--text-muted)" fontSize={11} />
               <Tooltip
-                contentStyle={{ background: '#1f1f1f', border: '1px solid #3f3f46', borderRadius: 8 }}
+                contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)', borderRadius: 8 }}
                 formatter={(v) => formatNumber(v)}
               />
-              <Bar dataKey="avgLikeCount" name="Rata-rata Suka" fill="#10b981" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="avgLikeCount" name="Rata-rata Suka" fill="oklch(0.65 0.16 160)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -75,14 +75,14 @@ export function AccountPatterns({ insights }) {
         <div className="h-56 mt-2">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={performanceByMonth}>
-              <CartesianGrid stroke="#27272a" strokeDasharray="3 3" />
-              <XAxis dataKey="month" stroke="#71717a" fontSize={10} />
-              <YAxis stroke="#71717a" fontSize={11} domain={['auto', 'auto']} allowDataOverflow={false} />
+              <CartesianGrid stroke="var(--border-subtle)" strokeDasharray="3 3" />
+              <XAxis dataKey="month" stroke="var(--text-muted)" fontSize={10} />
+              <YAxis stroke="var(--text-muted)" fontSize={11} domain={['auto', 'auto']} allowDataOverflow={false} />
               <Tooltip
-                contentStyle={{ background: '#1f1f1f', border: '1px solid #3f3f46', borderRadius: 8 }}
+                contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)', borderRadius: 8 }}
                 formatter={(v) => formatPercent(v, 3)}
               />
-              <Line type="monotone" dataKey="avgEngagementRate" name="ER (%)" stroke="#3b82f6" strokeWidth={2} dot={{ fill: '#3b82f6', r: 3 }} connectNulls />
+              <Line type="monotone" dataKey="avgEngagementRate" name="ER (%)" stroke="oklch(0.65 0.20 250)" strokeWidth={2} dot={{ fill: 'oklch(0.65 0.20 250)', r: 3 }} connectNulls />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -132,25 +132,25 @@ export function AccountPatterns({ insights }) {
             <AreaChart data={performanceByMonth}>
               <defs>
                 <linearGradient id="colorPosts" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.6} />
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05} />
+                  <stop offset="5%" stopColor="oklch(0.65 0.20 250)" stopOpacity={0.6} />
+                  <stop offset="95%" stopColor="oklch(0.65 0.20 250)" stopOpacity={0.05} />
                 </linearGradient>
                 <linearGradient id="colorLikes" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ec4899" stopOpacity={0.6} />
-                  <stop offset="95%" stopColor="#ec4899" stopOpacity={0.05} />
+                  <stop offset="5%" stopColor="oklch(0.65 0.22 350)" stopOpacity={0.6} />
+                  <stop offset="95%" stopColor="oklch(0.65 0.22 350)" stopOpacity={0.05} />
                 </linearGradient>
               </defs>
-              <CartesianGrid stroke="#27272a" strokeDasharray="3 3" />
-              <XAxis dataKey="month" stroke="#71717a" fontSize={10} />
-              <YAxis yAxisId="left" stroke="#71717a" fontSize={11} domain={['auto', 'auto']} allowDataOverflow={false} />
-              <YAxis yAxisId="right" orientation="right" stroke="#71717a" fontSize={11} domain={['auto', 'auto']} allowDataOverflow={false} />
+              <CartesianGrid stroke="var(--border-subtle)" strokeDasharray="3 3" />
+              <XAxis dataKey="month" stroke="var(--text-muted)" fontSize={10} />
+              <YAxis yAxisId="left" stroke="var(--text-muted)" fontSize={11} domain={['auto', 'auto']} allowDataOverflow={false} />
+              <YAxis yAxisId="right" orientation="right" stroke="var(--text-muted)" fontSize={11} domain={['auto', 'auto']} allowDataOverflow={false} />
               <Tooltip
-                contentStyle={{ background: '#1f1f1f', border: '1px solid #3f3f46', borderRadius: 8 }}
+                contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)', borderRadius: 8 }}
                 formatter={(v, name) => [formatNumber(v), name]}
               />
               <Legend wrapperStyle={{ fontSize: 12 }} />
-              <Area yAxisId="left" type="monotone" dataKey="postCount" name="Jumlah Post" stroke="#3b82f6" fill="url(#colorPosts)" strokeWidth={2} connectNulls />
-              <Area yAxisId="right" type="monotone" dataKey="totalLikeCount" name="Total Suka" stroke="#ec4899" fill="url(#colorLikes)" strokeWidth={2} connectNulls />
+              <Area yAxisId="left" type="monotone" dataKey="postCount" name="Jumlah Post" stroke="oklch(0.65 0.20 250)" fill="url(#colorPosts)" strokeWidth={2} connectNulls />
+              <Area yAxisId="right" type="monotone" dataKey="totalLikeCount" name="Total Suka" stroke="oklch(0.65 0.22 350)" fill="url(#colorLikes)" strokeWidth={2} connectNulls />
             </AreaChart>
           </ResponsiveContainer>
         </div>

@@ -5,20 +5,22 @@ import { Layers } from 'lucide-react';
 import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
 import { formatCompact } from '../lib/format.js';
 
+// V24.2: OKLCH colors via CSS custom properties (theme-aware).
+// Falls back to oklch() at component level if var() not available.
 const PLATFORM_COLORS = {
-  instagram: '#E1306C',
-  tiktok: '#00f2ea'
+  instagram: 'oklch(0.58 0.22 0)',
+  tiktok: 'oklch(0.88 0.18 195)'
 };
 
-// V11: professional palette — pink (REEL IG), violet (VIDEO), blue (IMAGE),
-// amber (CAROUSEL), slate (OTHER). Less saturated than V10's neon mix.
+// V24.2: oklch() perceptual palette (V11 visual = OKLCH conversion of same hues)
 const MEDIA_COLORS = {
-  REEL: '#ec4899',
-  VIDEO: '#8b5cf6',
-  IMAGE: '#3b82f6',
-  CAROUSEL_ALBUM: '#f59e0b',
-  OTHER: '#64748b'
+  REEL: 'oklch(0.65 0.22 350)',         // pink
+  VIDEO: 'oklch(0.58 0.22 280)',        // violet
+  IMAGE: 'oklch(0.65 0.20 250)',        // blue
+  CAROUSEL_ALBUM: 'oklch(0.75 0.16 75)',// amber
+  OTHER: 'oklch(0.50 0.005 280)'        // slate
 };
+const FALLBACK = 'oklch(0.50 0.005 280)';
 
 function buildSunburstData(accounts) {
   const byPlatform = new Map();
@@ -89,7 +91,7 @@ export function ContentSunburst({ accounts }) {
       count: platform.count,
       startAngle: platformStart,
       endAngle: platformEnd,
-      color: PLATFORM_COLORS[platform.name] ?? '#6b7280'
+      color: PLATFORM_COLORS[platform.name] ?? FALLBACK
     });
     // Inner: media type breakdown within platform
     let typeAcc = platformStart;
@@ -104,7 +106,7 @@ export function ContentSunburst({ accounts }) {
         count,
         startAngle: typeAcc,
         endAngle: typeAcc + typeArc,
-        color: MEDIA_COLORS[type] ?? '#6b7280'
+        color: MEDIA_COLORS[type] ?? FALLBACK
       });
       typeAcc += typeArc;
     }
@@ -163,7 +165,7 @@ export function ContentSunburst({ accounts }) {
               <div className="space-y-1 pl-5">
                 {[...platform.types.entries()].sort((a, b) => b[1] - a[1]).map(([type, count]) => (
                   <div key={type} className="flex items-center gap-1.5 text-[11px]">
-                    <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: MEDIA_COLORS[type] ?? '#64748b' }} />
+                    <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: MEDIA_COLORS[type] ?? FALLBACK }} />
                     <span className="text-text-secondary flex-1">{type}</span>
                     <span className="text-text-muted tabular-nums">{formatCompact(count)}</span>
                   </div>

@@ -1,20 +1,33 @@
-// V21.1: Account Overview tab — profile header, top-5 posts, outliers, health score.
+// V24.3: Account Overview tab — SectionLabel "01", V23 token-based health colors,
+// no font-bold, no raw Tailwind palette (semantic tokens only).
 // First tab of /account/:slug.
 import { Eye, Heart, MessageSquare, Sparkles, Award, TrendingUp, Activity, Target } from 'lucide-react';
 import ProfileHeader from '../ProfileHeader.jsx';
 import OutlierCard from '../OutlierCard.jsx';
 import StatCard from '../StatCard.jsx';
 import { SectionHeader } from '../ui/SectionHeader.jsx';
+import { SectionLabel } from '../ui/SectionLabel.jsx';
 import { PlatformIcon } from '../icons/PlatformIcon.jsx';
-import { formatNumber, formatPercent, formatCompact } from '../../lib/format.js';
+import { formatPercent, formatCompact } from '../../lib/format.js';
 
+// V24.3: V23 token-based tier colors (no raw Tailwind palette).
+// Map each tier to existing semantic accent tokens for consistency.
 const TIER_LABELS = {
-  viral: { label: 'Sangat Viral', color: 'text-purple-400', desc: '> 3× rata-rata' },
+  viral: { label: 'Sangat Viral', color: 'text-accent-secondary', desc: '> 3× rata-rata' },
   tinggi: { label: 'Performa Tinggi', color: 'text-accent-warning', desc: '1.5–3× rata-rata' },
   bagus: { label: 'Performa Bagus', color: 'text-accent-success', desc: '0.75–1.5× rata-rata' },
   rataRata: { label: 'Rata-rata', color: 'text-text-secondary', desc: '0.3–0.75× rata-rata' },
   rendah: { label: 'Rendah', color: 'text-text-muted', desc: '< 0.3× rata-rata' }
 };
+
+// V24.3: health score colors via semantic tokens (no emerald/sky/yellow/orange/rose raw).
+function healthColor(score) {
+  if (score >= 80) return { bg: 'bg-accent-success/10', text: 'text-accent-success', border: 'border-accent-success/30' };
+  if (score >= 65) return { bg: 'bg-accent-primary/10', text: 'text-accent-primary', border: 'border-accent-primary/30' };
+  if (score >= 50) return { bg: 'bg-accent-warning/10', text: 'text-accent-warning', border: 'border-accent-warning/30' };
+  if (score >= 35) return { bg: 'bg-accent-warning/10', text: 'text-accent-warning', border: 'border-accent-warning/30' };
+  return { bg: 'bg-accent-danger/10', text: 'text-accent-danger', border: 'border-accent-danger/30' };
+}
 
 function HealthBar({ label, value }) {
   const safeValue = Number.isFinite(value) ? value : 0;
@@ -26,13 +39,8 @@ function HealthBar({ label, value }) {
       </div>
       <div className="h-1.5 bg-bg-tertiary rounded-full overflow-hidden mt-0.5">
         <div
-          className={`h-full ${
-            safeValue >= 80 ? 'bg-emerald-500' :
-            safeValue >= 60 ? 'bg-sky-500' :
-            safeValue >= 40 ? 'bg-yellow-500' :
-            'bg-rose-500'
-          }`}
-          style={{ width: `${Math.min(100, safeValue)}%` }}
+          className={`h-full ${healthColor(safeValue).bg} ${healthColor(safeValue).border} border`}
+          style={{ width: `${Math.min(100, safeValue)}%`, backgroundColor: 'currentColor' }}
         />
       </div>
     </div>
@@ -75,6 +83,8 @@ export function AccountOverview({ account, insights }) {
 
   return (
     <div className="space-y-6">
+      <SectionLabel number="01" title="Ringkasan Akun" accent="accent" />
+
       <ProfileHeader
         account={{
           ...account,
@@ -137,7 +147,7 @@ export function AccountOverview({ account, insights }) {
               <div key={k} className="bg-bg-tertiary rounded-lg p-3 text-center border border-border-subtle">
                 <div className={`text-xs font-semibold uppercase tracking-wider ${meta.color}`}>{meta.label}</div>
                 <div className="text-xs text-text-muted mt-0.5 mb-2">{meta.desc}</div>
-                <div className={`text-2xl font-bold tabular-nums ${meta.color}`}>{count}</div>
+                <div className={`text-2xl font-semibold tabular-nums ${meta.color}`}>{count}</div>
                 <div className="text-[10px] text-text-muted mt-1">{pct}% dari total</div>
               </div>
             );
@@ -169,17 +179,13 @@ export function AccountOverview({ account, insights }) {
               <PlatformIcon platform={account?.platform} className="w-3.5 h-3.5 ml-1" />
             </h3>
             <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
-              <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-bold border-2 flex-shrink-0 ${
-                (healthScore.score ?? 0) >= 80 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' :
-                (healthScore.score ?? 0) >= 65 ? 'bg-sky-500/10 text-sky-500 border-sky-500/30' :
-                (healthScore.score ?? 0) >= 50 ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30' :
-                (healthScore.score ?? 0) >= 35 ? 'bg-orange-500/10 text-orange-500 border-orange-500/30' :
-                'bg-rose-500/10 text-rose-500 border-rose-500/30'
-              }`}>
+              <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-semibold border-2 flex-shrink-0 ${
+                healthColor(healthScore.score ?? 0).bg
+              } ${healthColor(healthScore.score ?? 0).text} ${healthColor(healthScore.score ?? 0).border}`}>
                 {healthScore.grade ?? '—'}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-2xl sm:text-3xl font-bold text-text-primary tabular-nums">{Number.isFinite(healthScore.score) ? healthScore.score : 0}<span className="text-base text-text-muted">/100</span></div>
+                <div className="text-2xl sm:text-3xl font-semibold text-text-primary tabular-nums">{Number.isFinite(healthScore.score) ? healthScore.score : 0}<span className="text-base text-text-muted">/100</span></div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-[11px]">
                   <HealthBar label="Engagement" value={healthScore.breakdown?.engagement ?? 0} />
                   <HealthBar label="Konsistensi" value={healthScore.breakdown?.consistency ?? 0} />
@@ -190,7 +196,7 @@ export function AccountOverview({ account, insights }) {
               {lastViral && (
                 <div className="text-right">
                   <div className="text-[10px] text-text-muted uppercase tracking-wider">Hari Sejak Viral Terakhir</div>
-                  <div className="text-2xl font-bold text-text-primary tabular-nums">{lastViral.days ?? '—'}</div>
+                  <div className="text-2xl font-semibold text-text-primary tabular-nums">{lastViral.days ?? '—'}</div>
                   {lastViral.lastViralDate && (
                     <div className="text-[10px] text-text-muted">pada {lastViral.lastViralDate}</div>
                   )}

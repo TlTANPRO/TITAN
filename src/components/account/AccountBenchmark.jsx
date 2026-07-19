@@ -43,7 +43,7 @@ export function AccountBenchmark({ account, insights }) {
           </div>
           <div className="bg-bg-tertiary rounded-lg p-4 flex flex-col justify-center items-center text-center">
             <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Performa vs Median Global</div>
-            <div className={`text-3xl font-bold tabular-nums mb-1 ${
+            <div className={`text-3xl font-semibold tabular-nums mb-1 ${
               internationalBenchmark.performanceVsMedian === 'above' ? 'text-accent-success'
               : internationalBenchmark.performanceVsMedian === 'below' ? 'text-accent-danger'
               : 'text-text-secondary'
@@ -61,7 +61,7 @@ export function AccountBenchmark({ account, insights }) {
         <SectionHeader icon={TrendingUp} title="Potensi Pertumbuhan" subtitle="Skor komposit 0-100 berdasarkan ER, frekuensi, dan konsistensi" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center mt-2">
           <div className="md:col-span-1 flex flex-col items-center justify-center text-center">
-            <div className="text-6xl font-bold tabular-nums text-accent-primary">{growthPotential.score}</div>
+            <div className="text-6xl font-semibold tabular-nums text-accent-primary">{growthPotential.score}</div>
             <div className="text-xs text-text-muted uppercase tracking-wider">/ 100</div>
             <div className={`mt-2 chip ${
               growthPotential.label === 'tinggi' ? 'bg-accent-success/10 text-accent-success'

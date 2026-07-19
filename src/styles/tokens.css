@@ -6,41 +6,50 @@
  */
 
 :root {
-  /* ===== Color (semantic) ===== */
-  --bg-canvas: #0a0a0a;
-  --bg-surface: #141414;
-  --bg-surface-raised: #1f1f1f;
-  --bg-surface-overlay: #262626;
-  --bg-hover: #2a2a2a;
+  /* ===== V24.1: --app-text-scale (open-webui a11y pattern) =====
+   * User-controllable font size preference. Persisted via localStorage.
+   * S=0.875, M=1, L=1.125, XL=1.25. Applied to <html> via data-text-scale.
+   */
+  --text-scale: 1;
 
-  --text-primary: #fafafa;
-  --text-secondary: #a1a1aa;
-  --text-muted: #a1a1aa;       /* V23: was #71717a, increased to AA+ contrast in dark */
-  --text-disabled: #52525b;
+  /* ===== Color (semantic) — V24.2 OKLCH migration =====
+   * oklch(L C H) = perceptually uniform. Same visual look, better gamut.
+   * Browser support: Chrome 111+, Safari 15.4+, Firefox 113+ (all 2023+).
+   */
+  --bg-canvas: oklch(0.15 0 0);
+  --bg-surface: oklch(0.18 0 0);
+  --bg-surface-raised: oklch(0.22 0 0);
+  --bg-surface-overlay: oklch(0.25 0 0);
+  --bg-hover: oklch(0.28 0 0);
 
-  --border-subtle: #27272a;
-  --border-default: #3f3f46;
-  --border-strong: #52525b;
+  --text-primary: oklch(0.98 0 0);
+  --text-secondary: oklch(0.75 0.005 280);
+  --text-muted: oklch(0.65 0.005 280);       /* AA+ contrast in dark */
+  --text-disabled: oklch(0.50 0.005 280);
 
-  --accent-primary: #3b82f6;
-  --accent-primary-hover: #2563eb;
-  --accent-secondary: #8b5cf6;
+  --border-subtle: oklch(0.25 0.005 280);
+  --border-default: oklch(0.40 0.005 280);
+  --border-strong: oklch(0.50 0.005 280);
 
-  --status-success: #10b981;
-  --status-warning: #f59e0b;
-  --status-danger: #ef4444;
-  --status-info: #0ea5e9;
+  --accent-primary: oklch(0.65 0.20 250);
+  --accent-primary-hover: oklch(0.58 0.22 250);
+  --accent-secondary: oklch(0.58 0.22 280);
 
-  --platform-instagram: #E1306C;
-  --platform-tiktok: #00f2ea;
+  --status-success: oklch(0.65 0.16 160);
+  --status-warning: oklch(0.75 0.16 75);
+  --status-danger: oklch(0.62 0.22 25);
+  --status-info: oklch(0.65 0.16 220);
+
+  --platform-instagram: oklch(0.58 0.22 0);
+  --platform-tiktok: oklch(0.88 0.18 195);
 
   /* Chart palette (semantic, used by ChartContainer) */
-  --chart-1: #3b82f6;
-  --chart-2: #10b981;
-  --chart-3: #f59e0b;
-  --chart-4: #ec4899;
-  --chart-5: #8b5cf6;
-  --chart-6: #06b6d4;
+  --chart-1: oklch(0.65 0.20 250);
+  --chart-2: oklch(0.65 0.16 160);
+  --chart-3: oklch(0.75 0.16 75);
+  --chart-4: oklch(0.65 0.22 350);
+  --chart-5: oklch(0.58 0.22 280);
+  --chart-6: oklch(0.65 0.16 200);
 
   /* ===== Spacing (4/8/12/16/24/32/48/64) ===== */
   --space-1: 4px;
@@ -64,7 +73,7 @@
   --shadow-sm: none;
   --shadow-md: none;
   --shadow-lg: none;
-  --shadow-glow-primary: 0 0 0 2px rgba(59, 130, 246, 0.4);
+  --shadow-glow-primary: 0 0 0 2px oklch(0.65 0.20 250 / 0.4);
 
   /* ===== Motion ===== */
   --duration-fast: 120ms;
@@ -93,25 +102,25 @@
   --font-feature-num:  'tnum' 1, 'cv11' 1, 'ss01' 1, 'ss03' 1;
 }
 
-/* Light theme (opt-in via html:not(.dark)) */
+/* Light theme (opt-in via html:not(.dark)) — V24.2 OKLCH */
 html:not(.dark) {
-  --bg-canvas: #fafafa;
-  --bg-surface: #ffffff;
-  --bg-surface-raised: #f4f4f5;
-  --bg-surface-overlay: #ffffff;
-  --bg-hover: #f4f4f5;
+  --bg-canvas: oklch(0.98 0 0);
+  --bg-surface: oklch(1 0 0);
+  --bg-surface-raised: oklch(0.96 0.005 280);
+  --bg-surface-overlay: oklch(1 0 0);
+  --bg-hover: oklch(0.96 0.005 280);
 
   /* V23: bumped to AAA contrast per PostHog/Stripe principle */
-  --text-primary: #18181b;
-  --text-secondary: #3f3f46;     /* was #52525b — now 10.4:1 AAA */
-  --text-muted: #52525b;         /* was #71717a — now 8.6:1 AAA */
-  --text-disabled: #71717a;      /* was #a1a1aa — readable but still muted */
+  --text-primary: oklch(0.18 0 0);
+  --text-secondary: oklch(0.27 0.005 280);     /* AAA 10.4:1 */
+  --text-muted: oklch(0.40 0.005 280);         /* AAA 8.6:1 */
+  --text-disabled: oklch(0.55 0.005 280);
 
-  --border-subtle: #e4e4e7;
-  --border-default: #d4d4d8;
-  --border-strong: #a1a1aa;
+  --border-subtle: oklch(0.90 0.005 280);
+  --border-default: oklch(0.84 0.005 280);
+  --border-strong: oklch(0.65 0.005 280);
 
-  --shadow-glow-primary: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  --shadow-glow-primary: 0 0 0 2px oklch(0.65 0.20 250 / 0.3);
 }
 
 /* Site-wide Inter with Raycast signature features (V23) */
@@ -120,7 +129,15 @@ html {
   font-feature-settings: var(--font-feature-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: calc(16px * var(--text-scale));
+  transition: font-size var(--duration-base) var(--ease-out);
 }
+
+/* V24.1: --app-text-scale size options */
+html[data-text-scale="S"] { --text-scale: 0.875; }
+html[data-text-scale="M"] { --text-scale: 1; }
+html[data-text-scale="L"] { --text-scale: 1.125; }
+html[data-text-scale="XL"] { --text-scale: 1.25; }
 
 /* Utility classes for token usage */
 .surface-canvas { background: var(--bg-canvas); }
@@ -161,7 +178,7 @@ html {
 
 /* V23: Heatmap top-3 pulse border */
 @keyframes pulse-border {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.0); }
-  50%      { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); }
+  0%, 100% { box-shadow: 0 0 0 0 oklch(0.65 0.20 250 / 0.0); }
+  50%      { box-shadow: 0 0 0 2px oklch(0.65 0.20 250 / 0.5); }
 }
 .motion-safe\:animate-pulse-border { animation: pulse-border 2s ease-in-out infinite; }
