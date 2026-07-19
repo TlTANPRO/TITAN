@@ -90,11 +90,17 @@ jobs:
         run: npm install -g pnpm@9.15.4
 
       - name: Install dependencies
-        # V27.11: drop --frozen-lockfile for first run after a pnpm upgrade
-        # (lockfile may need refresh), then re-add it once stable. Or just
-        # keep --frozen-lockfile — this is fine because we just added
-        # `packageManager: pnpm@9.15.4` which won't change.
         run: pnpm install --frozen-lockfile
+
+      # V27.12: Cold-start bootstrap. scripts/scraped/ is gitignored but the
+      # commit step at the end tries to commit it. If a previous CI run
+      # failed before commit, the runner starts with an empty scraped/ dir
+      # → scrape-incremental has nothing to read → generate-data finds 0
+      # files → post-write guard fails. Hydrate from the bundled
+      # src/data/accounts-full.json (which IS committed) before scraping.
+      - name: Bootstrap scraped/ from bundled data
+        if: success()
+        run: node scripts/bootstrap-scraped-from-bundled.mjs
 
       - name: Run incremental scraper
         id: scrape

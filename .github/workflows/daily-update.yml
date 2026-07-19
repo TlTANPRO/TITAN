@@ -83,6 +83,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # V27.12: Cold-start bootstrap. scripts/scraped/ is gitignored but the
+      # commit step at the end tries to commit it. If a previous CI run
+      # failed before commit, the runner starts with an empty scraped/ dir
+      # → scrape-incremental has nothing to read → generate-data finds 0
+      # files → post-write guard fails. Hydrate from the bundled
+      # src/data/accounts-full.json (which IS committed) before scraping.
+      - name: Bootstrap scraped/ from bundled data
+        run: node scripts/bootstrap-scraped-from-bundled.mjs
+
       # ============== SCRAPE PHASE (fail soft) ==============
 
       # V26: smart cadence — Sunday = full re-scrape (weekly catch-up).
