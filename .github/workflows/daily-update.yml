@@ -61,16 +61,21 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - name: Setup Node.js
+        # V27.7: bump Node 20→22 LTS (Node 20 is being deprecated on GH
+        # runners 19 Sep 2025; setup-node@v4 now downloads 22 by default but
+        # we pin to be explicit). Also installs pnpm 9 via corepack to match
+        # lockfileVersion 9.0 — the old `pnpm/action-setup@v4` step was
+        # getting its PATH overwritten by setup-node, leaving `pnpm` missing.
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
+
+      - name: Install pnpm 9 (match lockfile v9)
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

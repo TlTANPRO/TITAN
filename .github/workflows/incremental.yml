@@ -70,11 +70,19 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
 
-      - name: Setup Node 20
+      - name: Setup Node.js
+        # V27.7: bump Node 20→22 LTS (Node 20 deprecated on GH runners
+        # 19 Sep 2025). pnpm 9 installed via corepack to match lockfile
+        # version 9.0.
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: 22
+          cache: pnpm
+
+      - name: Install pnpm 9 (match lockfile v9)
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
