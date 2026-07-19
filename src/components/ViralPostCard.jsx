@@ -1,7 +1,8 @@
 // ViralPostCard — single card in the "Top 5 Viral Posts" section.
+// V26: card-level click opens the actual post (IG/TT) in a new tab.
+// Falls back to /account/:slug if no postUrl available (defensive).
 // Shows: thumbnail (or platform icon if missing), caption line-clamp-2,
-// metrics, @username + relative time. Click navigates to /account/:slug.
-// External post link (Buka) opens the actual post in new tab.
+// metrics, @username + relative time.
 import { Link } from 'react-router-dom';
 import { Eye, Heart, MessageCircle, Play, TrendingUp, ExternalLink } from 'lucide-react';
 import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
@@ -37,31 +38,21 @@ export function ViralPostCard({ post, rank }) {
   const mediaIsVideo = post.mediaType === 'VIDEO' || post.mediaType === 'REEL';
   // V25.2: evaluate proxiedImage once; '' means session-bound URL or missing — show placeholder.
   const thumbSrc = proxiedImage(post.thumbnailUrl, 320);
-  return (
-    <Link
-      to={`/account/${post.slug}`}
-      className="surface p-3 flex flex-col gap-2 hover:border-accent-primary/50 transition-colors group"
-      aria-label={`Post viral @${post.username}: ${post.caption?.slice(0, 60) ?? 'tanpa caption'}`}
-    >
+  // V26: prefer postUrl (IG normalizes to this; TT also writes postUrl now),
+  // fall back to videoUrl (TT legacy), then account page as last resort.
+  const targetUrl = post.postUrl || post.videoUrl || null;
+  const accountHref = `/account/${post.slug}`;
+
+  // V26: shared body — extracted so both <a> (has postUrl) and <Link> (fallback)
+  // render identically. Props.aria-label documented at outer wrapper.
+  const cardBody = (
+    <>
       <div className="flex items-center justify-between text-xs">
         <div className="flex items-center gap-1.5">
           <PlatformIcon platform={post.platform} className="w-3.5 h-3.5" />
           <span className="text-text-muted truncate">@{post.username}</span>
         </div>
         <div className="flex items-center gap-2">
-          {post.postUrl ? (
-            <a
-              href={post.postUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="text-text-muted hover:text-accent-primary transition-colors"
-              aria-label="Buka post di tab baru"
-              title="Buka post"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          ) : null}
           {rank ? (
             <span
               className={`flex items-center gap-0.5 font-semibold tabular-nums ${
@@ -138,6 +129,35 @@ export function ViralPostCard({ post, rank }) {
           </span>
         </div>
       </div>
+    </>
+  );
+
+  // V26: kalau ada postUrl → buka video/post asli di tab baru (user request).
+  // Fallback ke internal /account/:slug kalau tidak ada (defensive).
+  const sharedClass = "surface p-3 flex flex-col gap-2 hover:border-accent-primary/50 transition-colors group";
+  const sharedAriaLabel = `Buka post viral @${post.username}: ${post.caption?.slice(0, 60) ?? 'tanpa caption'}`;
+
+  if (targetUrl) {
+    return (
+      <a
+        href={targetUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={sharedClass}
+        aria-label={sharedAriaLabel}
+      >
+        {cardBody}
+      </a>
+    );
+  }
+
+  return (
+    <Link
+      to={accountHref}
+      className={sharedClass}
+      aria-label={sharedAriaLabel}
+    >
+      {cardBody}
     </Link>
   );
 }

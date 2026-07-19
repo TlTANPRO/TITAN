@@ -55,6 +55,9 @@ function normalizeTtPost(post) {
     createTime: Number(post.create_time ?? 0),
     timestamp: Number(post.create_time ?? 0) * 1000,
     coverUrl: cover?.url_list?.[0] ?? originCover?.url_list?.[0] ?? '',
+    // V26: normalize to postUrl (matches IG). Keep videoUrl as alias for
+    // backward-compat with existing cached data.
+    postUrl: String(post.share_url ?? `https://www.tiktok.com/@${post.author?.unique_id ?? ''}/video/${id}`),
     videoUrl: String(post.share_url ?? `https://www.tiktok.com/@${post.author?.unique_id ?? ''}/video/${id}`),
     playCount: Number(stats.play_count ?? 0),
     diggCount: Number(stats.digg_count ?? 0),

@@ -9,6 +9,9 @@
 #   6. Build Vite production bundle
 #   7. Deploy to GitHub Pages (atomic: copy dist→root, commit, push)
 #
+# Sunday 23:00 WIB → full re-scrape (catch-up for any missed days).
+# Other days → incremental 1-day window (fast + cheap).
+#
 # Can also be triggered manually via workflow_dispatch with custom inputs.
 name: TITAN Daily Update
 
@@ -74,13 +77,28 @@ jobs:
 
       # ============== SCRAPE PHASE (fail soft) ==============
 
-      - name: Scrape Instagram (incremental)
+      # V26: smart cadence — Sunday = full re-scrape (weekly catch-up).
+      # Other days = incremental 1-day window. Manual override via
+      # workflow_dispatch input `force_full_scrape=true`.
+      - name: Detect weekly catch-up day (Sunday UTC)
+        id: cadence
+        run: |
+          day=$(date -u +%u)
+          if [ "$day" = "7" ]; then
+            echo "weekly_full=true" >> $GITHUB_OUTPUT
+            echo "::notice::Sunday detected → weekly full re-scrape"
+          else
+            echo "weekly_full=false" >> $GITHUB_OUTPUT
+            echo "::notice::Weekday ($day) → incremental 1-day scrape"
+          fi
+
+      - name: Scrape Instagram
         if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ig' || github.event.inputs.platform == '' }}
         env:
           IG_SESSION: ${{ secrets.IG_SESSION }}
         run: |
-          if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ]; then
-            echo "Force full IG scrape"
+          if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ] || [ "${{ steps.cadence.outputs.weekly_full }}" = "true" ]; then
+            echo "Full IG scrape"
             node scripts/scrape-ig.mjs --force
           else
             echo "Incremental IG scrape (1-day window)"
@@ -94,11 +112,11 @@ jobs:
         run: |
           echo "::notice::IG scrape outcome=${{ steps.scrape-ig.outcome }}"
 
-      - name: Scrape TikTok (incremental)
+      - name: Scrape TikTok
         if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '' }}
         run: |
-          if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ]; then
-            echo "Force full TT scrape"
+          if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ] || [ "${{ steps.cadence.outputs.weekly_full }}" = "true" ]; then
+            echo "Full TT scrape"
             node scripts/scrape-tt.mjs --force
           else
             echo "Incremental TT scrape (1-day window)"
@@ -175,6 +193,7 @@ jobs:
           echo "TITAN Daily Update Summary"
           echo "==================================="
           echo "Date: $(date -u)"
+          echo "Cadence: ${{ steps.cadence.outputs.weekly_full == 'true' && 'weekly full re-scrape' || 'incremental 1-day' }}"
           echo "IG scrape: ${{ steps.scrape-ig.outcome }}"
           echo "TT scrape: ${{ steps.scrape-tt.outcome }}"
           echo "Build outcome: ${{ steps.build.outcome }}"
