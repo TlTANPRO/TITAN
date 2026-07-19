@@ -99,14 +99,14 @@ export default function Compare() {
       ) : (
         <div className="surface overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm min-w-[480px]">
               <thead>
                 <tr className="border-b border-border-subtle">
-                  <th className="px-3 py-3 text-left font-medium text-text-muted uppercase text-[10px] tracking-wider w-32">
+                  <th className="px-3 py-3 text-left font-medium text-text-muted uppercase text-[10px] tracking-wider w-24 sm:w-32">
                     Metric
                   </th>
                   {selected.map((a) => (
-                    <th key={a.slug} className="px-3 py-3 text-left font-medium border-l border-border-subtle/50">
+                    <th key={a.slug} className="px-3 py-3 text-left font-medium border-l border-border-subtle/50 min-w-[140px]">
                       <button
                         onClick={() => navigate(`/account/${a.slug}`)}
                         className="flex items-center gap-2 group"
@@ -131,14 +131,14 @@ export default function Compare() {
                   const max = Math.max(...vals);
                   return (
                     <tr key={m.key} className="border-b border-border-subtle/50">
-                      <td className="px-3 py-2.5 text-xs text-text-muted font-medium">{m.label}</td>
+                      <td className="px-3 py-2.5 text-xs text-text-muted font-medium whitespace-nowrap">{m.label}</td>
                       {selected.map((a) => {
                         const v = a[m.key] ?? 0;
                         const isMax = v === max && v > 0;
                         return (
                           <td
                             key={a.slug}
-                            className={`px-3 py-2.5 tabular-nums border-l border-border-subtle/50 ${
+                            className={`px-3 py-2.5 tabular-nums border-l border-border-subtle/50 whitespace-nowrap ${
                               m.highlight ? 'text-accent-primary font-bold' : 'text-text-primary'
                             } ${isMax ? 'bg-accent-success/5' : ''}`}
                           >
@@ -152,6 +152,9 @@ export default function Compare() {
                 })}
               </tbody>
             </table>
+          </div>
+          <div className="px-3 py-1.5 text-[10px] text-text-muted sm:hidden border-t border-border-subtle/50 bg-bg-tertiary/30">
+            ← Geser untuk melihat kolom lainnya →
           </div>
         </div>
       )}

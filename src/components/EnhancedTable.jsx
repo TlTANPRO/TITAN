@@ -11,18 +11,27 @@ const PLATFORM_FILTERS = [
   { key: 'tiktok', label: 'TikTok' }
 ];
 
-// V11: tambah Avg Comments & Avg Shares agar data di tabel match data aktual.
+// V22: tambah `responsive` flag — hide low-priority columns on mobile so the
+// table fits inside narrow bento cards. Essential (Akun/Followers/ER/Health)
+// stay visible; nice-to-have (Platform full label, Avg Komen, Avg Tayangan)
+// hide on small screens.
 const COLUMNS = [
-  { key: 'username', label: 'Akun', align: 'left', sortable: true },
-  { key: 'platform', label: 'Platform', align: 'left', sortable: true },
-  { key: 'followerCount', label: 'Pengikut', align: 'right', sortable: true },
-  { key: 'postCount', label: 'Post', align: 'right', sortable: true },
-  { key: 'avgLikes', label: 'Avg Suka', align: 'right', sortable: true },
-  { key: 'avgComments', label: 'Avg Komen', align: 'right', sortable: true },
-  { key: 'avgViews', label: 'Avg Tayangan', align: 'right', sortable: true },
-  { key: 'engagementRate', label: 'ER', align: 'right', sortable: true },
-  { key: 'healthScore', label: 'Health', align: 'right', sortable: true }
+  { key: 'username', label: 'Akun', align: 'left', sortable: true, responsive: 'show' },
+  { key: 'platform', label: 'Platform', align: 'left', sortable: true, responsive: 'md' },
+  { key: 'followerCount', label: 'Pengikut', align: 'right', sortable: true, responsive: 'show' },
+  { key: 'postCount', label: 'Post', align: 'right', sortable: true, responsive: 'lg' },
+  { key: 'avgLikes', label: 'Avg Suka', align: 'right', sortable: true, responsive: 'md' },
+  { key: 'avgComments', label: 'Avg Komen', align: 'right', sortable: true, responsive: 'lg' },
+  { key: 'avgViews', label: 'Avg Tayangan', align: 'right', sortable: true, responsive: 'lg' },
+  { key: 'engagementRate', label: 'ER', align: 'right', sortable: true, responsive: 'show' },
+  { key: 'healthScore', label: 'Health', align: 'right', sortable: true, responsive: 'md' }
 ];
+
+const RESPONSIVE_CLASS = {
+  show: '',
+  md: 'hidden md:table-cell',
+  lg: 'hidden lg:table-cell'
+};
 
 function SortIcon({ active, dir }) {
   if (!active) return <ArrowUpDown className="w-3 h-3 opacity-30" />;
@@ -85,7 +94,7 @@ export function EnhancedTable({ comparison }) {
               {COLUMNS.map((c) => (
                 <th
                   key={c.key}
-                  className={`py-3 px-4 font-medium cursor-pointer select-none ${c.align === 'right' ? 'text-right' : 'text-left'}`}
+                  className={`py-3 px-4 font-medium cursor-pointer select-none ${c.align === 'right' ? 'text-right' : 'text-left'} ${RESPONSIVE_CLASS[c.responsive]}`}
                   onClick={() => c.sortable && handleSort(c.key)}
                 >
                   <span className={`inline-flex items-center gap-1.5 ${c.align === 'right' ? 'flex-row-reverse' : ''}`}>
@@ -99,26 +108,25 @@ export function EnhancedTable({ comparison }) {
           <tbody>
             {sorted.map((a, i) => (
               <tr key={a.slug} className="border-b border-border-subtle/50 hover:bg-bg-tertiary/50">
-                <td className="py-3 px-4 text-text-muted tabular-nums">{i + 1}</td>
                 <td className="py-3 px-4">
                   <Link to={`/account/${a.slug}`} className="text-text-primary hover:text-accent-primary font-medium">@{a.username}</Link>
                 </td>
-                <td className="py-3 px-4 text-text-secondary">
+                <td className={`py-3 px-4 text-text-secondary ${RESPONSIVE_CLASS['md']}`}>
                   <span className="inline-flex items-center gap-1">
                     <PlatformIcon platform={a.platform} className="w-3.5 h-3.5" />
                     <span className="hidden md:inline">{platformLabel(a.platform)}</span>
                     <span className="md:hidden">{a.platform === 'instagram' ? 'IG' : 'TT'}</span>
                   </span>
                 </td>
-                <td className="py-3 px-4 text-right tabular-nums">{formatNumber(a.followerCount)}</td>
-                <td className="py-3 px-4 text-right tabular-nums">{a.postCount}</td>
-                <td className="py-3 px-4 text-right tabular-nums">{formatNumber(a.avgLikes)}</td>
-                <td className="py-3 px-4 text-right tabular-nums">{formatNumber(a.avgComments)}</td>
-                <td className="py-3 px-4 text-right tabular-nums">{formatNumber(a.avgViews)}</td>
-                <td className="py-3 px-4 text-right tabular-nums font-semibold">
+                <td className={`py-3 px-4 text-right tabular-nums`}>{formatNumber(a.followerCount)}</td>
+                <td className={`py-3 px-4 text-right tabular-nums ${RESPONSIVE_CLASS['lg']}`}>{a.postCount}</td>
+                <td className={`py-3 px-4 text-right tabular-nums ${RESPONSIVE_CLASS['md']}`}>{formatNumber(a.avgLikes)}</td>
+                <td className={`py-3 px-4 text-right tabular-nums ${RESPONSIVE_CLASS['lg']}`}>{formatNumber(a.avgComments)}</td>
+                <td className={`py-3 px-4 text-right tabular-nums ${RESPONSIVE_CLASS['lg']}`}>{formatNumber(a.avgViews)}</td>
+                <td className={`py-3 px-4 text-right tabular-nums font-semibold`}>
                   {a.hasER ? <span className="text-accent-success">{formatPercent(a.engagementRate)}</span> : <span className="text-text-muted" title="Data like/komentar tidak tersedia">—</span>}
                 </td>
-                <td className="py-3 px-4 text-right tabular-nums">
+                <td className={`py-3 px-4 text-right tabular-nums ${RESPONSIVE_CLASS['md']}`}>
                   <span className={`text-xs font-semibold ${
                     a.healthScore >= 80 ? 'text-emerald-500' :
                     a.healthScore >= 65 ? 'text-sky-500' :

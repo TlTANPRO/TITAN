@@ -67,17 +67,20 @@ export default function AccountList() {
     }
   };
 
-  const SortHeader = ({ k, label, align = 'left' }) => (
-    <th
-      onClick={() => toggleSort(k)}
-      className={`px-3 py-2 text-${align} font-medium text-text-muted uppercase text-[10px] tracking-wider cursor-pointer hover:text-text-primary select-none`}
-    >
-      <span className="inline-flex items-center gap-1">
-        {label}
-        <ArrowUpDown className={`w-3 h-3 ${sortKey === k ? 'text-accent-primary' : 'opacity-30'}`} />
-      </span>
-    </th>
-  );
+  const SortHeader = ({ k, label, align = 'left', responsive = 'show' }) => {
+    const cls = responsive === 'md' ? 'hidden md:table-cell' : responsive === 'lg' ? 'hidden lg:table-cell' : '';
+    return (
+      <th
+        onClick={() => toggleSort(k)}
+        className={`px-3 py-2 text-${align} font-medium text-text-muted uppercase text-[10px] tracking-wider cursor-pointer hover:text-text-primary select-none ${cls}`}
+      >
+        <span className="inline-flex items-center gap-1">
+          {label}
+          <ArrowUpDown className={`w-3 h-3 ${sortKey === k ? 'text-accent-primary' : 'opacity-30'}`} />
+        </span>
+      </th>
+    );
+  };
 
   return (
     <div className="p-4 md:p-6 space-y-4 max-w-7xl mx-auto">
@@ -126,12 +129,12 @@ export default function AccountList() {
               <thead>
                 <tr className="border-b border-border-subtle">
                   <th className="px-3 py-2 text-left font-medium text-text-muted uppercase text-[10px] tracking-wider">Akun</th>
-                  <th className="px-3 py-2 text-left font-medium text-text-muted uppercase text-[10px] tracking-wider">Platform</th>
+                  <th className="px-3 py-2 text-left font-medium text-text-muted uppercase text-[10px] tracking-wider hidden md:table-cell">Platform</th>
                   <SortHeader k="followerCount" label="Followers" align="right" />
-                  <SortHeader k="posts.length" label="Posts" align="right" />
+                  <SortHeader k="posts.length" label="Posts" align="right" responsive="md" />
                   <SortHeader k="engagementRate" label="ER" align="right" />
-                  <SortHeader k="avgLikes" label="Avg Likes" align="right" />
-                  <SortHeader k="avgViews" label="Avg Views" align="right" />
+                  <SortHeader k="avgLikes" label="Avg Likes" align="right" responsive="md" />
+                  <SortHeader k="avgViews" label="Avg Views" align="right" responsive="lg" />
                   <th className="px-3 py-2 text-left font-medium text-text-muted uppercase text-[10px] tracking-wider">Data</th>
                 </tr>
               </thead>
@@ -153,7 +156,7 @@ export default function AccountList() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-3 py-2.5">
+                    <td className="px-3 py-2.5 hidden md:table-cell">
                       <span className="inline-flex items-center gap-1 text-xs text-text-secondary">
                         <PlatformIcon platform={a.platform} className="w-3.5 h-3.5" />
                         {platformLabel(a.platform)}
@@ -162,16 +165,16 @@ export default function AccountList() {
                     <td className="px-3 py-2.5 text-right tabular-nums text-text-secondary">
                       {formatNumber(a.followerCount)}
                     </td>
-                    <td className="px-3 py-2.5 text-right tabular-nums text-text-secondary">
+                    <td className="px-3 py-2.5 text-right tabular-nums text-text-secondary hidden md:table-cell">
                       {formatNumber(a.posts?.length ?? 0)}
                     </td>
                     <td className="px-3 py-2.5 text-right tabular-nums font-semibold text-accent-primary">
                       {formatPercent(a.engagementRate)}
                     </td>
-                    <td className="px-3 py-2.5 text-right tabular-nums text-text-secondary">
+                    <td className="px-3 py-2.5 text-right tabular-nums text-text-secondary hidden md:table-cell">
                       {formatNumber(a.avgLikes)}
                     </td>
-                    <td className="px-3 py-2.5 text-right tabular-nums text-text-secondary">
+                    <td className="px-3 py-2.5 text-right tabular-nums text-text-secondary hidden lg:table-cell">
                       {formatNumber(a.avgViews)}
                     </td>
                     <td className="px-3 py-2.5">

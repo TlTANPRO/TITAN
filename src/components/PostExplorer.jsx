@@ -180,42 +180,69 @@ export function PostExplorer({ posts = [], followerCount = 0 }) {
         <ul className="space-y-1.5 max-h-[600px] overflow-y-auto">
           {filtered.slice(0, 200).map((p) => {
             const er = postER(p, followerCount);
+            const date = p.createTime > 0 ? new Date(p.createTime * 1000).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: '2-digit' }) : '—';
             return (
               <li
                 key={p.id}
-                className="flex items-start gap-2 text-xs py-1.5 px-2 rounded hover:bg-bg-tertiary/40 transition-colors"
+                className="text-xs py-2 px-2 rounded hover:bg-bg-tertiary/40 transition-colors"
               >
-                <span className="text-text-muted w-20 flex-shrink-0 tabular-nums">
-                  {p.createTime > 0 ? new Date(p.createTime * 1000).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: '2-digit' }) : '—'}
-                </span>
-                <span className="text-text-muted w-12 flex-shrink-0 text-[10px] uppercase tracking-wider">
-                  {p.mediaType ?? '—'}
-                </span>
-                {p.postUrl ? (
-                  <a
-                    href={p.postUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 line-clamp-1 text-text-secondary hover:text-text-primary"
-                  >
-                    {highlightMatch(p.caption || '(tanpa caption)', query)}
-                  </a>
-                ) : (
-                  <span className="flex-1 line-clamp-1 text-text-secondary">
-                    {highlightMatch(p.caption || '(tanpa caption)', query)}
+                {/* Mobile: card layout — date + media + metrics stacked */}
+                <div className="flex sm:hidden flex-col gap-1">
+                  <div className="flex items-center gap-2 text-text-muted tabular-nums">
+                    <span className="text-[10px]">{date}</span>
+                    <span className="text-[10px] uppercase tracking-wider">{p.mediaType ?? '—'}</span>
+                  </div>
+                  {p.postUrl ? (
+                    <a
+                      href={p.postUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="line-clamp-2 text-text-secondary hover:text-text-primary"
+                    >
+                      {highlightMatch(p.caption || '(tanpa caption)', query)}
+                    </a>
+                  ) : (
+                    <span className="line-clamp-2 text-text-secondary">
+                      {highlightMatch(p.caption || '(tanpa caption)', query)}
+                    </span>
+                  )}
+                  <div className="flex items-center gap-3 text-[11px] tabular-nums text-text-muted">
+                    <span title="Tayangan">👁 {formatCompact(p.viewCount ?? 0)}</span>
+                    <span title="Suka">♥ {formatCompact(p.likeCount ?? 0)}</span>
+                    {followerCount > 0 && <span className="text-accent-primary" title="ER">{formatPercent(er, 1)}</span>}
+                  </div>
+                </div>
+
+                {/* Desktop: single row layout */}
+                <div className="hidden sm:flex items-start gap-2">
+                  <span className="text-text-muted w-20 flex-shrink-0 tabular-nums">{date}</span>
+                  <span className="text-text-muted w-12 flex-shrink-0 text-[10px] uppercase tracking-wider">{p.mediaType ?? '—'}</span>
+                  {p.postUrl ? (
+                    <a
+                      href={p.postUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 min-w-0 line-clamp-1 text-text-secondary hover:text-text-primary"
+                    >
+                      {highlightMatch(p.caption || '(tanpa caption)', query)}
+                    </a>
+                  ) : (
+                    <span className="flex-1 min-w-0 line-clamp-1 text-text-secondary">
+                      {highlightMatch(p.caption || '(tanpa caption)', query)}
+                    </span>
+                  )}
+                  <span className="text-text-muted tabular-nums w-14 text-right flex-shrink-0" title="Tayangan">
+                    {formatCompact(p.viewCount ?? 0)}
                   </span>
-                )}
-                <span className="text-text-muted tabular-nums w-14 text-right" title="Tayangan">
-                  {formatCompact(p.viewCount ?? 0)}
-                </span>
-                <span className="text-text-secondary tabular-nums w-14 text-right" title="Suka">
-                  {formatCompact(p.likeCount ?? 0)}
-                </span>
-                {followerCount > 0 && (
-                  <span className="text-accent-primary tabular-nums w-14 text-right" title="ER">
-                    {formatPercent(er, 1)}
+                  <span className="text-text-secondary tabular-nums w-14 text-right flex-shrink-0" title="Suka">
+                    {formatCompact(p.likeCount ?? 0)}
                   </span>
-                )}
+                  {followerCount > 0 && (
+                    <span className="text-accent-primary tabular-nums w-14 text-right flex-shrink-0" title="ER">
+                      {formatPercent(er, 1)}
+                    </span>
+                  )}
+                </div>
               </li>
             );
           })}
