@@ -62,13 +62,14 @@ jobs:
           fetch-depth: 1
 
       - name: Setup Node.js
-        # V27.10: Node 22 LTS (Node 20 deprecated 19 Sep 2025)
+        # V27.11: Node 22 LTS. NO `cache:` — the only options are
+        # 'npm' (needs package-lock.json), 'pnpm' (needs pnpm-lock.yaml
+        # BUT pnpm isn't installed yet at this step), 'yarn' (needs
+        # yarn.lock). We use pnpm, so we skip the setup-node cache and
+        # let pnpm's own store cache + runner warm cache handle speed.
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          # No `cache: pnpm` here — pnpm is installed in the next step,
-          # so setup-node can't see the cache directory yet.
-          cache: 'npm'
 
       - name: Install pnpm 9 (match lockfile v9)
         # V27.10: install via npm globally instead of corepack — the corepack
