@@ -1,4 +1,4 @@
-// V21: /ai — Global AI Insights view (ViralRecipe, GrowthStrategy, StrategyBrief, WeeklyBriefing).
+// V21: /ai — Global Insight & Rekomendasi view (ViralRecipe, GrowthStrategy, StrategyBrief, WeeklyBriefing).
 // Tabbed view across all 9 accounts. Shows pre-cached text from ai-insights.json.
 import { useState, useEffect } from 'react';
 import { Bot, Sparkles, TrendingUp, FileText, Calendar } from 'lucide-react';
@@ -47,12 +47,12 @@ export default function AiInsights() {
       <div>
         <h1 className="text-2xl font-bold text-text-primary flex items-center gap-2">
           <Bot className="w-6 h-6 text-accent-primary" />
-          AI Insights
+          Insight & Rekomendasi
         </h1>
         <p className="text-sm text-text-muted mt-0.5">
           {meta.generatedAt
             ? `Last generated: ${new Date(meta.generatedAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })} · ${meta.accountCount} akun`
-            : 'No AI insights generated yet'
+            : 'Belum ada insight yang di-generate'
           }
         </p>
       </div>
@@ -119,14 +119,14 @@ export default function AiInsights() {
           ) : (
             <EmptyState
               title="Weekly Briefing belum tersedia"
-              description="Jalankan `pnpm insights:briefing` untuk generate AI text. Atau lihat analytics-only Weekly Recap di Home page."
+              description="Jalankan `pnpm insights:briefing` di terminal untuk generate. Sambil menunggu, cek Weekly Recap di Home untuk ringkasan otomatis."
             />
           )
         ) : activeText ? (
           <div>
             <div className="flex items-center gap-2 mb-3 text-xs text-accent-primary">
               <Bot className="w-3.5 h-3.5" />
-              <span className="font-semibold uppercase tracking-wider">AI-Generated Insight</span>
+              <span className="font-semibold uppercase tracking-wider">Rekomendasi</span>
               <Chip size="sm" tone="info">Pre-cached</Chip>
             </div>
             <div className="text-sm text-text-primary leading-relaxed whitespace-pre-line">
@@ -136,7 +136,7 @@ export default function AiInsights() {
         ) : (
           <EmptyState
             title="Insight belum tersedia"
-            description={`Belum ada AI text untuk @${activeSlug.replace(/^[^-]+-/, '')} - ${TABS.find(t => t.value === activeTab)?.label}. Jalankan \`pnpm insights:generate\` untuk generate.`}
+            description={`Belum ada insight untuk @${activeSlug.replace(/^[^-]+-/, '')} - ${TABS.find(t => t.value === activeTab)?.label}. Jalankan \`pnpm insights:generate\` untuk generate.`}
           />
         )}
       </div>

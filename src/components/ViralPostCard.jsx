@@ -1,8 +1,9 @@
 // ViralPostCard — single card in the "Top 5 Viral Posts" section.
 // Shows: thumbnail (or platform icon if missing), caption line-clamp-2,
 // metrics, @username + relative time. Click navigates to /account/:slug.
+// External post link (Buka) opens the actual post in new tab.
 import { Link } from 'react-router-dom';
-import { Eye, Heart, MessageCircle, Play, TrendingUp } from 'lucide-react';
+import { Eye, Heart, MessageCircle, Play, TrendingUp, ExternalLink } from 'lucide-react';
 import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
 import { formatNumber, formatCompact } from '../lib/format.js';
 import { proxiedImage } from '../lib/imageProxy.js';
@@ -38,16 +39,31 @@ export function ViralPostCard({ post, rank }) {
           <PlatformIcon platform={post.platform} className="w-3.5 h-3.5" />
           <span className="text-text-muted truncate">@{post.username}</span>
         </div>
-        {rank ? (
-          <span
-            className={`flex items-center gap-0.5 font-bold tabular-nums ${
-              rank === 1 ? 'text-yellow-500' : rank === 2 ? 'text-zinc-400' : 'text-orange-700'
-            }`}
-          >
-            <TrendingUp className="w-3 h-3" />
-            #{rank}
-          </span>
-        ) : null}
+        <div className="flex items-center gap-2">
+          {post.postUrl ? (
+            <a
+              href={post.postUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-text-muted hover:text-accent-primary transition-colors"
+              aria-label="Buka post di tab baru"
+              title="Buka post"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          ) : null}
+          {rank ? (
+            <span
+              className={`flex items-center gap-0.5 font-bold tabular-nums ${
+                rank === 1 ? 'text-yellow-500' : rank === 2 ? 'text-zinc-400' : 'text-orange-700'
+              }`}
+            >
+              <TrendingUp className="w-3 h-3" />
+              #{rank}
+            </span>
+          ) : null}
+        </div>
       </div>
 
       <div className="relative aspect-square bg-bg-tertiary rounded overflow-hidden">

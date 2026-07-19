@@ -119,10 +119,13 @@ export function PostExplorer({ posts = [], followerCount = 0 }) {
       {/* Filter row 2: time range + sort + search */}
       <div className="flex items-center gap-2 mb-3 flex-wrap">
         <select
+          id="postexplorer-range"
+          name="range"
           value={range}
           onChange={(e) => setRange(e.target.value)}
           className="bg-bg-tertiary text-text-primary text-xs rounded-md px-2 py-1.5 border border-border-subtle focus:outline-none focus:border-accent-primary"
           aria-label="Rentang waktu"
+          autoComplete="off"
         >
           {RANGE_FILTERS.map((r) => (
             <option key={r.key} value={r.key}>{r.label}</option>
@@ -133,10 +136,13 @@ export function PostExplorer({ posts = [], followerCount = 0 }) {
           Sort:
         </div>
         <select
+          id="postexplorer-sort"
+          name="sort"
           value={sortKey}
           onChange={(e) => setSortKey(e.target.value)}
           className="bg-bg-tertiary text-text-primary text-xs rounded-md px-2 py-1.5 border border-border-subtle focus:outline-none focus:border-accent-primary"
           aria-label="Urutkan"
+          autoComplete="off"
         >
           {SORT_OPTIONS.map((s) => (
             <option key={s.key} value={s.key}>{s.label}</option>
@@ -145,11 +151,14 @@ export function PostExplorer({ posts = [], followerCount = 0 }) {
         <div className="flex-1 min-w-[180px] relative">
           <Search className="w-3.5 h-3.5 absolute left-2 top-1/2 -translate-y-1/2 text-text-muted" />
           <input
+            id="postexplorer-search"
+            name="q"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Cari caption atau hashtag…"
             className="w-full bg-bg-tertiary text-text-primary text-xs rounded-md pl-7 pr-7 py-1.5 border border-border-subtle focus:outline-none focus:border-accent-primary placeholder:text-text-muted"
             aria-label="Cari post"
+            autoComplete="off"
           />
           {query && (
             <button

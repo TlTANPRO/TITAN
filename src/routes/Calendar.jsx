@@ -131,12 +131,12 @@ export default function Calendar() {
                 className={`
                   aspect-square rounded text-[10px] font-semibold tabular-nums
                   flex flex-col items-center justify-center
-                  transition-all
+                  transition-colors
                   ${cellColor(count)}
                   ${current ? 'text-text-primary' : 'text-text-muted/40'}
                   ${isToday ? 'ring-1 ring-accent-primary' : ''}
                   ${isSelected ? 'ring-2 ring-accent-primary' : ''}
-                  ${count > 0 ? 'hover:scale-105 cursor-pointer' : 'cursor-default'}
+                  ${count > 0 ? 'hover:bg-accent-primary/30 cursor-pointer' : 'cursor-default'}
                 `}
               >
                 <span>{date.getDate()}</span>

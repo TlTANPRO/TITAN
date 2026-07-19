@@ -10,14 +10,26 @@ import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { formatNumber, formatCompact } from '../lib/format.js';
 
 export default function Library() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const initialQ = searchParams.get('q') ?? '';
+  const initialSort = searchParams.get('sortBy') ?? 'createTime';
   const accounts = useAccounts();
   const [search, setSearch] = useState(initialQ);
   const [platform, setPlatform] = useState('all');
   const [accountSlugs, setAccountSlugs] = useState([]);
   const [mediaType, setMediaType] = useState('all');
-  const [sortBy, setSortBy] = useState('createTime');
+  const [sortBy, setSortBy] = useState(initialSort);
+
+  // Sync sort → URL (so Hero KPI links like ?sortBy=viewCount take effect)
+  useMemo(() => {
+    const next = new URLSearchParams(searchParams);
+    if (sortBy === 'createTime') next.delete('sortBy');
+    else next.set('sortBy', sortBy);
+    if (search.trim()) next.set('q', search.trim());
+    else next.delete('q');
+    setSearchParams(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortBy, search]);
 
   // Flatten all posts across all accounts
   const allPosts = useMemo(() => {
@@ -83,24 +95,27 @@ export default function Library() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted pointer-events-none" />
             <input
+              id="library-search"
+              name="q"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari di caption…"
               aria-label="Search captions"
+              autoComplete="off"
               className="w-full pl-9 pr-3 py-1.5 text-sm bg-bg-tertiary border border-border-subtle rounded-md text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-primary"
             />
           </div>
-          <select value={platform} onChange={(e) => setPlatform(e.target.value)} aria-label="Platform"
+          <select id="library-platform" name="platform" value={platform} onChange={(e) => setPlatform(e.target.value)} aria-label="Platform"
             className="text-sm bg-bg-tertiary border border-border-subtle rounded px-3 py-1.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-primary">
             <option value="all">Semua Platform</option>
             <option value="instagram">Instagram</option>
             <option value="tiktok">TikTok</option>
           </select>
-          <select value={mediaType} onChange={(e) => setMediaType(e.target.value)} aria-label="Media type"
+          <select id="library-mediatype" name="mediaType" value={mediaType} onChange={(e) => setMediaType(e.target.value)} aria-label="Media type"
             className="text-sm bg-bg-tertiary border border-border-subtle rounded px-3 py-1.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-primary">
             {MEDIA_TYPES.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
           </select>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort"
+          <select id="library-sort" name="sortBy" value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort"
             className="text-sm bg-bg-tertiary border border-border-subtle rounded px-3 py-1.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-primary">
             <option value="createTime">Terbaru</option>
             <option value="likeCount">Likes Terbanyak</option>

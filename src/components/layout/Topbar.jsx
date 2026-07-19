@@ -67,7 +67,7 @@ export function Topbar({ limitedCount = 0 }) {
     if (location.pathname === '/compare') return 'Bandingkan Akun';
     if (location.pathname === '/calendar') return 'Kalender Konten';
     if (location.pathname === '/library') return 'Library Post';
-    if (location.pathname === '/ai') return 'AI Insights';
+    if (location.pathname === '/ai') return 'TITAN · Insight';
     if (location.pathname === '/settings') return 'Settings';
     if (location.pathname.startsWith('/account/')) return null; // AccountPage renders its own
     return 'TITAN';
@@ -91,15 +91,18 @@ export function Topbar({ limitedCount = 0 }) {
         )}
 
         {/* Search */}
-        <form onSubmit={handleSearchSubmit} className="flex-1 max-w-md">
+        <form onSubmit={handleSearchSubmit} className="flex-1 max-w-md md:max-w-md">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted pointer-events-none" />
             <input
+              id="titan-search"
+              name="q"
               type="search"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Cari akun atau post…"
               aria-label="Search"
+              autoComplete="off"
               className="w-full pl-9 pr-3 py-1.5 text-sm bg-bg-tertiary border border-border-subtle rounded-md text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent"
             />
           </div>
@@ -111,9 +114,12 @@ export function Topbar({ limitedCount = 0 }) {
         <div className="hidden sm:flex items-center gap-1.5">
           <Filter className="w-3.5 h-3.5 text-text-muted" />
           <select
+            id="titan-period"
+            name="period"
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
             aria-label="Periode filter"
+            autoComplete="off"
             className="text-xs bg-bg-tertiary border border-border-subtle rounded px-2 py-1 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-primary"
           >
             {PERIOD_OPTIONS.map((o) => (

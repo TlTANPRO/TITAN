@@ -84,9 +84,11 @@ export default function Settings() {
                 <div className="flex gap-2 mt-1">
                   <input
                     id="username"
+                    name="username"
                     value={userName}
                     onChange={(e) => setUserName(e.target.value)}
                     placeholder="Syahfalah"
+                    autoComplete="off"
                     className="flex-1 px-3 py-1.5 text-sm bg-bg-tertiary border border-border-subtle rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-primary"
                   />
                   <button onClick={saveUserName} className="btn-primary !px-4 !py-1.5 text-sm">Simpan</button>
@@ -123,10 +125,13 @@ export default function Settings() {
                   <div className="relative flex-1">
                     <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted" />
                     <input
+                      id="hard-refresh-password"
+                      name="hardRefreshPassword"
                       type="password"
                       value={hardRefreshPassword}
                       onChange={(e) => setHardRefreshPassword(e.target.value)}
                       placeholder="Password"
+                      autoComplete="current-password"
                       className="w-full pl-9 pr-3 py-1.5 text-sm bg-bg-tertiary border border-border-subtle rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-primary"
                     />
                   </div>

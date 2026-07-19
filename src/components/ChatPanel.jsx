@@ -137,7 +137,7 @@ export default function ChatPanel() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-accent-primary hover:bg-accent-primary/90 text-white shadow-2xl flex items-center justify-center transition-all hover:scale-105"
+          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-accent-primary hover:bg-accent-primary/90 text-white shadow-2xl flex items-center justify-center transition-colors"
           aria-label="Buka AI Assistant"
           title="TITAN AI — buka chat"
         >
@@ -216,6 +216,8 @@ export default function ChatPanel() {
           <form onSubmit={handleSend} className="p-3 border-t border-border-subtle bg-bg-elevated">
             <div className="flex items-end gap-2">
               <textarea
+                id="chat-message"
+                name="message"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -226,6 +228,7 @@ export default function ChatPanel() {
                 }}
                 placeholder="Tanya…"
                 rows={1}
+                autoComplete="off"
                 className="flex-1 resize-none bg-bg-secondary border border-border-subtle rounded-xl px-3 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-primary transition-colors max-h-32"
               />
               {isStreaming ? (

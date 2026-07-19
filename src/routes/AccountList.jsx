@@ -95,17 +95,23 @@ export default function AccountList() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted pointer-events-none" />
           <input
+            id="accounts-search"
+            name="q"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari username atau nama…"
             aria-label="Search accounts"
+            autoComplete="off"
             className="w-full pl-9 pr-3 py-1.5 text-sm bg-bg-tertiary border border-border-subtle rounded-md text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-primary"
           />
         </div>
         <select
+          id="accounts-platform"
+          name="platform"
           value={platform}
           onChange={(e) => setPlatform(e.target.value)}
           aria-label="Platform filter"
+          autoComplete="off"
           className="text-sm bg-bg-tertiary border border-border-subtle rounded px-3 py-1.5 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-primary"
         >
           {PLATFORM_FILTERS.map((p) => (

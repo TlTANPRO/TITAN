@@ -81,9 +81,9 @@ html:not(.dark) .skeleton-shimmer {
   background-size: 200% 100%;
 }
 
-/* Heatmap cell */
+/* Heatmap cell — Raycast-style: no scale, opacity/ring on hover only */
 .heatmap-cell {
-  @apply rounded-sm transition-all duration-150 hover:scale-110 hover:ring-1 hover:ring-white/30;
+  @apply rounded-sm transition-all duration-150 hover:ring-1 hover:ring-white/30;
 }
 
 /* Chat bubble animation */

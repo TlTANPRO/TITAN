@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { to: '/compare', label: 'Bandingkan', icon: GitCompareArrows },
   { to: '/calendar', label: 'Kalender', icon: CalIcon },
   { to: '/library', label: 'Library', icon: Library },
-  { to: '/ai', label: 'AI Lab', icon: Sparkles },
+  { to: '/ai', label: 'Insight', icon: Sparkles },
   { to: '/settings', label: 'Settings', icon: Settings }
 ];
 

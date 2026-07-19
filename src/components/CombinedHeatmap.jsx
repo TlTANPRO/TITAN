@@ -85,7 +85,7 @@ export function CombinedHeatmap({ accounts }) {
               return (
                 <div
                   key={hour}
-                  className="flex-1 h-5 rounded-sm cursor-pointer transition-transform hover:scale-125"
+                  className="flex-1 h-5 rounded-sm cursor-pointer transition-all hover:ring-1 hover:ring-accent-primary/60"
                   style={{
                     backgroundColor: `rgba(236, 72, 153, ${cellOpacity(value)})`,
                     border: isTop ? '1.5px solid rgb(236, 72, 153)' : '1px solid var(--border-subtle)'

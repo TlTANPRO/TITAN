@@ -34,10 +34,10 @@ export function Hero({ accounts, allPosts }) {
   return (
     <section className="surface p-6 bg-gradient-to-br from-bg-secondary to-bg-tertiary">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KpiItem icon={<Users className="w-4 h-4" />} label="Total Pengikut" value={formatNumber(kpi.totalFollowers)} color="text-accent-primary" />
-        <KpiItem icon={<Sparkles className="w-4 h-4" />} label="Total Postingan" value={formatNumber(kpi.totalPosts)} color="text-accent-secondary" />
-        <KpiItem icon={<Heart className="w-4 h-4" />} label="Total Suka" value={formatNumber(kpi.totalLikes)} color="text-pink-500" />
-        <KpiItem icon={<Eye className="w-4 h-4" />} label="Total Tayangan" value={formatNumber(kpi.totalViews)} color="text-cyan-500" />
+        <KpiItem icon={<Users className="w-4 h-4" />} label="Total Pengikut" value={formatNumber(kpi.totalFollowers)} color="text-accent-primary" href="/account?sort=followerCount" />
+        <KpiItem icon={<Sparkles className="w-4 h-4" />} label="Total Postingan" value={formatNumber(kpi.totalPosts)} color="text-accent-secondary" href="/library" />
+        <KpiItem icon={<Heart className="w-4 h-4" />} label="Total Suka" value={formatNumber(kpi.totalLikes)} color="text-pink-500" href="/library?sortBy=likeCount" />
+        <KpiItem icon={<Eye className="w-4 h-4" />} label="Total Tayangan" value={formatNumber(kpi.totalViews)} color="text-cyan-500" href="/library?sortBy=viewCount" />
       </div>
 
       {latestScrape && (
@@ -49,14 +49,26 @@ export function Hero({ accounts, allPosts }) {
   );
 }
 
-function KpiItem({ icon, label, value, color }) {
-  return (
-    <div>
+function KpiItem({ icon, label, value, color, href }) {
+  const content = (
+    <>
       <div className={`flex items-center gap-1.5 text-xs ${color} font-medium`}>
         {icon}
         <span className="uppercase tracking-wider">{label}</span>
       </div>
-      <div className="text-2xl font-bold text-text-primary tabular-nums mt-1">{value}</div>
-    </div>
+      <div className="text-display-lg text-text-primary tabular-nums mt-1">{value}</div>
+    </>
   );
+  if (href) {
+    return (
+      <a
+        href={href}
+        className="block hover:opacity-70 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary rounded"
+        aria-label={`Lihat detail ${label}`}
+      >
+        {content}
+      </a>
+    );
+  }
+  return <div>{content}</div>;
 }

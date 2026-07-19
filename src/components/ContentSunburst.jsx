@@ -136,16 +136,16 @@ export function ContentSunburst({ accounts }) {
                   stroke="var(--bg-secondary)"
                   strokeWidth={1.5}
                   opacity={hover && hover.name !== s.name ? 0.4 : 1}
-                  className="transition-opacity cursor-pointer"
+                  className="transition-opacity duration-150 cursor-pointer"
                   onMouseEnter={() => setHover(s)}
                   onMouseLeave={() => setHover(null)}
                 />
               );
             })}
-            <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" className="fill-text-primary font-bold" style={{ fontSize: 16 }}>
+            <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" className="fill-text-primary font-semibold tabular-nums" style={{ fontSize: 16, letterSpacing: '-0.01em' }}>
               {formatCompact(total)}
             </text>
-            <text x={cx} y={cy + 14} textAnchor="middle" dominantBaseline="central" className="fill-text-muted" style={{ fontSize: 8 }}>
+            <text x={cx} y={cy + 14} textAnchor="middle" dominantBaseline="central" className="fill-text-muted" style={{ fontSize: 8, letterSpacing: '0.05em' }}>
               TOTAL
             </text>
           </svg>
@@ -174,7 +174,7 @@ export function ContentSunburst({ accounts }) {
           {hover && (
             <div className="surface p-2 text-text-secondary">
               <div className="font-semibold text-text-primary">{hover.name}</div>
-              <div className="text-[10px] uppercase tracking-wider">
+              <div className="text-[10px] uppercase tracking-wider tabular-nums">
                 {formatCompact(hover.count)} posts ({Math.round(hover.count / total * 100)}%)
               </div>
             </div>

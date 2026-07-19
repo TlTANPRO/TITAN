@@ -20,6 +20,7 @@ import { EnhancedTable } from '../components/EnhancedTable.jsx';
 import { ViralPostCard } from '../components/ViralPostCard.jsx';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { BentoGrid, BentoItem } from '../components/ui/BentoGrid.jsx';
+import { SectionLabel } from '../components/ui/SectionLabel.jsx';
 import { formatNumber, formatPercent, formatCompact } from '../lib/format.js';
 import { dataAvailability } from '../lib/analytics.js';
 import { weeklyTopViral } from '../lib/weeklyRecap.js';
@@ -125,10 +126,7 @@ export default function Home() {
         {topViral.length > 0 && (
           <BentoGrid>
             <BentoItem colSpan="col-5" padding="p-4" className="overflow-hidden">
-              <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-accent-danger" />
-                Top 5 Viral (7 Hari)
-              </h2>
+              <SectionLabel number="01" title="Top 5 Viral (7 Hari)" accent="pink" className="mb-3" />
               <div className="grid grid-cols-2 gap-2">
                 {topViral.slice(0, 4).map((p, i) => (
                   <ViralPostCard key={p.id} post={p} rank={i + 1} />
@@ -147,10 +145,7 @@ export default function Home() {
             </BentoItem>
 
             <BentoItem colSpan="col-7" padding="p-4">
-              <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-                <Activity className="w-4 h-4 text-accent-success animate-pulse" />
-                Live Activity
-              </h2>
+              <SectionLabel number="02" title="Live Activity" accent="cyan" className="mb-3" />
               <LiveActivityFeed posts={latestPosts} />
             </BentoItem>
           </BentoGrid>
@@ -159,10 +154,7 @@ export default function Home() {
         {/* ===== ROW 3: Account Health (12) ===== */}
         <BentoGrid>
           <BentoItem colSpan="col-12" padding="p-4">
-            <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-accent-warning" />
-              Account Health Score
-            </h2>
+            <SectionLabel number="03" title="Account Health Score" accent="warning" className="mb-3" />
             <AccountHealthGrid accounts={accounts} comparison={comparison} />
           </BentoItem>
         </BentoGrid>
@@ -170,14 +162,12 @@ export default function Home() {
         {/* ===== ROW 4: Weekly Briefing (8) + Top ER (4) ===== */}
         <BentoGrid>
           <BentoItem colSpan="col-8" padding="p-4">
+            <SectionLabel number="04" title="Weekly Recap" accent="accent" className="mb-3" />
             <WeeklyBriefing accounts={accounts} />
           </BentoItem>
 
           <BentoItem colSpan="col-4" padding="p-4">
-            <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-accent-warning" />
-              Top Engagement Rate
-            </h2>
+            <SectionLabel number="05" title="Top Engagement Rate" accent="pink" className="mb-3" />
             <ol className="space-y-2">
               {comparison
                 .filter((a) => Number.isFinite(a.engagementRate) && a.engagementRate > 0)
@@ -249,10 +239,7 @@ export default function Home() {
         {/* ===== ROW 7: Content Mix bars (full width) ===== */}
         <BentoGrid>
           <BentoItem colSpan="col-12" padding="p-4">
-            <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-accent-primary" />
-              Content Mix
-            </h2>
+            <SectionLabel number="07" title="Content Mix" accent="accent-secondary" className="mb-3" />
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {contentMix.breakdown.map((b) => {
                 const pct = (b.count / contentMix.total) * 100;
@@ -291,16 +278,13 @@ export default function Home() {
         <BentoGrid>
           <BentoItem colSpan="col-12" padding="p-4">
             <div className="flex items-center justify-between gap-2 mb-3">
-              <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-accent-primary" />
-                Perbandingan Lintas Akun
-              </h2>
+              <SectionLabel number="08" title="Perbandingan Lintas Akun" accent="accent" />
               <Link
                 to="/ai"
                 className="text-[10px] text-accent-primary hover:underline inline-flex items-center gap-1"
               >
                 <Bot className="w-3 h-3" />
-                Lihat AI Insights
+                Lihat Rekomendasi
                 <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
