@@ -71,18 +71,22 @@ jobs:
           token: ${{ secrets.GH_PAT }}
 
       - name: Setup Node.js
-        # V27.7: bump Node 20→22 LTS (Node 20 deprecated on GH runners
-        # 19 Sep 2025). pnpm 9 installed via corepack to match lockfile
-        # version 9.0.
+        # V27.10: Node 22 LTS (Node 20 deprecated 19 Sep 2025)
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
+          # No `cache: pnpm` here — pnpm is installed in the next step,
+          # so setup-node can't see the cache directory yet.
+          cache: 'npm'
 
       - name: Install pnpm 9 (match lockfile v9)
-        run: |
-          corepack enable
-          corepack prepare pnpm@9 --activate
+        # V27.10: install via npm globally instead of corepack — the corepack
+        # shim lives at a path that subsequent steps don't always inherit
+        # on the GH runner, causing "Unable to locate executable file: pnpm"
+        # even after `corepack prepare pnpm@9 --activate` succeeded.
+        # npm-global install lands in /usr/local/bin which is on the default
+        # PATH for every subsequent step.
+        run: npm install -g pnpm@9.15.4
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
