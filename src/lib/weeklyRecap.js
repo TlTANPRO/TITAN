@@ -86,6 +86,12 @@ export function weeklyTopViral(accounts, days = 7, n = 5) {
     username: x.account.username,
     thumbnailUrl: x.post.thumbnailUrl,
     mediaType: x.post.mediaType,
+    // V27.6: include postUrl/videoUrl so ViralPostCard can open the real
+    // IG/TT post in a new tab (V26 card-level click feature). Without
+    // these, the card falls back to /account/:slug internal nav and the
+    // thumbnail has no fallback when proxiedImage returns ''.
+    postUrl: x.post.postUrl,
+    videoUrl: x.post.videoUrl,
     caption: x.post.caption ?? '',
     timestamp: x.post.timestamp,
     viewCount: x.post.viewCount ?? 0,

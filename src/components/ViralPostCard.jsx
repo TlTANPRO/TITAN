@@ -3,13 +3,19 @@
 // Falls back to /account/:slug if no postUrl available (defensive).
 // Shows: thumbnail (or platform icon if missing), caption line-clamp-2,
 // metrics, @username + relative time.
+// V27.6: when proxiedImage returns '' (session-bound IG/TT CDN), fetch the
+// public og:image via the existing webAccess pipeline (L1 local + L2 bot
+// UA + L3 Jina) so the user sees the actual post visual instead of a
+// blank platform-icon placeholder.
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, Heart, MessageCircle, Play, TrendingUp, ExternalLink } from 'lucide-react';
 import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
 import { formatNumber, formatCompact } from '../lib/format.js';
 import { proxiedImage } from '../lib/imageProxy.js';
+import { fetchSocialContent } from '../lib/webAccess.js';
 
-// V25.2: token-based rank palette (V23: no raw Tailwind colors)
+// V27.2: token-based rank palette (V23: no raw Tailwind colors)
 const RANK_COLORS = [
   'text-accent-warning',   // gold
   'text-text-secondary',   // silver
@@ -37,11 +43,35 @@ export function ViralPostCard({ post, rank }) {
   if (!post) return null;
   const mediaIsVideo = post.mediaType === 'VIDEO' || post.mediaType === 'REEL';
   // V25.2: evaluate proxiedImage once; '' means session-bound URL or missing — show placeholder.
-  const thumbSrc = proxiedImage(post.thumbnailUrl, 320);
+  const initialThumb = proxiedImage(post.thumbnailUrl, 320);
   // V26: prefer postUrl (IG normalizes to this; TT also writes postUrl now),
   // fall back to videoUrl (TT legacy), then account page as last resort.
   const targetUrl = post.postUrl || post.videoUrl || null;
   const accountHref = `/account/${post.slug}`;
+
+  // V27.6: when the session-bound thumbnail is empty, fetch the public
+  // og:image via the existing webAccess pipeline (L1 local + L2 bot UA +
+  // L3 Jina) so the user sees the actual post visual. og:image is the
+  // public preview that IG/TT serve to crawlers — valid for days.
+  const [ogImage, setOgImage] = useState('');
+  useEffect(() => {
+    if (initialThumb || !targetUrl) return;
+    let cancelled = false;
+    fetchSocialContent(targetUrl)
+      .then((res) => {
+        if (cancelled || !res?.ok) return;
+        const img = res.raw?.image || res.image;
+        if (img) setOgImage(img);
+      })
+      .catch(() => {
+        // silent — placeholder stays visible
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [initialThumb, targetUrl]);
+
+  const thumbSrc = initialThumb || ogImage;
 
   // V26: shared body — extracted so both <a> (has postUrl) and <Link> (fallback)
   // render identically. Props.aria-label documented at outer wrapper.
@@ -70,8 +100,9 @@ export function ViralPostCard({ post, rank }) {
         {thumbSrc ? (
           <img
             src={thumbSrc}
-            alt=""
+            alt={`Post viral @${post.username}`}
             loading="lazy"
+            referrerPolicy="no-referrer"
             className="w-full h-full object-cover"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
@@ -79,7 +110,7 @@ export function ViralPostCard({ post, rank }) {
             }}
           />
         ) : null}
-        {/* V25.2: hide placeholder only when thumb is actually rendered (thumbSrc truthy) */}
+        {/* V27.6: placeholder visible until thumb loads (or if all strategies fail) */}
         <div
           className={`${thumbSrc ? 'hidden' : ''} absolute inset-0 flex items-center justify-center bg-gradient-to-br from-bg-tertiary to-bg-primary`}
         >
