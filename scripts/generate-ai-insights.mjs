@@ -136,10 +136,16 @@ function buildCrossAccountContext(accounts) {
     }
   }
   recent.sort((a, b) => b.viewCount - a.viewCount);
+  // Anti-hallucination: build explicit account list with @ prefix + platform + followers.
+  // The LLM prompt instructs it to ONLY cite these names.
+  const accountList = accounts
+    .map((a) => `- @${a.username} (${a.platform}, ${a.followerCount ?? 0} followers)`)
+    .join('\n');
   return {
     accountCount: accounts.length,
     igCount: accounts.filter((a) => a.platform === 'instagram').length,
     ttCount: accounts.filter((a) => a.platform === 'tiktok').length,
+    accountList,
     totalPostsThisWeek: recent.length,
     topViral: recent.slice(0, 3).map((p) => ({ username: p.username, platform: p.platform, viewCount: p.viewCount, likeCount: p.likeCount }))
   };
@@ -236,7 +242,15 @@ async function main() {
   if (!onlySlug) {
     console.log(`\n=== Generating weekly briefing ===`);
     try {
-      result.weekly = await generateWeeklyBriefing(targetAccounts);
+      let text = await generateWeeklyBriefing(targetAccounts);
+      // Anti-hallucination safety net: strip any @-mention that is not in the real account list.
+      // Catches single-character typos like "@ardiantanah." (extra period) or
+      // accidental LLM inventions.
+      const realUsernames = new Set(targetAccounts.map((a) => a.username));
+      text = text.replace(/@([A-Za-z0-9_.]+)/g, (match, name) => {
+        return realUsernames.has(name) ? match : '';
+      });
+      result.weekly = text;
       console.log(`  ✓ weekly briefing generated (${result.weekly.length} chars)`);
     } catch (e) {
       console.error(`  ✗ weekly briefing failed: ${e.message}`);
