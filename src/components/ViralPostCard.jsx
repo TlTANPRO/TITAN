@@ -40,14 +40,18 @@ function relativeTime(timestamp) {
 }
 
 export function ViralPostCard({ post, rank }) {
-  if (!post) return null;
-  const mediaIsVideo = post.mediaType === 'VIDEO' || post.mediaType === 'REEL';
+  // V27.8: defensive — post is normally an object, but the weekly recap can
+  // hand back null/undefined in edge cases. Coerce to a safe shape so the
+  // hooks below (useState + useEffect) always run in the same order on
+  // every render — never return null BEFORE the hook calls.
+  const safePost = post ?? null;
+  const mediaIsVideo = safePost?.mediaType === 'VIDEO' || safePost?.mediaType === 'REEL';
   // V25.2: evaluate proxiedImage once; '' means session-bound URL or missing — show placeholder.
-  const initialThumb = proxiedImage(post.thumbnailUrl, 320);
+  const initialThumb = proxiedImage(safePost?.thumbnailUrl, 320);
   // V26: prefer postUrl (IG normalizes to this; TT also writes postUrl now),
   // fall back to videoUrl (TT legacy), then account page as last resort.
-  const targetUrl = post.postUrl || post.videoUrl || null;
-  const accountHref = `/account/${post.slug}`;
+  const targetUrl = safePost?.postUrl || safePost?.videoUrl || null;
+  const accountHref = safePost?.slug ? `/account/${safePost.slug}` : '#';
 
   // V27.6: when the session-bound thumbnail is empty, fetch the public
   // og:image via the existing webAccess pipeline (L1 local + L2 bot UA +
@@ -73,14 +77,17 @@ export function ViralPostCard({ post, rank }) {
 
   const thumbSrc = initialThumb || ogImage;
 
+  // V27.8: after all hooks have run, we can safely return null for invalid post.
+  if (!safePost) return null;
+
   // V26: shared body — extracted so both <a> (has postUrl) and <Link> (fallback)
   // render identically. Props.aria-label documented at outer wrapper.
   const cardBody = (
     <>
       <div className="flex items-center justify-between text-xs">
         <div className="flex items-center gap-1.5">
-          <PlatformIcon platform={post.platform} className="w-3.5 h-3.5" />
-          <span className="text-text-muted truncate">@{post.username}</span>
+          <PlatformIcon platform={safePost.platform} className="w-3.5 h-3.5" />
+          <span className="text-text-muted truncate">@{safePost.username}</span>
         </div>
         <div className="flex items-center gap-2">
           {rank ? (
@@ -100,7 +107,7 @@ export function ViralPostCard({ post, rank }) {
         {thumbSrc ? (
           <img
             src={thumbSrc}
-            alt={`Post viral @${post.username}`}
+            alt={`Post viral @${safePost.username}`}
             loading="lazy"
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover"
@@ -114,7 +121,7 @@ export function ViralPostCard({ post, rank }) {
         <div
           className={`${thumbSrc ? 'hidden' : ''} absolute inset-0 flex items-center justify-center bg-gradient-to-br from-bg-tertiary to-bg-primary`}
         >
-          <PlatformIcon platform={post.platform} className="w-12 h-12 text-text-muted opacity-50" />
+          <PlatformIcon platform={safePost.platform} className="w-12 h-12 text-text-muted opacity-50" />
         </div>
         {mediaIsVideo ? (
           <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
@@ -125,9 +132,9 @@ export function ViralPostCard({ post, rank }) {
         ) : null}
       </div>
 
-      {post.caption ? (
+      {safePost.caption ? (
         <p className="text-xs text-text-secondary line-clamp-2 min-h-[2rem]">
-          {post.caption}
+          {safePost.caption}
         </p>
       ) : (
         <p className="text-xs text-text-muted italic line-clamp-2 min-h-[2rem]">
@@ -136,27 +143,27 @@ export function ViralPostCard({ post, rank }) {
       )}
 
       <div className="flex items-center justify-between text-[11px] text-text-muted">
-        <span title={platformLabel(post.platform)}>{platformLabel(post.platform)}</span>
-        <span>{relativeTime(post.timestamp)}</span>
+        <span title={platformLabel(safePost.platform)}>{platformLabel(safePost.platform)}</span>
+        <span>{relativeTime(safePost.timestamp)}</span>
       </div>
 
       <div className="grid grid-cols-3 gap-1 text-center text-xs">
         <div className="flex flex-col items-center gap-0.5">
           <Eye className="w-3 h-3 text-text-muted" />
           <span className="font-semibold text-text-primary tabular-nums">
-            {formatCompact(post.viewCount ?? 0)}
+            {formatCompact(safePost.viewCount ?? 0)}
           </span>
         </div>
         <div className="flex flex-col items-center gap-0.5">
           <Heart className="w-3 h-3 text-text-muted" />
           <span className="font-semibold text-text-primary tabular-nums">
-            {formatNumber(post.likeCount ?? 0)}
+            {formatNumber(safePost.likeCount ?? 0)}
           </span>
         </div>
         <div className="flex flex-col items-center gap-0.5">
           <MessageCircle className="w-3 h-3 text-text-muted" />
           <span className="font-semibold text-text-primary tabular-nums">
-            {formatNumber(post.commentCount ?? 0)}
+            {formatNumber(safePost.commentCount ?? 0)}
           </span>
         </div>
       </div>
@@ -166,7 +173,7 @@ export function ViralPostCard({ post, rank }) {
   // V26: kalau ada postUrl → buka video/post asli di tab baru (user request).
   // Fallback ke internal /account/:slug kalau tidak ada (defensive).
   const sharedClass = "surface p-3 flex flex-col gap-2 hover:border-accent-primary/50 transition-colors group";
-  const sharedAriaLabel = `Buka post viral @${post.username}: ${post.caption?.slice(0, 60) ?? 'tanpa caption'}`;
+  const sharedAriaLabel = `Buka post viral @${safePost.username}: ${safePost.caption?.slice(0, 60) ?? 'tanpa caption'}`;
 
   if (targetUrl) {
     return (
