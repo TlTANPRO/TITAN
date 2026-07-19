@@ -67,11 +67,14 @@ export function ContentSunburst({ accounts }) {
     );
   }
 
-  const cx = 110;
-  const cy = 110;
-  const rOuter = 100;
-  const rMiddle = 60;
-  const rInner = 28;
+  // V22.1: shrunk to 180x180 so it fits in col-4 bento without bleeding
+  // into CombinedHeatmap (which now lives in the same "Konten & Timing"
+  // section at col-8). Scale ratio 0.82 of previous (220→180).
+  const cx = 90;
+  const cy = 90;
+  const rOuter = 82;
+  const rMiddle = 49;
+  const rInner = 23;
 
   // Calculate angles
   let accAngle = -Math.PI / 2; // start at 12 o'clock
@@ -114,9 +117,9 @@ export function ContentSunburst({ accounts }) {
         <Layers className="w-4 h-4 text-accent-primary" />
         Komposisi Konten
       </h3>
-      <div className="flex items-center justify-center gap-6 flex-wrap">
-        <div className="relative" style={{ width: 220, height: 220 }}>
-          <svg width={220} height={220} viewBox="0 0 220 220" className="overflow-visible">
+      <div className="flex items-center justify-center gap-4 flex-wrap">
+        <div className="relative" style={{ width: 180, height: 180 }}>
+          <svg width={180} height={180} viewBox="0 0 180 180" className="overflow-visible">
             {slices.map((s, i) => {
               const isPlatform = s.type === 'platform';
               const path = describeArc(
@@ -139,10 +142,10 @@ export function ContentSunburst({ accounts }) {
                 />
               );
             })}
-            <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" className="fill-text-primary font-bold" style={{ fontSize: 18 }}>
+            <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" className="fill-text-primary font-bold" style={{ fontSize: 16 }}>
               {formatCompact(total)}
             </text>
-            <text x={cx} y={cy + 16} textAnchor="middle" dominantBaseline="central" className="fill-text-muted" style={{ fontSize: 9 }}>
+            <text x={cx} y={cy + 14} textAnchor="middle" dominantBaseline="central" className="fill-text-muted" style={{ fontSize: 8 }}>
               TOTAL
             </text>
           </svg>

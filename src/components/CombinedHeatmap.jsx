@@ -1,8 +1,6 @@
-// CombinedHeatmap — 7×24 heatmap aggregating posts from all 9 accounts
-// V22: rotated to vertical (24 rows × 7 columns) so it fits in narrow bento
-// cards (col-4 ~300-400px wide). Day names are column headers, hour labels
-// are row labels, and the time-of-day flows top-to-bottom — natural reading
-// direction for "best hour" scan.
+// CombinedHeatmap — V22.1 reverted to landscape 7×24 (day rows × hour cols).
+// flex-1 cells auto-distribute across container width. Placed in dedicated
+// "Konten & Timing" section (col-8) so 24 hour cells have ~22-44px width.
 import { useMemo, useState } from 'react';
 import { Calendar } from 'lucide-react';
 
@@ -60,88 +58,75 @@ export function CombinedHeatmap({ accounts }) {
   }, [grid, counts]);
 
   return (
-    <div className="surface p-4">
+    <div className="surface p-5">
       <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
         <Calendar className="w-4 h-4 text-accent-primary" />
-        Waktu Posting Terbaik
+        Waktu Posting Terbaik <span className="text-text-muted normal-case font-normal">· Gabungan 9 Akun</span>
       </h3>
 
-      <div className="flex gap-1.5">
-        {/* Hour labels (left column) */}
-        <div className="flex flex-col gap-1 pt-4 flex-shrink-0">
+      <div>
+        {/* Hour labels (top row) */}
+        <div className="flex gap-1 mb-1 pl-10">
           {Array.from({ length: 24 }, (_, h) => (
-            <div key={h} className="h-3.5 text-[9px] text-text-muted tabular-nums text-right pr-0.5 leading-none">
+            <div key={h} className="flex-1 text-center text-[9px] text-text-muted tabular-nums">
               {h % 3 === 0 ? h : ''}
             </div>
           ))}
         </div>
 
-        {/* Grid: 7 day-columns, 24 hour-rows */}
-        <div className="flex-1 min-w-0">
-          {/* Day column headers */}
-          <div className="grid grid-cols-7 gap-1 mb-1">
-            {DAY_LABELS.map((d) => (
-              <div key={d} className="text-center text-[10px] text-text-muted font-medium uppercase tracking-wider">
-                {d}
-              </div>
-            ))}
+        {/* Day rows × hour cells */}
+        {DAY_LABELS.map((dayLabel, day) => (
+          <div key={day} className="flex gap-1 items-center mb-1">
+            <div className="w-10 text-[10px] text-text-muted font-medium uppercase tracking-wider flex-shrink-0">{dayLabel}</div>
+            {Array.from({ length: 24 }, (_, hour) => {
+              const value = grid[day][hour];
+              const count = counts[day][hour];
+              const isTop = topWindows.some((w) => w.d === day && w.h === hour);
+              return (
+                <div
+                  key={hour}
+                  className="flex-1 h-5 rounded-sm cursor-pointer transition-transform hover:scale-125"
+                  style={{
+                    backgroundColor: `rgba(236, 72, 153, ${cellOpacity(value)})`,
+                    border: isTop ? '1.5px solid rgb(236, 72, 153)' : '1px solid var(--border-subtle)'
+                  }}
+                  onMouseEnter={() => setHover({ day, hour, value, count })}
+                  onMouseLeave={() => setHover(null)}
+                  title={`${dayLabel} ${hour.toString().padStart(2, '0')}:00 — ${count} post, avg ${Math.round(value)} engagement`}
+                  aria-label={`${dayLabel} ${hour}:00, ${count} post`}
+                />
+              );
+            })}
           </div>
-
-          {/* Hour rows × day cells */}
-          <div className="flex flex-col gap-1">
-            {Array.from({ length: 24 }, (_, hour) => (
-              <div key={hour} className="grid grid-cols-7 gap-1">
-                {DAY_LABELS.map((_, day) => {
-                  const value = grid[day][hour];
-                  const count = counts[day][hour];
-                  const isTop = topWindows.some((w) => w.d === day && w.h === hour);
-                  return (
-                    <div
-                      key={day}
-                      className="h-3.5 rounded-sm cursor-pointer transition-transform hover:scale-125"
-                      style={{
-                        backgroundColor: `rgba(236, 72, 153, ${cellOpacity(value)})`,
-                        border: isTop ? '1px solid rgb(236, 72, 153)' : '1px solid var(--border-subtle)'
-                      }}
-                      onMouseEnter={() => setHover({ day, hour, value, count })}
-                      onMouseLeave={() => setHover(null)}
-                      title={`${DAY_LABELS[day]} ${hour.toString().padStart(2, '0')}:00 — ${count} post, avg ${Math.round(value)} engagement`}
-                      aria-label={`${DAY_LABELS[day]} ${hour}:00, ${count} post`}
-                    />
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
 
-      {hover && (
-        <div className="mt-3 surface p-2 text-xs text-text-secondary inline-block">
-          <span className="font-semibold text-text-primary">{DAY_LABELS[hover.day]} {hover.hour.toString().padStart(2, '0')}:00</span>
-          <span className="text-text-muted ml-2">{hover.count} post · avg {Math.round(hover.value)} engagement</span>
-        </div>
-      )}
-
-      {topWindows.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-border-subtle">
-          <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1.5">Top 3 window</div>
-          <div className="flex flex-wrap gap-1.5">
+      <div className="flex items-center justify-between mt-3 pt-3 border-t border-border-subtle flex-wrap gap-2">
+        {topWindows.length > 0 ? (
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[10px] text-text-muted uppercase tracking-wider">Top 3:</span>
             {topWindows.map((w) => (
               <div key={`${w.d}-${w.h}`} className="text-[10px] px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary border border-accent-primary/30">
                 {DAY_LABELS[w.d]} {String(w.h).padStart(2, '0')}:00
               </div>
             ))}
           </div>
-        </div>
-      )}
+        ) : <div />}
 
-      <div className="flex items-center gap-2 mt-3 text-[10px] text-text-muted">
-        <span>Less</span>
-        {[0.15, 0.3, 0.5, 0.7, 0.9].map((o) => (
-          <div key={o} className="w-3 h-3 rounded" style={{ backgroundColor: `rgba(236, 72, 153, ${o})` }} />
-        ))}
-        <span>More</span>
+        {hover && (
+          <div className="text-xs text-text-secondary">
+            <span className="font-semibold text-text-primary">{DAY_LABELS[hover.day]} {hover.hour.toString().padStart(2, '0')}:00</span>
+            <span className="text-text-muted ml-1.5">{hover.count} post · avg {Math.round(hover.value)}</span>
+          </div>
+        )}
+
+        <div className="flex items-center gap-1.5 text-[10px] text-text-muted ml-auto">
+          <span>Less</span>
+          {[0.15, 0.3, 0.5, 0.7, 0.9].map((o) => (
+            <div key={o} className="w-2.5 h-2.5 rounded" style={{ backgroundColor: `rgba(236, 72, 153, ${o})` }} />
+          ))}
+          <span>More</span>
+        </div>
       </div>
     </div>
   );

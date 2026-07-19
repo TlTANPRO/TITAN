@@ -48,7 +48,9 @@ function isSessionBoundHost(url) {
 /**
  * Convert a CDN image URL into a fetchable URL the browser will accept.
  *
- * - Empty / data: / local / already-proxied: returned untouched.
+ * - Empty / data: / Worker / `/TITAN/...` committed asset: returned untouched.
+ * - `/...` runtime path (e.g. /video/cover/{id}.webp — daily-scraped but
+ *   not committed): may 404 if file is gone. Returned '' to skip the fetch.
  * - IG/TT session-bound: returns '' (caller must handle empty src).
  * - Other remote CDN: routed through Worker `/avatar` (CORS-clean).
  */
@@ -56,7 +58,8 @@ export function proxiedImage(url, size = 192) {
   if (!url) return '';
   if (url.startsWith('data:')) return url;
   if (url.startsWith(WORKER_URL)) return url;
-  if (url.startsWith('/TITAN/') || url.startsWith('/')) return url; // local asset
+  if (url.startsWith('/TITAN/')) return url; // committed static asset (avatars)
+  if (url.startsWith('/')) return ''; // runtime local path — may 404, skip
   if (isSessionBoundHost(url)) return ''; // session-bound — skip fetch
   return `${WORKER_URL}/avatar?url=${encodeURIComponent(url)}&w=${size}&h=${size}&fit=cover`;
 }

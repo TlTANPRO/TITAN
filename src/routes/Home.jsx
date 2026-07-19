@@ -1,5 +1,9 @@
-// V21.1: Home — Grafana-style bento dashboard.
-// Mixed panel sizes (1-12 col grid) instead of stacked sections.
+// V22.1: Home — Grafana-style bento dashboard with dedicated "Konten & Timing"
+// section. V22 had CombinedHeatmap + ContentSunburst + Content Mix squeezed
+// into a 3×col-4 row, which caused Sunburst legend to bleed into the
+// heatmap. V22.1 moves heatmap to a wider col-8 within its own section,
+// and shrinks Sunburst to 180×180 so both panels sit comfortably side-by-side.
+// Top Engagement Rate reduced from 5→3 items to avoid "terlalu panjang ke bawah".
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Trophy, TrendingUp, Activity, Sparkles, Heart, MessageCircle, Eye, Bot, ArrowRight } from 'lucide-react';
@@ -178,7 +182,7 @@ export default function Home() {
               {comparison
                 .filter((a) => Number.isFinite(a.engagementRate) && a.engagementRate > 0)
                 .sort((a, b) => b.engagementRate - a.engagementRate)
-                .slice(0, 5)
+                .slice(0, 3)
                 .map((a, i) => (
                   <li key={a.slug}>
                     <Link
@@ -231,22 +235,25 @@ export default function Home() {
           />
         </BentoGrid>
 
-        {/* ===== ROW 6: Sunburst (4) + Heatmap (4) + Content Mix (4) ===== */}
+        {/* ===== ROW 6: Konten & Timing — Sunburst (4) + Heatmap (8) ===== */}
         <BentoGrid>
           <BentoItem colSpan="col-4" padding="p-4">
             <ContentSunburst accounts={accounts} />
           </BentoItem>
 
-          <BentoItem colSpan="col-4" padding="p-4">
+          <BentoItem colSpan="col-8" padding="p-4">
             <CombinedHeatmap accounts={accounts} />
           </BentoItem>
+        </BentoGrid>
 
-          <BentoItem colSpan="col-4" padding="p-4">
+        {/* ===== ROW 7: Content Mix bars (full width) ===== */}
+        <BentoGrid>
+          <BentoItem colSpan="col-12" padding="p-4">
             <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-accent-primary" />
               Content Mix
             </h2>
-            <div className="space-y-2">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {contentMix.breakdown.map((b) => {
                 const pct = (b.count / contentMix.total) * 100;
                 return (
