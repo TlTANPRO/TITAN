@@ -88,7 +88,7 @@ export function AccountOverview({ account, insights }) {
 
       {availability.message && (
         <div className="surface p-4 border border-accent-warning/30 bg-accent-warning/5 flex items-start gap-3">
-          <span className="text-xl">⚠️</span>
+          <span className="text-xl" aria-hidden="true">⚠️</span>
           <div className="text-sm">
             <div className="font-semibold text-accent-warning mb-1">Data Terbatas Terdeteksi</div>
             <div className="text-text-secondary">{availability.message}</div>
@@ -168,8 +168,8 @@ export function AccountOverview({ account, insights }) {
               Account Health Score
               <PlatformIcon platform={account?.platform} className="w-3.5 h-3.5 ml-1" />
             </h3>
-            <div className="flex items-center gap-6 flex-wrap">
-              <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-bold border-2 ${
+            <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
+              <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-bold border-2 flex-shrink-0 ${
                 (healthScore.score ?? 0) >= 80 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' :
                 (healthScore.score ?? 0) >= 65 ? 'bg-sky-500/10 text-sky-500 border-sky-500/30' :
                 (healthScore.score ?? 0) >= 50 ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30' :
@@ -179,7 +179,7 @@ export function AccountOverview({ account, insights }) {
                 {healthScore.grade ?? '—'}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-3xl font-bold text-text-primary tabular-nums">{Number.isFinite(healthScore.score) ? healthScore.score : 0}<span className="text-base text-text-muted">/100</span></div>
+                <div className="text-2xl sm:text-3xl font-bold text-text-primary tabular-nums">{Number.isFinite(healthScore.score) ? healthScore.score : 0}<span className="text-base text-text-muted">/100</span></div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-[11px]">
                   <HealthBar label="Engagement" value={healthScore.breakdown?.engagement ?? 0} />
                   <HealthBar label="Konsistensi" value={healthScore.breakdown?.consistency ?? 0} />

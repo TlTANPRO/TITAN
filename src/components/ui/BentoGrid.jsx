@@ -30,7 +30,7 @@ const ROW_SPAN = {
 
 export function BentoGrid({ children, className = '' }) {
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-6 lg:grid-cols-12 gap-4 auto-rows-min ${className}`}>
+    <div className={`grid grid-cols-1 sm:grid-cols-6 lg:grid-cols-12 gap-3 sm:gap-4 auto-rows-min ${className}`}>
       {children}
     </div>
   );

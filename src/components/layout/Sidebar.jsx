@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Home, Users, GitCompareArrows, Calendar as CalIcon, Library, Sparkles, Settings,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, X
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -134,10 +134,11 @@ export function Sidebar({ limitedCount = 0 }) {
       {/* Mobile toggle button — rendered separately via parent or just hidden if drawer auto-renders */}
       <button
         onClick={() => setMobileOpen((v) => !v)}
-        aria-label="Open navigation"
-        className="lg:hidden fixed bottom-4 left-4 z-toast w-10 h-10 rounded-full bg-accent-primary text-white shadow-lg flex items-center justify-center"
+        aria-label={mobileOpen ? 'Tutup navigasi' : 'Buka navigasi'}
+        aria-expanded={mobileOpen}
+        className="lg:hidden fixed bottom-4 left-4 z-toast w-10 h-10 rounded-full bg-accent-primary text-white shadow-lg flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
       >
-        <ChevronRight className="w-5 h-5" />
+        {mobileOpen ? <X className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
       </button>
     </>
   );

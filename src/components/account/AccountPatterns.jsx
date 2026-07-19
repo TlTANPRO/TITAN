@@ -94,6 +94,7 @@ export function AccountPatterns({ insights }) {
         {durationAnalysis.some((d) => d.postCount > 0) ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
+              <caption className="sr-only">Rata-rata performa per bucket durasi video</caption>
               <thead>
                 <tr className="text-xs text-text-muted uppercase border-b border-border-subtle">
                   <th className="text-left py-2 px-3 font-medium">Bucket Durasi</th>
@@ -161,6 +162,7 @@ export function AccountPatterns({ insights }) {
           <SectionHeader icon={BookOpen} title="Ringkasan Tahunan" subtitle="Agregasi performa dikelompokkan per tahun" />
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
+              <caption className="sr-only">Agregasi performa per tahun</caption>
               <thead>
                 <tr className="text-xs text-text-muted uppercase border-b border-border-subtle">
                   <th className="text-left py-2 px-3 font-medium">Tahun</th>

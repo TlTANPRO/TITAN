@@ -60,7 +60,8 @@ function HealthCard({ acc, posts }) {
   return (
     <Link
       to={`/account/${acc.slug}`}
-      className="surface p-4 hover:border-border-default transition-all"
+      aria-label={`Lihat detail akun @${acc.username}, health score ${score} dari 100, grade ${grade}`}
+      className="surface p-4 hover:border-border-default transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
     >
       <div className="flex items-center gap-3">
         <AccountAvatar account={acc} />
