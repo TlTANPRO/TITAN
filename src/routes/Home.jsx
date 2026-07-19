@@ -1,4 +1,8 @@
+// V21.1: Home — Grafana-style bento dashboard.
+// Mixed panel sizes (1-12 col grid) instead of stacked sections.
 import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { Trophy, TrendingUp, Activity, Sparkles, Heart, MessageCircle, Eye, Bot, ArrowRight } from 'lucide-react';
 import { useAccounts, useCrossAccountComparison } from '../hooks/useAccount.js';
 import { getLatestPosts } from '../lib/dataStore.js';
 import { Hero } from '../components/Hero.jsx';
@@ -11,9 +15,9 @@ import { CombinedHeatmap } from '../components/CombinedHeatmap.jsx';
 import { EnhancedTable } from '../components/EnhancedTable.jsx';
 import { ViralPostCard } from '../components/ViralPostCard.jsx';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
-import { Trophy, TrendingUp, Activity, Sparkles, Heart, MessageCircle, Eye } from 'lucide-react';
-import { formatNumber, formatPercent } from '../lib/format.js';
-import { dataAvailability, topByMetric } from '../lib/analytics.js';
+import { BentoGrid, BentoItem } from '../components/ui/BentoGrid.jsx';
+import { formatNumber, formatPercent, formatCompact } from '../lib/format.js';
+import { dataAvailability } from '../lib/analytics.js';
 import { weeklyTopViral } from '../lib/weeklyRecap.js';
 
 function withAvailability(account) {
@@ -33,17 +37,17 @@ function TopPerformersCard({ title, icon, accounts, metricKey, suffix }) {
     .slice(0, 3);
   if (top.length === 0) {
     return (
-      <div className="surface p-4">
+      <BentoItem colSpan="col-6" padding="p-4" className="min-h-[140px]">
         <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3 flex items-center gap-1.5">
           {icon}
           {title}
         </h3>
         <div className="text-xs text-text-muted text-center py-4">Data tidak tersedia</div>
-      </div>
+      </BentoItem>
     );
   }
   return (
-    <div className="surface p-4">
+    <BentoItem colSpan="col-3" padding="p-4" className="min-h-[140px]">
       <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3 flex items-center gap-1.5">
         {icon}
         {title}
@@ -51,21 +55,24 @@ function TopPerformersCard({ title, icon, accounts, metricKey, suffix }) {
       <ol className="space-y-2">
         {top.map((a, i) => (
           <li key={a.slug} className="flex items-center gap-2">
-            <span className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold border ${RANK_COLORS[i] ?? RANK_COLORS[2]}`}>
+            <span className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold border flex-shrink-0 ${RANK_COLORS[i] ?? RANK_COLORS[2]}`}>
               {i + 1}
             </span>
-            <ProxiedAvatar account={a} size={28} className="" />
-            <a href={`/account/${a.slug}`} className="text-sm font-medium text-text-primary hover:text-accent-primary truncate flex-1">
+            <ProxiedAvatar account={a} size={24} className="flex-shrink-0" />
+            <Link
+              to={`/account/${a.slug}`}
+              className="text-sm font-medium text-text-primary hover:text-accent-primary truncate flex-1"
+            >
               @{a.username}
-            </a>
-            <span className="text-sm font-bold text-accent-primary tabular-nums">
+            </Link>
+            <span className="text-sm font-bold text-accent-primary tabular-nums flex-shrink-0">
               {metricKey === 'engagementRate' ? formatPercent(a[metricKey]) : formatNumber(a[metricKey])}
             </span>
-            {suffix ? <span className="text-[10px] text-text-muted">{suffix}</span> : null}
+            {suffix ? <span className="text-[10px] text-text-muted flex-shrink-0">{suffix}</span> : null}
           </li>
         ))}
       </ol>
-    </div>
+    </BentoItem>
   );
 }
 
@@ -82,101 +89,217 @@ export default function Home() {
     return weeklyTopViral(rawAccounts, 7, 5);
   }, [rawAccounts]);
 
+  // Content mix stat (Foto/Reel/Video/Carousel breakdown)
+  const contentMix = useMemo(() => {
+    const mix = { IMAGE: 0, REEL: 0, VIDEO: 0, CAROUSEL_ALBUM: 0, OTHER: 0 };
+    for (const a of accounts) {
+      for (const p of a.posts ?? []) {
+        const mt = p.mediaType ?? 'IMAGE';
+        mix[mt] = (mix[mt] ?? 0) + 1;
+      }
+    }
+    const total = Object.values(mix).reduce((s, v) => s + v, 0) || 1;
+    return {
+      breakdown: [
+        { key: 'IMAGE', label: 'Foto', count: mix.IMAGE, color: 'bg-blue-500' },
+        { key: 'REEL', label: 'Reels', count: mix.REEL, color: 'bg-pink-500' },
+        { key: 'VIDEO', label: 'Video', count: mix.VIDEO, color: 'bg-purple-500' },
+        { key: 'CAROUSEL_ALBUM', label: 'Carousel', count: mix.CAROUSEL_ALBUM, color: 'bg-amber-500' }
+      ].filter((x) => x.count > 0),
+      total
+    };
+  }, [accounts]);
+
   return (
     <div className="bg-bg-primary">
-      <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-8 pb-32 md:pb-8">
-        {/* 1. HERO */}
+      <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-32 md:pb-8 space-y-6">
+
+        {/* ===== ROW 1: Hero KPI strip (full width) ===== */}
         <Hero accounts={accounts} allPosts={latestPosts} />
 
-        {/* 2. WEEKLY BRIEFING (4 sections) */}
-        <WeeklyBriefing accounts={accounts} />
-
-        {/* 3. TOP 5 VIRAL POSTS (mingguan) */}
+        {/* ===== ROW 2: Top Viral (5) + Live Activity (7) ===== */}
         {topViral.length > 0 && (
-          <section>
-            <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-accent-danger" />
-              Top 5 Viral Posts (7 Hari)
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-              {topViral.map((p, i) => (
-                <ViralPostCard key={p.id} post={p} rank={i + 1} />
-              ))}
-            </div>
-          </section>
+          <BentoGrid>
+            <BentoItem colSpan="col-5" padding="p-4" className="overflow-hidden">
+              <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-accent-danger" />
+                Top 5 Viral (7 Hari)
+              </h2>
+              <div className="grid grid-cols-2 gap-2">
+                {topViral.slice(0, 4).map((p, i) => (
+                  <ViralPostCard key={p.id} post={p} rank={i + 1} />
+                ))}
+              </div>
+              {topViral.length > 4 && (
+                <div className="mt-2 text-center">
+                  <Link
+                    to="/library?sortBy=viewCount"
+                    className="text-[10px] text-accent-primary hover:underline inline-flex items-center gap-1"
+                  >
+                    +{topViral.length - 4} lainnya <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
+              )}
+            </BentoItem>
+
+            <BentoItem colSpan="col-7" padding="p-4">
+              <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+                <Activity className="w-4 h-4 text-accent-success animate-pulse" />
+                Live Activity
+              </h2>
+              <LiveActivityFeed posts={latestPosts} />
+            </BentoItem>
+          </BentoGrid>
         )}
 
-        {/* 4. ACCOUNT HEALTH GRID (grouped IG/TT) */}
-        <section>
-          <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-accent-warning" />
-            Account Health Score
-          </h2>
-          <AccountHealthGrid accounts={accounts} comparison={comparison} />
-        </section>
+        {/* ===== ROW 3: Account Health (12) ===== */}
+        <BentoGrid>
+          <BentoItem colSpan="col-12" padding="p-4">
+            <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-accent-warning" />
+              Account Health Score
+            </h2>
+            <AccountHealthGrid accounts={accounts} comparison={comparison} />
+          </BentoItem>
+        </BentoGrid>
 
-        {/* 5. LIVE ACTIVITY FEED */}
-        <section>
-          <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-            <Activity className="w-4 h-4 text-accent-success animate-pulse" />
-            Live Activity (10 Postingan Terbaru)
-          </h2>
-          <LiveActivityFeed posts={latestPosts} />
-        </section>
+        {/* ===== ROW 4: Weekly Briefing (8) + Top ER (4) ===== */}
+        <BentoGrid>
+          <BentoItem colSpan="col-8" padding="p-4">
+            <WeeklyBriefing accounts={accounts} />
+          </BentoItem>
 
-        {/* 6. CROSS-ACCOUNT TREND TIMELINE */}
-        <section>
-          <CrossAccountTimeline accounts={accounts} />
-        </section>
+          <BentoItem colSpan="col-4" padding="p-4">
+            <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-accent-warning" />
+              Top Engagement Rate
+            </h2>
+            <ol className="space-y-2">
+              {comparison
+                .filter((a) => Number.isFinite(a.engagementRate) && a.engagementRate > 0)
+                .sort((a, b) => b.engagementRate - a.engagementRate)
+                .slice(0, 5)
+                .map((a, i) => (
+                  <li key={a.slug}>
+                    <Link
+                      to={`/account/${a.slug}`}
+                      className="flex items-center gap-2 p-1.5 -m-1.5 rounded hover:bg-bg-tertiary/40 transition-colors"
+                    >
+                      <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold border flex-shrink-0 ${RANK_COLORS[i] ?? RANK_COLORS[2]}`}>
+                        {i + 1}
+                      </span>
+                      <ProxiedAvatar account={a} size={20} className="flex-shrink-0" />
+                      <span className="text-xs font-medium text-text-primary truncate flex-1">
+                        @{a.username}
+                      </span>
+                      <span className="text-sm font-bold text-accent-primary tabular-nums flex-shrink-0">
+                        {formatPercent(a.engagementRate)}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+            </ol>
+          </BentoItem>
+        </BentoGrid>
 
-        {/* 7. CONTENT SUNBURST + HEATMAP 2-col */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <ContentSunburst accounts={accounts} />
-          <CombinedHeatmap accounts={accounts} />
-        </div>
+        {/* ===== ROW 5: 4 Top Performer tiles ===== */}
+        <BentoGrid>
+          <TopPerformersCard
+            title="Top Views"
+            icon={<Eye className="w-3.5 h-3.5 text-cyan-500" />}
+            accounts={comparison}
+            metricKey="avgViews"
+          />
+          <TopPerformersCard
+            title="Top Likes"
+            icon={<Heart className="w-3.5 h-3.5 text-pink-500" />}
+            accounts={comparison}
+            metricKey="avgLikes"
+          />
+          <TopPerformersCard
+            title="Top Comments"
+            icon={<MessageCircle className="w-3.5 h-3.5 text-accent-secondary" />}
+            accounts={comparison}
+            metricKey="avgComments"
+          />
+          <TopPerformersCard
+            title="Top Posts/Minggu"
+            icon={<Sparkles className="w-3.5 h-3.5 text-accent-primary" />}
+            accounts={comparison}
+            metricKey="postsPerWeek"
+            suffix="post"
+          />
+        </BentoGrid>
 
-        {/* 8. TOP PERFORMERS — ER / Views / Comments / Likes */}
-        <section>
-          <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-accent-primary" />
-            Top Performers
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <TopPerformersCard
-              title="Top Engagement Rate"
-              icon={<Trophy className="w-3.5 h-3.5 text-accent-warning" />}
-              accounts={comparison}
-              metricKey="engagementRate"
-            />
-            <TopPerformersCard
-              title="Top Views"
-              icon={<Eye className="w-3.5 h-3.5 text-cyan-500" />}
-              accounts={comparison}
-              metricKey="avgViews"
-            />
-            <TopPerformersCard
-              title="Top Comments"
-              icon={<MessageCircle className="w-3.5 h-3.5 text-accent-secondary" />}
-              accounts={comparison}
-              metricKey="avgComments"
-            />
-            <TopPerformersCard
-              title="Top Likes"
-              icon={<Heart className="w-3.5 h-3.5 text-pink-500" />}
-              accounts={comparison}
-              metricKey="avgLikes"
-            />
-          </div>
-        </section>
+        {/* ===== ROW 6: Sunburst (4) + Heatmap (4) + Content Mix (4) ===== */}
+        <BentoGrid>
+          <BentoItem colSpan="col-4" padding="p-4">
+            <ContentSunburst accounts={accounts} />
+          </BentoItem>
 
-        {/* 9. ENHANCED TABLE (sortable + filterable) */}
-        <section>
-          <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-accent-primary" />
-            Perbandingan Lintas Akun
-          </h2>
-          <EnhancedTable comparison={comparison} />
-        </section>
+          <BentoItem colSpan="col-4" padding="p-4">
+            <CombinedHeatmap accounts={accounts} />
+          </BentoItem>
+
+          <BentoItem colSpan="col-4" padding="p-4">
+            <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-accent-primary" />
+              Content Mix
+            </h2>
+            <div className="space-y-2">
+              {contentMix.breakdown.map((b) => {
+                const pct = (b.count / contentMix.total) * 100;
+                return (
+                  <div key={b.key}>
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <span className="text-text-secondary font-medium">{b.label}</span>
+                      <span className="text-text-muted tabular-nums">
+                        {formatCompact(b.count)} <span className="opacity-60">({pct.toFixed(1)}%)</span>
+                      </span>
+                    </div>
+                    <div className="h-1.5 bg-bg-tertiary rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${b.color} transition-all`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="pt-2 mt-3 border-t border-border-subtle text-[10px] text-text-muted">
+              Total {formatNumber(contentMix.total)} post lintas 9 akun
+            </div>
+          </BentoItem>
+        </BentoGrid>
+
+        {/* ===== ROW 7: Cross-Account Timeline (full) ===== */}
+        <BentoGrid>
+          <BentoItem colSpan="col-12" padding="p-4">
+            <CrossAccountTimeline accounts={accounts} />
+          </BentoItem>
+        </BentoGrid>
+
+        {/* ===== ROW 8: AI quick link + Enhanced Table ===== */}
+        <BentoGrid>
+          <BentoItem colSpan="col-12" padding="p-4">
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-accent-primary" />
+                Perbandingan Lintas Akun
+              </h2>
+              <Link
+                to="/ai"
+                className="text-[10px] text-accent-primary hover:underline inline-flex items-center gap-1"
+              >
+                <Bot className="w-3 h-3" />
+                Lihat AI Insights
+                <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+            <EnhancedTable comparison={comparison} />
+          </BentoItem>
+        </BentoGrid>
       </main>
     </div>
   );
