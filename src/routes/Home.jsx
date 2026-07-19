@@ -1,7 +1,5 @@
-import { useMemo } from 'react';
 import { useAccounts, useCrossAccountComparison } from '../hooks/useAccount.js';
 import { getLatestPosts } from '../lib/dataStore.js';
-import { TopbarActions } from '../components/TopbarActions.jsx';
 import { Hero } from '../components/Hero.jsx';
 import { AccountHealthGrid } from '../components/AccountHealthGrid.jsx';
 import { LiveActivityFeed } from '../components/LiveActivityFeed.jsx';
@@ -84,12 +82,7 @@ export default function Home() {
   }, [rawAccounts]);
 
   return (
-    <div className="min-h-screen bg-bg-primary">
-      <TopbarActions
-        title="TITAN"
-        subtitle="Social Media Marketing Intelligence · V11"
-      />
-
+    <div className="bg-bg-primary">
       <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-8 pb-32 md:pb-8">
         {/* 1. HERO */}
         <Hero accounts={accounts} allPosts={latestPosts} />

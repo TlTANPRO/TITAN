@@ -1,0 +1,181 @@
+# TITAN Daily Update Workflow
+#
+# Runs every day at 23:00 WIB (16:00 UTC) to:
+#   1. Scrape Instagram accounts (incremental, 1-day window)
+#   2. Scrape TikTok accounts (incremental, 1-day window)
+#   3. Validate merged data (pre-flight check: 9 akun, ≥4000 posts, no cross-dup)
+#   4. Generate src/data/accounts-full.json + public/data/accounts-full.json
+#   5. Generate AI insights (optional, falls back to analytics-only if Worker fails)
+#   6. Build Vite production bundle
+#   7. Deploy to GitHub Pages (atomic: copy dist→root, commit, push)
+#
+# Can also be triggered manually via workflow_dispatch with custom inputs.
+name: TITAN Daily Update
+
+on:
+  schedule:
+    # 16:00 UTC = 23:00 WIB (Asia/Jakarta)
+    - cron: '0 16 * * *'
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to scrape'
+        required: true
+        type: choice
+        default: 'all'
+        options:
+          - all
+          - ig
+          - tt
+      force_full_scrape:
+        description: 'Force full scrape (instead of incremental 1-day window)'
+        required: false
+        type: boolean
+        default: false
+      regenerate_ai:
+        description: 'Force regenerate AI insights'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: titan-daily-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Scrape + Generate + Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    permissions:
+      contents: write   # git push for deploy
+    env:
+      # Fail loud on validation errors, fail soft on scrape errors
+      FAIL_LATEST: true
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ============== SCRAPE PHASE (fail soft) ==============
+
+      - name: Scrape Instagram (incremental)
+        if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ig' || github.event.inputs.platform == '' }}
+        env:
+          IG_SESSION: ${{ secrets.IG_SESSION }}
+        run: |
+          if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ]; then
+            echo "Force full IG scrape"
+            node scripts/scrape-ig.mjs --force
+          else
+            echo "Incremental IG scrape (1-day window)"
+            node scripts/scrape-ig.mjs --days=1
+          fi
+        continue-on-error: true
+        id: scrape-ig
+
+      - name: Log IG scrape result
+        if: always() && steps.scrape-ig.outcome != 'skipped'
+        run: |
+          echo "::notice::IG scrape outcome=${{ steps.scrape-ig.outcome }}"
+
+      - name: Scrape TikTok (incremental)
+        if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '' }}
+        run: |
+          if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ]; then
+            echo "Force full TT scrape"
+            node scripts/scrape-tt.mjs --force
+          else
+            echo "Incremental TT scrape (1-day window)"
+            node scripts/scrape-tt.mjs --days=1
+          fi
+        continue-on-error: true
+        id: scrape-tt
+
+      - name: Log TT scrape result
+        if: always() && steps.scrape-tt.outcome != 'skipped'
+        run: |
+          echo "::notice::TT scrape outcome=${{ steps.scrape-tt.outcome }}"
+
+      # ============== VALIDATION PHASE (fail loud) ==============
+
+      - name: Validate merged data (pre-flight)
+        run: |
+          echo "==================================="
+          echo "Pre-flight validation"
+          echo "==================================="
+          node scripts/validate-merge.mjs
+          if [ $? -ne 0 ]; then
+            echo "::error::Pre-flight validation FAILED — aborting deploy"
+            exit 1
+          fi
+          echo "::notice::Pre-flight validation passed"
+
+      # ============== GENERATE PHASE (fail loud) ==============
+
+      - name: Generate accounts-full.json
+        run: node scripts/generate-data.mjs
+
+      - name: Generate AI insights (optional, fail soft)
+        env:
+          VITE_LLM_PROXY_URL: ${{ secrets.LLM_PROXY_URL }}
+        run: |
+          if [ "${{ github.event.inputs.regenerate_ai }}" = "true" ]; then
+            echo "Force regenerate AI insights"
+            pnpm insights:generate
+          else
+            echo "Generate AI insights (continue on error)"
+            pnpm insights:generate || echo "::warning::AI insights generation failed — continuing with analytics-only mode"
+          fi
+
+      # ============== BUILD PHASE ==============
+
+      - name: Build production bundle
+        run: pnpm run build
+
+      # ============== DEPLOY PHASE ==============
+
+      - name: Configure git for deploy
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy to GitHub Pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          GH_TOKEN="$GH_TOKEN" pnpm run deploy
+          if [ $? -ne 0 ]; then
+            echo "::error::Deploy failed"
+            exit 1
+          fi
+          echo "::notice::Deploy complete — https://tltanpro.github.io/TITAN/"
+
+      # ============== NOTIFY (always run, even on partial failure) ==============
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "==================================="
+          echo "TITAN Daily Update Summary"
+          echo "==================================="
+          echo "Date: $(date -u)"
+          echo "IG scrape: ${{ steps.scrape-ig.outcome }}"
+          echo "TT scrape: ${{ steps.scrape-tt.outcome }}"
+          echo "Build outcome: ${{ steps.build.outcome }}"
+          echo "==================================="

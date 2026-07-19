@@ -1,6 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
 import { useAccount, useAccountInsights } from '../hooks/useAccount.js';
-import { TopbarActions } from '../components/TopbarActions.jsx';
 import ProfileHeader from '../components/ProfileHeader.jsx';
 import Heatmap from '../components/Heatmap.jsx';
 import OutlierCard from '../components/OutlierCard.jsx';
@@ -21,7 +20,7 @@ import {
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, Tooltip, CartesianGrid, AreaChart, Area, Legend } from 'recharts';
 import { normalizedHashtags, normalizedMentions, marketInsightsExtended, topByMetricExtended } from '../lib/analytics.js';
-import { PlatformIcon, platformLabel } from '../components/icons/PlatformIcon.jsx';
+import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
 
 const TIER_LABELS = {
   viral: { label: 'Sangat Viral', color: 'text-purple-400', desc: '> 3× rata-rata' },
@@ -180,11 +179,7 @@ export default function AccountPage() {
     .map(([k, v]) => ({ key: k, label: MEDIA_LABELS[k] ?? k, count: v, pct: contentMix.percentages[k] ?? 0 }));
 
   return (
-    <div className="min-h-screen bg-bg-primary">
-      <TopbarActions
-        title={`@${account.username}`}
-        subtitle={`${platformLabel(account.platform)} · ${aggregates?.totalPostsAnalyzed ?? account.posts?.length ?? 0} post`}
-      />
+    <div className="bg-bg-primary">
       <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-6 pb-32 md:pb-8">
         {/* ===== SECTION 1: PROFIL ===== */}
         <ProfileHeader account={{ ...account, aggregates, availability, engagementRate: aggregates.engagementRate, tiers, cadence: postingCadence }} />

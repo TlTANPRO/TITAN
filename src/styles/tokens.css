@@ -1,0 +1,123 @@
+/* V21 Design Tokens
+ * Single source of truth for color, spacing, motion, z-index.
+ * Inspired by Grafana + AdminLTE + nexu-io/open-design.
+ * Each token has both dark (default) and light (via :root) variants.
+ */
+
+:root {
+  /* ===== Color (semantic) ===== */
+  --bg-canvas: #0a0a0a;
+  --bg-surface: #141414;
+  --bg-surface-raised: #1f1f1f;
+  --bg-surface-overlay: #262626;
+  --bg-hover: #2a2a2a;
+
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-disabled: #52525b;
+
+  --border-subtle: #27272a;
+  --border-default: #3f3f46;
+  --border-strong: #52525b;
+
+  --accent-primary: #3b82f6;
+  --accent-primary-hover: #2563eb;
+  --accent-secondary: #8b5cf6;
+
+  --status-success: #10b981;
+  --status-warning: #f59e0b;
+  --status-danger: #ef4444;
+  --status-info: #0ea5e9;
+
+  --platform-instagram: #E1306C;
+  --platform-tiktok: #00f2ea;
+
+  /* Chart palette (semantic, used by ChartContainer) */
+  --chart-1: #3b82f6;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #ec4899;
+  --chart-5: #8b5cf6;
+  --chart-6: #06b6d4;
+
+  /* ===== Spacing (4/8/12/16/24/32/48/64) ===== */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ===== Radius ===== */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
+  /* ===== Shadow ===== */
+  --shadow-xs: 0 1px 0 0 var(--border-subtle);
+  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -2px rgba(0,0,0,0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -4px rgba(0,0,0,0.3);
+  --shadow-glow-primary: 0 0 20px rgba(59, 130, 246, 0.3);
+
+  /* ===== Motion ===== */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 360ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ===== Z-index scale ===== */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-sticky: 30;
+  --z-overlay: 40;
+  --z-modal: 50;
+  --z-toast: 60;
+}
+
+/* Light theme (opt-in via html:not(.dark)) */
+html:not(.dark) {
+  --bg-canvas: #fafafa;
+  --bg-surface: #ffffff;
+  --bg-surface-raised: #f4f4f5;
+  --bg-surface-overlay: #ffffff;
+  --bg-hover: #f4f4f5;
+
+  --text-primary: #18181b;
+  --text-secondary: #52525b;
+  --text-muted: #71717a;
+  --text-disabled: #a1a1aa;
+
+  --border-subtle: #e4e4e7;
+  --border-default: #d4d4d8;
+  --border-strong: #a1a1aa;
+
+  --shadow-xs: 0 1px 0 0 var(--border-subtle);
+  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+  --shadow-glow-primary: 0 0 20px rgba(59, 130, 246, 0.15);
+}
+
+/* Utility classes for token usage */
+.surface-canvas { background: var(--bg-canvas); }
+.surface-1 { background: var(--bg-surface); }
+.surface-2 { background: var(--bg-surface-raised); }
+
+.text-display {
+  font-feature-settings: 'tnum' 1, 'ss01' 1, 'cv11' 1;
+}
+
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}

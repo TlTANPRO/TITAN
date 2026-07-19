@@ -132,7 +132,19 @@ export function normalizeAccount(raw, platform) {
     // photo instead of fetching session-bound CDN URLs.
     localAvatar: a.localAvatar ?? '',
     scrapedAt: raw.scrapedAt ?? new Date().toISOString(),
-    posts: Array.isArray(raw.posts) ? raw.posts.map((p) => normalizePost(p, platform)).filter(Boolean) : []
+    posts: Array.isArray(raw.posts) ? raw.posts.map((p) => normalizePost(p, platform)).filter(Boolean) : [],
+    // V21 (Phase 6): derived freshness — most recent post timestamp + total count.
+    // UI uses lastPostAt for "X hari sejak post terakhir" badge.
+    lastPostAt: (() => {
+      if (!Array.isArray(raw.posts) || raw.posts.length === 0) return null;
+      const times = raw.posts
+        .map((p) => Number(p.createTime ?? p.taken_at ?? p.timestamp ?? 0))
+        .filter((t) => t > 0);
+      if (times.length === 0) return null;
+      // Normalize to ms epoch
+      const max = Math.max(...times);
+      return new Date(max > 1e12 ? max : max * 1000).toISOString();
+    })()
   };
 }
 
