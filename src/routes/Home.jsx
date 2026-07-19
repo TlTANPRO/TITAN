@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useAccounts, useCrossAccountComparison } from '../hooks/useAccount.js';
 import { getLatestPosts } from '../lib/dataStore.js';
 import { Hero } from '../components/Hero.jsx';
