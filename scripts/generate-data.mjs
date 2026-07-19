@@ -33,6 +33,19 @@ async function findLocalAvatar(slug) {
 
 async function main() {
   await fs.mkdir(OUT_DIR, { recursive: true });
+
+  // Pre-flight: fail fast kalau scraped/ ada backup files (defense in depth).
+  // Bug yang sama dengan validate-merge.mjs line 120 — kalau scraped/*.backup-*.json
+  // lolos, generate-data bisa overwrite post legitimate dengan data stale dari backup.
+  const scrapedAll = await fs.readdir(SCRAPED_DIR);
+  const backups = scrapedAll.filter((f) => f.includes('.backup-') && f.endsWith('.json'));
+  if (backups.length > 0) {
+    console.error(`❌ Found ${backups.length} backup file(s) in scraped/:`);
+    backups.forEach((f) => console.error(`   - ${f}`));
+    console.error(`   Move them out of scraped/ or delete them. Backup files in scraped/ break SSOT.`);
+    process.exit(1);
+  }
+
   const allData = [];
   const missing = [];
 
@@ -74,6 +87,41 @@ async function main() {
   if (missing.length > 0) {
     console.log(`Missing (no real data): ${missing.join(', ')}`);
   }
+
+  // Post-write validation: defense in depth against future regressions
+  // (validate-merge.mjs line 120 bug emptied scraped/ → generate-data wrote 0 post).
+  const verify = JSON.parse(await fs.readFile(outPath, 'utf-8'));
+  if (verify.length !== 9) {
+    throw new Error(`Post-write: expected 9 accounts, got ${verify.length}`);
+  }
+  const verifyTotalPosts = verify.reduce((s, a) => s + (a.posts?.length ?? 0), 0);
+  if (verifyTotalPosts < 4000) {
+    throw new Error(`Post-write: post count ${verifyTotalPosts} < 4000 (likely data loss)`);
+  }
+  const seenKeys = new Map();
+  let crossDup = 0;
+  for (const a of verify) {
+    for (const p of a.posts || []) {
+      const key = p.shortcode || p.id;
+      if (!key) continue;
+      if (seenKeys.has(key) && seenKeys.get(key) !== a.account.slug) {
+        crossDup++;
+      } else {
+        seenKeys.set(key, a.account.slug);
+      }
+    }
+  }
+  if (crossDup > 0) {
+    // Tolerance untuk data historis: cross-account dup bisa terjadi kalau 1 post
+    // di-share/embed di multiple akun (e.g. ig-syahfalahproperti re-post ig-ardiantanah).
+    // Batas 5 dup = wajar untuk dataset historis. Kalau naik → investigate.
+    if (crossDup <= 5) {
+      console.warn(`⚠️  Post-write: ${crossDup} cross-account duplicate(s) detected (within tolerance, see DATA-SSOT.md §4)`);
+    } else {
+      throw new Error(`Post-write: ${crossDup} cross-account duplicate(s) detected (exceeds tolerance of 5)`);
+    }
+  }
+  console.log(`\n✅ Post-write validation passed (9 akun, ${verifyTotalPosts} posts, 0 cross-dup)`);
 }
 
 main().catch((err) => {

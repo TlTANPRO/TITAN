@@ -97,6 +97,50 @@ async function main() {
   console.log('\n[1/6] Regenerate accounts-full.json from scraped data...');
   run('node scripts/generate-data.mjs', { stdio: 'inherit' });
 
+  // Step 1.5: pre-flight sanity check (fail fast BEFORE build/push)
+  // Defense against the validate-merge.mjs line 120 bug class (0-post deploy).
+  console.log('\n[1.5/6] Pre-flight sanity check...');
+  const preFlightErrors = [];
+  const scrapedDir = path.join(ROOT, 'scripts', 'scraped');
+  const scrapedFiles = (await fs.readdir(scrapedDir)).filter((f) => f.endsWith('.json') && !f.includes('.backup-'));
+  if (scrapedFiles.length !== 9) {
+    preFlightErrors.push(`Expected 9 scraped files, got ${scrapedFiles.length}`);
+  }
+  const accFull = JSON.parse(await fs.readFile(path.join(ROOT, 'src', 'data', 'accounts-full.json'), 'utf-8'));
+  if (accFull.length !== 9) {
+    preFlightErrors.push(`Expected 9 accounts in accounts-full.json, got ${accFull.length}`);
+  }
+  const totalPosts = accFull.reduce((s, a) => s + (a.posts?.length || 0), 0);
+  if (totalPosts < 4000) {
+    preFlightErrors.push(`Post count ${totalPosts} too low (expected >= 4000, likely data loss)`);
+  }
+  // Cross-account dup check (cheap O(n) pre-flight)
+  const seenKeys = new Map();
+  let crossDup = 0;
+  for (const a of accFull) {
+    for (const p of a.posts || []) {
+      const key = p.shortcode || p.id;
+      if (!key) continue;
+      if (seenKeys.has(key) && seenKeys.get(key) !== a.account.slug) crossDup++;
+      else seenKeys.set(key, a.account.slug);
+    }
+  }
+  if (crossDup > 0) {
+    // Tolerance 5 untuk data historis (cross-account share/embed). See generate-data.mjs.
+    if (crossDup > 5) {
+      preFlightErrors.push(`${crossDup} cross-account duplicate(s) detected (exceeds tolerance of 5)`);
+    } else {
+      console.warn(`   ⚠️  ${crossDup} cross-account duplicate(s) (within tolerance, see DATA-SSOT.md §4)`);
+    }
+  }
+  if (preFlightErrors.length > 0) {
+    console.error('\n❌ [deploy] Pre-flight FAILED:');
+    preFlightErrors.forEach((e) => console.error(`   - ${e}`));
+    console.error('   Aborting before build/push to prevent 0-post deploy.');
+    process.exit(1);
+  }
+  console.log(`   ✅ 9 akun, ${totalPosts} posts, 0 cross-dup`);
+
   // Step 2: vite build (prebuild hook auto-copies data to public/)
   console.log('\n[2/6] Vite build...');
   run('pnpm run build', { stdio: 'inherit' });
@@ -133,6 +177,16 @@ async function main() {
 
   // Step 4: git add + check for changes
   console.log('\n[4/6] Git add + check for changes...');
+
+  // Belt-and-suspenders: bersihkan backup files kalau ada di scraped/
+  // (walau validate-merge/generate-data sudah punya pre-flight, deploy harus
+  // tetap aman kalau user jalankan ad-hoc).
+  const backupFiles = (await fs.readdir(scrapedDir)).filter((f) => f.includes('.backup-') && f.endsWith('.json'));
+  if (backupFiles.length > 0) {
+    console.warn(`[deploy] Cleaning ${backupFiles.length} backup file(s) from scraped/`);
+    for (const f of backupFiles) await fs.rm(path.join(scrapedDir, f));
+  }
+
   run('git add -A', { stdio: 'inherit' });
 
   const status = execSync('git status --porcelain', { cwd: ROOT, encoding: 'utf-8' });
