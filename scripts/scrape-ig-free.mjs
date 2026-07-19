@@ -159,16 +159,28 @@ async function getAllPosts(userId) {
   return all;
 }
 
-// Merge existing scraped data with new free-scrape data
-function mergePosts(existingPosts, newPosts) {
+// Merge existing scraped data with new free-scrape data.
+// accountPk: number|null — when provided (IG), drop new posts whose embedded
+// `userId` (parsed from `id` like "{postId}_{userIdCreator}") does not match
+// the account. /clips/user/ sometimes includes other creators' posts as noise.
+function mergePosts(existingPosts, newPosts, accountPk = null) {
   const byId = new Map();
   for (const p of existingPosts || []) {
     if (p?.id) byId.set(String(p.id), { ...p });
   }
   let addedCount = 0;
   let upgradedCount = 0;
+  let noiseDropped = 0;
   for (const np of newPosts) {
     if (!np?.id) continue;
+    // Noise filter: if accountPk is set (IG), embedded userId must match account pk
+    if (accountPk != null && np.id.includes('_')) {
+      const embeddedUid = np.id.split('_')[1];
+      if (String(accountPk) !== embeddedUid) {
+        noiseDropped++;
+        continue;
+      }
+    }
     const key = String(np.id);
     const existing = byId.get(key);
     if (!existing) {
@@ -200,7 +212,7 @@ function mergePosts(existingPosts, newPosts) {
   }
   const merged = Array.from(byId.values());
   merged.sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0));
-  return { merged, addedCount, upgradedCount };
+  return { merged, addedCount, upgradedCount, noiseDropped };
 }
 
 async function atomicWriteJson(filepath, data) {
@@ -244,8 +256,8 @@ async function scrapeAccount(account) {
 
   // Merge (reels + posts combined, then merged with existing)
   const allNew = [...reels, ...posts];
-  const { merged, addedCount, upgradedCount } = mergePosts(existing?.posts, allNew);
-  console.log(`  merge: +${addedCount} new posts, ${upgradedCount} upgraded metrics, total=${merged.length}`);
+  const { merged, addedCount, upgradedCount, noiseDropped } = mergePosts(existing?.posts, allNew, account.pk);
+  console.log(`  merge: +${addedCount} new posts, ${upgradedCount} upgraded metrics, ${noiseDropped} noise dropped, total=${merged.length}`);
 
   // Recompute account-level stats from merged posts
   const existingAcc = existing?.account ?? account;

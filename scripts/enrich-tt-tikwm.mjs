@@ -112,11 +112,26 @@ async function enrichAccount(account) {
     } else {
       failCount++;
       if (failCount <= 3) console.log(`  ! fail ${p.id}: ${info.error}`);
+      // If rate limit hit, back off harder (5s)
+      if (info.error && (info.error.includes('Free Api Limit') || info.error.includes('Too Many'))) {
+        await sleep(5000);
+      }
     }
     if ((i + 1) % 10 === 0 || i === targets.length - 1) {
       console.log(`  ... ${i + 1}/${targets.length} done (ok=${okCount}, fail=${failCount}, upgraded=${upgradedCount})`);
     }
     if (i < targets.length - 1) await sleep(DELAY_MS);
+    // Persist every 30 posts to avoid data loss on long runs
+    if ((i + 1) % 30 === 0) {
+      existing.stats = existing.stats || {};
+      existing.stats.lastTikwmEnrichAt = new Date().toISOString();
+      existing.stats.tikwmAttempted = i + 1;
+      existing.stats.tikwmSuccess = okCount;
+      existing.stats.tikwmFailed = failCount;
+      existing.stats.tikwmUpgraded = upgradedCount;
+      await atomicWriteJson(outPath, existing);
+      console.log(`  [checkpoint] saved at i=${i + 1}`);
+    }
   }
 
   existing.stats = existing.stats || {};
