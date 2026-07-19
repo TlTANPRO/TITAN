@@ -222,31 +222,40 @@ export default function Home() {
           />
         </BentoGrid>
 
-        {/* ===== ROW 6: Konten & Timing — KomposisiKonten (5) + Heatmap (7) =====
-            V27.5: Sunburst replaced by KomposisiKonten (chart+table toggle,
-            per-account breakdown). Heatmap moved next to it. */}
+        {/* ===== ROW 6: Komposisi Konten (full width, standalone) =====
+            V27.13: Moved out of the col-5/col-7 split with CombinedHeatmap
+            so the per-platform + per-account chart has room to breathe. The
+            heatmap takes its own full row below. Numbered 06 to keep
+            SectionLabel sequence 01-09 consistent. */}
         <BentoGrid>
-          <BentoItem colSpan="col-5" padding="p-4">
+          <BentoItem colSpan="col-12" padding="p-4">
+            <SectionLabel number="06" title="Komposisi Konten" accent="accent" className="mb-3" />
             <KomposisiKonten accounts={accounts} />
           </BentoItem>
+        </BentoGrid>
 
-          <BentoItem colSpan="col-7" padding="p-4">
+        {/* ===== ROW 7: Waktu Posting Terbaik (full width, standalone) =====
+            V27.13: Moved out of the col-5/col-7 split with KomposisiKonten
+            so the 7×24 heatmap has the full row width (24 hour cells get
+            more breathing room than col-7 could give). */}
+        <BentoGrid>
+          <BentoItem colSpan="col-12" padding="p-4">
             <CombinedHeatmap accounts={accounts} />
           </BentoItem>
         </BentoGrid>
 
-        {/* ===== ROW 7: Cross-Account Timeline (full) ===== */}
+        {/* ===== ROW 8: Cross-Account Timeline (full) ===== */}
         <BentoGrid>
           <BentoItem colSpan="col-12" padding="p-4">
             <CrossAccountTimeline accounts={accounts} />
           </BentoItem>
         </BentoGrid>
 
-        {/* ===== ROW 8: Enhanced Table + Recommendation link ===== */}
+        {/* ===== ROW 9: Enhanced Table + Recommendation link ===== */}
         <BentoGrid>
           <BentoItem colSpan="col-12" padding="p-4">
             <div className="flex items-center justify-between gap-2 mb-3">
-              <SectionLabel number="08" title="Perbandingan Lintas Akun" accent="accent" />
+              <SectionLabel number="09" title="Perbandingan Lintas Akun" accent="accent" />
               <Link
                 to="/ai"
                 className="text-[10px] text-accent-primary hover:underline inline-flex items-center gap-1"
