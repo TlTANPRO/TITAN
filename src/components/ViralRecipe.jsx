@@ -1,9 +1,10 @@
-// ViralRecipe — top-3 outliers + pattern + timing + hashtag + AI insight
+// ViralRecipe — top-3 outliers + pattern + timing + hashtag + pre-generated insight
 // V11: 10+ reasons panel (caption, emoji, question, format, prime-time, niche
 // hashtag, mention, recency, consistency, hook, CTA, top pillar). AI label
 // dropped — section is now an analytics explainer, not "AI analysis".
+// V25.7: removed Bot icon (AI symbol), font-bold → font-semibold.
 import { Link } from 'react-router-dom';
-import { Sparkles, Clock, Hash, MessageCircle, Heart, Eye, CheckCircle2, Bot, Zap, Repeat, Tag, Calendar, TrendingUp } from 'lucide-react';
+import { Sparkles, Clock, Hash, MessageCircle, Heart, Eye, CheckCircle2, Lightbulb, Zap, Repeat, Tag, Calendar, TrendingUp } from 'lucide-react';
 import { formatNumber } from '../lib/format.js';
 import { getInsight } from '../lib/insights.js';
 import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
@@ -170,7 +171,7 @@ export function ViralRecipe({ insights, account }) {
             className="surface p-3 hover:border-accent-primary transition-colors block"
           >
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-accent-warning to-accent-secondary flex items-center justify-center text-white font-semibold text-xs flex-shrink-0">
                 #{i + 1}
               </div>
               <div className="flex-1 min-w-0 flex items-center gap-1.5">
@@ -203,8 +204,8 @@ export function ViralRecipe({ insights, account }) {
             Waktu Posting Terbaik
           </div>
           <div className="text-sm text-text-secondary">
-            Hari <span className="font-bold text-text-primary">{timing?.topDay ?? '—'}</span> sekitar jam{' '}
-            <span className="font-bold text-text-primary">{timing?.topHour ?? 0}:00</span>
+            Hari <span className="font-semibold text-text-primary">{timing?.topDay ?? '—'}</span> sekitar jam{' '}
+            <span className="font-semibold text-text-primary">{timing?.topHour ?? 0}:00</span>
           </div>
           <div className="text-[10px] text-text-muted mt-1">
             Berdasarkan distribusi {examples.length} post viral
@@ -251,11 +252,11 @@ export function ViralRecipe({ insights, account }) {
         </div>
       )}
 
-      {/* AI insight panel (pre-generated, lazy-loaded) */}
+      {/* Pre-generated insight (analytics-only fallback when insight text unavailable) */}
       {aiText && (
         <div className="surface p-3 mt-4 border border-accent-primary/30 bg-accent-primary/5">
           <div className="flex items-center gap-2 text-xs font-semibold text-accent-primary uppercase tracking-wider mb-2">
-            <Bot className="w-3.5 h-3.5" />
+            <Lightbulb className="w-3.5 h-3.5" />
             {platformLabel(account?.platform)} Insight — Mengapa Post Ini Viral
           </div>
           <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">{aiText}</p>
@@ -269,7 +270,7 @@ function Stat({ label, value }) {
   return (
     <div className="surface p-2 bg-bg-tertiary/30">
       <div className="text-[10px] text-text-muted uppercase tracking-wider">{label}</div>
-      <div className="text-base font-bold text-text-primary mt-0.5">{value}</div>
+      <div className="text-base font-semibold text-text-primary mt-0.5">{value}</div>
     </div>
   );
 }

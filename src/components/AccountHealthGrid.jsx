@@ -11,12 +11,14 @@ import { performanceByMonth } from '../lib/analytics.js';
 import { ProxiedAvatar } from './ProxiedAvatar.jsx';
 import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
 
+// V25.10: token-based grade colors (raw Tailwind palette is V23 hard NO).
+// Same hue family as AccountOverview healthColor() for visual consistency.
 const GRADE_COLORS = {
-  A: 'bg-emerald-500/20 text-emerald-500 border-emerald-500/30',
-  B: 'bg-sky-500/20 text-sky-500 border-sky-500/30',
-  C: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30',
-  D: 'bg-orange-500/20 text-orange-500 border-orange-500/30',
-  E: 'bg-rose-500/20 text-rose-500 border-rose-500/30'
+  A: 'bg-accent-success/20 text-accent-success border-accent-success/30',
+  B: 'bg-accent-primary/20 text-accent-primary border-accent-primary/30',
+  C: 'bg-accent-warning/20 text-accent-warning border-accent-warning/30',
+  D: 'bg-accent-secondary/20 text-accent-secondary border-accent-secondary/30',
+  E: 'bg-accent-danger/20 text-accent-danger border-accent-danger/30'
 };
 
 function AccountAvatar({ account }) {
@@ -72,7 +74,7 @@ function HealthCard({ acc, posts }) {
           </div>
         </div>
         <div
-          className={`flex-shrink-0 px-2 py-1 rounded-md flex items-center gap-1 text-xs font-bold border ${GRADE_COLORS[grade]}`}
+          className={`flex-shrink-0 px-2 py-1 rounded-md flex items-center gap-1 text-xs font-semibold border ${GRADE_COLORS[grade]}`}
           title={`Health ${score}/100`}
         >
           <span>{grade}</span>

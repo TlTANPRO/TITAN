@@ -415,12 +415,52 @@ export function marketInsightsExtended(account, insights) {
     recs.push('TikTok rewarding konsistensi harian — coba 1 post/hari selama 2 minggu, ukur dampaknya.');
   }
 
-  // Ensure minimum counts
+  // V25.5: pad to 5 with general best-practice fallbacks if data-derived < 5.
+  // User requirement: "5 semua" (5 kekuatan, 5 kelemahan, 5 aksi).
+  const GENERAL_STRENGTHS = [
+    'Konsistensi adalah kunci — pertahankan jadwal posting yang sudah ada.',
+    'Kualitas konten lebih penting dari kuantitas — fokus pada value per post.',
+    'Pahami audiens: cek insight demografi & engagement per jam posting.',
+    'Engagement 2-arah (balas komentar) meningkatkan reach algoritma 20-30%.',
+    'Coba A/B test caption & hook 3 detik untuk optimasi CTR.'
+  ];
+  const GENERAL_WEAKNESSES = [
+    'Pola posting perlu diversifikasi waktu — jangan hanya 1 slot jam.',
+    'Caption lebih panjang + storytelling biasanya mendapat save lebih tinggi.',
+    'Hashtag niche (3-5) lebih efektif dari hashtag umum (15-20).',
+    'Cross-post antar platform (IG ↔ TT) melipatgandakan jangkauan.',
+    'Tambahkan call-to-action eksplisit di setiap post.'
+  ];
+  const GENERAL_RECS = [
+    'Monitor Insight mingguan: post mana yang mendapat save/share tertinggi?',
+    'Eksperimen 1 format baru per minggu (Reel, carousel, IG Live, dll).',
+    'Buat content calendar 1 bulan ke depan agar konsistensi terjaga.',
+    'Kolaborasi 1x sebulan dengan akun sejenis untuk audiens baru.',
+    'Gunakan Story + Highlight untuk evergreen content (FAQ, tips, behind-the-scene).'
+  ];
+  for (const candidate of GENERAL_STRENGTHS) {
+    if (strengths.length >= 5) break;
+    if (!strengths.includes(candidate)) strengths.push(candidate);
+  }
+  for (const candidate of GENERAL_WEAKNESSES) {
+    if (weaknesses.length >= 5) break;
+    if (!weaknesses.includes(candidate)) weaknesses.push(candidate);
+  }
+  for (const candidate of GENERAL_RECS) {
+    if (recs.length >= 5) break;
+    if (!recs.includes(candidate)) recs.push(candidate);
+  }
+
+  // Ensure minimum counts (legacy fallback if arrays still empty for some reason)
   if (strengths.length === 0) strengths.push('Data cukup untuk dianalisis lebih lanjut.');
   if (weaknesses.length === 0) weaknesses.push('Tidak ada kelemahan signifikan pada sampel.');
   if (recs.length === 0) recs.push('Pertahankan strategi dan pantau metrik secara berkala.');
 
-  return { strengths, weaknesses, recommendations: recs };
+  return {
+    strengths: strengths.slice(0, 5),
+    weaknesses: weaknesses.slice(0, 5),
+    recommendations: recs.slice(0, 5)
+  };
 }
 
 const INDUSTRY = {
@@ -493,27 +533,50 @@ export function bestTimeOfDay(posts) {
   return { heatmap: cells, topWindows: top };
 }
 
+// V25.1: outlier-resilient cadence calc.
+// 1. Drop legacy gaps > 730 days (sample windows older than 2 years).
+// 2. Apply IQR (Tukey's fence) filter to drop extreme outliers from a single bad timestamp.
+// 3. Return medianGapDays as primary metric (more robust than mean for skewed cadence data).
 export function postingCadence(posts) {
   if (posts.length < 2) {
-    return { avgGapDays: 0, stdDevDays: 0, longestGapDays: 0, currentStreakDays: 0, score: 0 };
+    return { avgGapDays: 0, medianGapDays: 0, stdDevDays: 0, longestGapDays: 0, currentStreakDays: 0, score: 0 };
   }
   const sorted = [...posts].filter((p) => p.timestamp).sort((a, b) => a.timestamp - b.timestamp);
-  const gaps = [];
+  const allGaps = [];
   for (let i = 1; i < sorted.length; i++) {
-    gaps.push((sorted[i].timestamp - sorted[i - 1].timestamp) / (1000 * 60 * 60 * 24));
+    allGaps.push((sorted[i].timestamp - sorted[i - 1].timestamp) / (1000 * 60 * 60 * 24));
   }
-  const avg = gaps.reduce((s, g) => s + g, 0) / gaps.length;
-  const variance = gaps.reduce((s, g) => s + (g - avg) ** 2, 0) / gaps.length;
+
+  // Step 1: legacy filter — only count recent activity (last 2 years)
+  const recentGaps = allGaps.filter((g) => g > 0 && g <= 730);
+  if (recentGaps.length < 2) {
+    return { avgGapDays: 0, medianGapDays: 0, stdDevDays: 0, longestGapDays: 0, currentStreakDays: 0, score: 0 };
+  }
+
+  // Step 2: IQR (Tukey's fence) — sort, find Q1/Q3, drop gaps above Q3 + 1.5*IQR
+  const sortedG = [...recentGaps].sort((a, b) => a - b);
+  const q1 = sortedG[Math.floor(sortedG.length * 0.25)];
+  const q3 = sortedG[Math.floor(sortedG.length * 0.75)];
+  const iqr = q3 - q1;
+  const upperFence = q3 + 1.5 * iqr;
+  const filtered = sortedG.filter((g) => g <= upperFence);
+
+  const avg = filtered.reduce((s, g) => s + g, 0) / filtered.length;
+  const variance = filtered.reduce((s, g) => s + (g - avg) ** 2, 0) / filtered.length;
   const std = Math.sqrt(variance);
-  const longest = Math.max(...gaps);
+  const longest = Math.max(...filtered);
+  const median = sortedG[Math.floor(sortedG.length / 2)];
+
   const now = Date.now();
   const lastTs = sorted[sorted.length - 1].timestamp;
   const currentStreak = (now - lastTs) / (1000 * 60 * 60 * 24);
-  // Score: tighter std + active streak = higher
+
+  // Score: std-based + active streak
   const consistencyScore = Math.max(0, 100 - std * 5);
   const streakScore = Math.max(0, 100 - currentStreak * 2);
   return {
     avgGapDays: avg,
+    medianGapDays: median,
     stdDevDays: std,
     longestGapDays: longest,
     currentStreakDays: currentStreak,

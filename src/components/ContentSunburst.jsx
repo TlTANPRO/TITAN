@@ -69,14 +69,19 @@ export function ContentSunburst({ accounts }) {
     );
   }
 
-  // V22.1: shrunk to 180x180 so it fits in col-4 bento without bleeding
-  // into CombinedHeatmap (which now lives in the same "Konten & Timing"
-  // section at col-8). Scale ratio 0.82 of previous (220→180).
+  // V25.9: donut layout — 60% inner radius, strokeless segments
+  // (V23 no-shadow rule applied to chart borders too), center label
+  // shows total + dominant platform (V23 display-md pattern).
   const cx = 90;
   const cy = 90;
-  const rOuter = 82;
-  const rMiddle = 49;
-  const rInner = 23;
+  const rOuter = 84;
+  const rInner = 50;   // 60% ratio → true donut
+  const donutHole = 32;
+
+  // Find dominant platform for center label
+  const dominant = byPlatform.reduce((a, b) => (b.count > a.count ? b : a), byPlatform[0]);
+  const dominantLabel = dominant ? platformLabel(dominant.name) : '—';
+  const dominantPct = dominant ? Math.round((dominant.count / total) * 100) : 0;
 
   // Calculate angles
   let accAngle = -Math.PI / 2; // start at 12 o'clock
@@ -119,68 +124,77 @@ export function ContentSunburst({ accounts }) {
         <Layers className="w-4 h-4 text-accent-primary" />
         Komposisi Konten
       </h3>
-      <div className="flex items-center justify-center gap-4 flex-wrap">
+      <div className="flex flex-col items-center gap-4">
         <div className="relative" style={{ width: 180, height: 180 }}>
-          <svg width={180} height={180} viewBox="0 0 180 180" className="overflow-visible">
+          <svg width={180} height={180} viewBox="0 0 180 180">
             {slices.map((s, i) => {
               const isPlatform = s.type === 'platform';
               const path = describeArc(
                 cx, cy,
-                isPlatform ? rOuter : rMiddle,
-                isPlatform ? rMiddle : rInner,
+                isPlatform ? rOuter : rInner,
+                isPlatform ? rInner : donutHole,
                 s.startAngle, s.endAngle
               );
+              const isHover = hover?.name === s.name;
               return (
                 <path
                   key={i}
                   d={path}
                   fill={s.color}
-                  stroke="var(--bg-secondary)"
-                  strokeWidth={1.5}
-                  opacity={hover && hover.name !== s.name ? 0.4 : 1}
-                  className="transition-opacity duration-150 cursor-pointer"
+                  fillOpacity={hover ? (isHover ? 0.95 : 0.5) : 0.85}
+                  className="cursor-pointer"
+                  style={{ transition: 'fill-opacity 120ms ease-out' }}
                   onMouseEnter={() => setHover(s)}
                   onMouseLeave={() => setHover(null)}
                 />
               );
             })}
-            <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" className="fill-text-primary font-semibold tabular-nums" style={{ fontSize: 16, letterSpacing: '-0.01em' }}>
+            {/* V25.9: center label — total + dominant platform (V23 display-md) */}
+            <text
+              x={cx} y={cy - 4}
+              textAnchor="middle" dominantBaseline="central"
+              className="fill-text-primary tabular-nums"
+              style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.01em' }}
+            >
               {formatCompact(total)}
             </text>
-            <text x={cx} y={cy + 14} textAnchor="middle" dominantBaseline="central" className="fill-text-muted" style={{ fontSize: 8, letterSpacing: '0.05em' }}>
-              TOTAL
+            <text
+              x={cx} y={cy + 14}
+              textAnchor="middle" dominantBaseline="central"
+              className="fill-text-muted"
+              style={{ fontSize: 8, letterSpacing: '0.08em' }}
+            >
+              {hover
+                ? `${hover.name} · ${Math.round((hover.count / total) * 100)}%`
+                : `${dominantLabel} ${dominantPct}%`
+              }
             </text>
           </svg>
         </div>
-        <div className="flex-1 min-w-0 max-w-xs space-y-3 text-xs">
+        {/* V25.9: legend below the chart — more compact on mobile, no side bleed */}
+        <div className="w-full space-y-2 text-xs">
           {byPlatform.map((platform) => (
             <div key={platform.name}>
-              <div className="flex items-center gap-2 mb-1.5">
+              <div className="flex items-center gap-2 mb-1">
                 <PlatformIcon platform={platform.name} className="w-3.5 h-3.5" />
                 <span className="font-semibold text-text-primary uppercase tracking-wider">
                   {platformLabel(platform.name)}
                 </span>
-                <span className="text-text-muted ml-auto tabular-nums">{formatCompact(platform.count)} ({Math.round(platform.count / total * 100)}%)</span>
+                <span className="text-text-muted ml-auto tabular-nums">
+                  {formatCompact(platform.count)} ({Math.round(platform.count / total * 100)}%)
+                </span>
               </div>
-              <div className="space-y-1 pl-5">
+              <div className="flex flex-wrap gap-x-3 gap-y-1 pl-5">
                 {[...platform.types.entries()].sort((a, b) => b[1] - a[1]).map(([type, count]) => (
                   <div key={type} className="flex items-center gap-1.5 text-[11px]">
-                    <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: MEDIA_COLORS[type] ?? FALLBACK }} />
-                    <span className="text-text-secondary flex-1">{type}</span>
+                    <div className="w-2 h-2 rounded-sm flex-shrink-0" style={{ backgroundColor: MEDIA_COLORS[type] ?? FALLBACK }} />
+                    <span className="text-text-secondary">{type}</span>
                     <span className="text-text-muted tabular-nums">{formatCompact(count)}</span>
                   </div>
                 ))}
               </div>
             </div>
           ))}
-          {hover && (
-            <div className="surface p-2 text-text-secondary">
-              <div className="font-semibold text-text-primary">{hover.name}</div>
-              <div className="text-[10px] uppercase tracking-wider tabular-nums">
-                {formatCompact(hover.count)} posts ({Math.round(hover.count / total * 100)}%)
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

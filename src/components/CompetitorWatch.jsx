@@ -114,7 +114,7 @@ export function CompetitorWatch({ account }) {
               <PolarAngleAxis dataKey="metric" tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} />
               <PolarRadiusAxis tick={{ fontSize: 8 }} stroke="var(--border-subtle)" domain={[0, 100]} />
               <Radar name="Anda" dataKey="mine" stroke="oklch(0.65 0.22 350)" fill="oklch(0.65 0.22 350)" fillOpacity={0.4} />
-              <Radar name={primary.username} dataKey="peer" stroke="oklch(0.65 0.16 200)" fill="oklch(0.65 0.16 200)" fillOpacity={0.2} />
+              <Radar name={primary.username} dataKey="peer" stroke="oklch(0.65 0.16 200)" fill="oklch(0.65 0.16 200)" fillOpacity={0.3} />
               <Legend wrapperStyle={{ fontSize: 10 }} />
             </RadarChart>
           </ResponsiveContainer>

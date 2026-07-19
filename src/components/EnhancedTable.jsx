@@ -33,6 +33,16 @@ const RESPONSIVE_CLASS = {
   lg: 'hidden lg:table-cell'
 };
 
+// V25.4: token-based health color (V23: no raw Tailwind palette)
+// Mirrors AccountOverview healthColor() — single source of truth pattern.
+function healthColor(score) {
+  if (score >= 80) return { text: 'text-accent-success' };
+  if (score >= 65) return { text: 'text-accent-primary' };
+  if (score >= 50) return { text: 'text-accent-warning' };
+  if (score >= 35) return { text: 'text-accent-warning' };
+  return { text: 'text-accent-danger' };
+}
+
 function SortIcon({ active, dir }) {
   if (!active) return <ArrowUpDown className="w-3 h-3 opacity-30" />;
   return dir === 'asc' ? <ArrowUp className="w-3 h-3 text-accent-primary" /> : <ArrowDown className="w-3 h-3 text-accent-primary" />;
@@ -127,12 +137,7 @@ export function EnhancedTable({ comparison }) {
                   {a.hasER ? <span className="text-accent-success">{formatPercent(a.engagementRate)}</span> : <span className="text-text-muted" title="Data like/komentar tidak tersedia">—</span>}
                 </td>
                 <td className={`py-3 px-4 text-right tabular-nums ${RESPONSIVE_CLASS['md']}`}>
-                  <span className={`text-xs font-semibold ${
-                    a.healthScore >= 80 ? 'text-emerald-500' :
-                    a.healthScore >= 65 ? 'text-sky-500' :
-                    a.healthScore >= 50 ? 'text-yellow-500' :
-                    a.healthScore >= 35 ? 'text-orange-500' : 'text-rose-500'
-                  }`}>
+                  <span className={`text-xs font-semibold ${healthColor(a.healthScore ?? 0).text}`}>
                     {Number.isFinite(a.healthScore) ? a.healthScore : 0}
                     <span className="text-text-muted font-normal ml-1">({a.healthGrade ?? '—'})</span>
                   </span>

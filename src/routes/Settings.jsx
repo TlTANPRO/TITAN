@@ -2,7 +2,7 @@
 // Vertical tabs layout. Hard refresh behind simple password gate.
 // V24.1: added Tampilan (Display) section with --app-text-scale toggle.
 import { useState } from 'react';
-import { Settings as SettingsIcon, Palette, Database, Users, Bot, Info, ShieldAlert, KeyRound, Type } from 'lucide-react';
+import { Settings as SettingsIcon, Palette, Database, Users, Lightbulb, Info, ShieldAlert, KeyRound, Type } from 'lucide-react';
 import { useAccounts } from '../hooks/useAccount.js';
 import { FreshnessBadge } from '../components/ui/FreshnessBadge.jsx';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
@@ -16,7 +16,7 @@ const SECTIONS = [
   { id: 'display', label: 'Tampilan', icon: Palette },
   { id: 'data', label: 'Data & Refresh', icon: Database },
   { id: 'accounts', label: 'Accounts', icon: Users },
-  { id: 'ai', label: 'Insight', icon: Bot },
+  { id: 'ai', label: 'Insight', icon: Lightbulb },
   { id: 'about', label: 'About', icon: Info }
 ];
 
@@ -221,7 +221,7 @@ export default function Settings() {
 
           {activeSection === 'ai' && (
             <>
-              <h2 className="text-lg font-bold text-text-primary">AI Configuration</h2>
+              <h2 className="text-lg font-semibold text-text-primary">Insight Configuration</h2>
               <div className="space-y-3 text-sm">
                 <div>
                   <div className="text-xs font-semibold text-text-muted uppercase tracking-wider">LLM Proxy</div>
@@ -231,7 +231,7 @@ export default function Settings() {
                 </div>
                 <div className="pt-3 border-t border-border-subtle">
                   <p className="text-xs text-text-muted">
-                    AI text di-cache di <code className="bg-bg-tertiary px-1 rounded">src/data/ai-insights.json</code>.
+                    Teks insight di-cache di <code className="bg-bg-tertiary px-1 rounded">src/data/ai-insights.json</code>.
                     Regenerate dengan: <code className="bg-bg-tertiary px-1 rounded">pnpm insights:generate</code>
                   </p>
                 </div>
@@ -241,9 +241,9 @@ export default function Settings() {
 
           {activeSection === 'about' && (
             <>
-              <h2 className="text-lg font-bold text-text-primary">About TITAN</h2>
+              <h2 className="text-lg font-semibold text-text-primary">About TITAN</h2>
               <div className="space-y-2 text-sm text-text-secondary">
-                <div><strong className="text-text-primary">Version:</strong> 21.0</div>
+                <div><strong className="text-text-primary">Version:</strong> 25.0</div>
                 <div><strong className="text-text-primary">Description:</strong> Social Media Marketing Intelligence Dashboard</div>
                 <div><strong className="text-text-primary">Stack:</strong> React 18 · Vite · Tailwind · recharts</div>
                 <div><strong className="text-text-primary">Data source:</strong> 4 Instagram + 5 TikTok akun</div>

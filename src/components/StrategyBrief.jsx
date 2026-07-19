@@ -1,8 +1,10 @@
 // StrategyBrief — 1-page summary (SWOT + 10+ Action Plan)
 // V11: drop "AI Strategy Brief" label (use platform-anchored), expand action
 // plan to 10+ actionable items from multiple primitives.
+// V25.7: removed Bot icon (AI symbol), font-bold → font-semibold, SWOT colors
+// migrated from raw Tailwind (emerald/rose/sky/amber) to semantic tokens.
 import { useMemo } from 'react';
-import { FileText, ArrowUp, ArrowDown, Plus, AlertTriangle, Target, Bot } from 'lucide-react';
+import { FileText, ArrowUp, ArrowDown, Plus, AlertTriangle, Target, Sparkles } from 'lucide-react';
 import { formatPercent, formatNumber } from '../lib/format.js';
 import { accountHealthScore, timeSinceLastViral, outlierPosts } from '../lib/analytics.js';
 import { getInsight } from '../lib/insights.js';
@@ -187,21 +189,21 @@ export function StrategyBrief({ account, insights }) {
         <span className="text-[10px] text-text-muted flex items-center gap-1">
           {hasAi ? (
             <>
-              <Bot className="w-3 h-3 text-accent-primary" />
-              Diperkaya dengan AI (pre-cached di ai-insights.json)
+              <Sparkles className="w-3 h-3 text-accent-primary" />
+              Pre-generated insight (tersimpan lokal)
             </>
           ) : (
-            'Auto-generated (analytics-only) · run `pnpm insights:generate` untuk AI generatif'
+            'Auto-generated (analytics-only) · lihat detail per-akun di tab Pola & Waktu'
           )}
         </span>
       </div>
 
       {hasAi ? (
-        // AI mode — show AI text + action plan from analytics
+        // Pre-generated text mode — show insight text + action plan from analytics
         <div className="space-y-4">
           <div className="surface p-4 bg-bg-primary/50 border border-accent-primary/30">
             <div className="text-xs text-accent-primary uppercase tracking-wider font-semibold mb-2 flex items-center gap-2">
-              <Bot className="w-3.5 h-3.5" />
+              <Sparkles className="w-3.5 h-3.5" />
               {platformLabel(account?.platform)} Insight — Strategy Brief
             </div>
             <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">{aiText}</p>
@@ -214,7 +216,7 @@ export function StrategyBrief({ account, insights }) {
             <ol className="space-y-1.5 text-sm text-text-primary">
               {actions.map((a, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-accent-primary text-white text-[10px] font-bold flex items-center justify-center mt-0.5">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-accent-primary text-white text-[10px] font-semibold flex items-center justify-center mt-0.5">
                     {i + 1}
                   </span>
                   <span className="text-text-secondary">{a}</span>
@@ -227,10 +229,10 @@ export function StrategyBrief({ account, insights }) {
         // Analytics-only mode — show auto-SWOT grid
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-            <SwotBox type="strength" title="Strengths" items={swot.strengths} color="emerald" />
-            <SwotBox type="weakness" title="Weaknesses" items={swot.weaknesses} color="rose" />
-            <SwotBox type="opportunity" title="Opportunities" items={swot.opportunities} color="sky" />
-            <SwotBox type="threat" title="Threats" items={swot.threats} color="amber" />
+            <SwotBox type="strength" title="Strengths" items={swot.strengths} color="success" />
+            <SwotBox type="weakness" title="Weaknesses" items={swot.weaknesses} color="danger" />
+            <SwotBox type="opportunity" title="Opportunities" items={swot.opportunities} color="info" />
+            <SwotBox type="threat" title="Threats" items={swot.threats} color="warning" />
           </div>
 
           <div className="surface p-4 bg-bg-primary/50">
@@ -241,7 +243,7 @@ export function StrategyBrief({ account, insights }) {
             <ol className="space-y-1.5 text-sm text-text-primary">
               {actions.map((a, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-accent-primary text-white text-[10px] font-bold flex items-center justify-center mt-0.5">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-accent-primary text-white text-[10px] font-semibold flex items-center justify-center mt-0.5">
                     {i + 1}
                   </span>
                   <span className="text-text-secondary">{a}</span>
@@ -255,11 +257,12 @@ export function StrategyBrief({ account, insights }) {
   );
 }
 
+// V25.7: token-based SWOT color palette (V23: no raw Tailwind)
 const COLOR_MAP = {
-  emerald: { border: 'border-emerald-500/30', bg: 'bg-emerald-500/5', text: 'text-emerald-500' },
-  rose: { border: 'border-rose-500/30', bg: 'bg-rose-500/5', text: 'text-rose-500' },
-  sky: { border: 'border-sky-500/30', bg: 'bg-sky-500/5', text: 'text-sky-500' },
-  amber: { border: 'border-amber-500/30', bg: 'bg-amber-500/5', text: 'text-amber-500' }
+  success: { border: 'border-accent-success/30', bg: 'bg-accent-success/5', text: 'text-accent-success' },
+  danger: { border: 'border-accent-danger/30', bg: 'bg-accent-danger/5', text: 'text-accent-danger' },
+  info: { border: 'border-accent-primary/30', bg: 'bg-accent-primary/5', text: 'text-accent-primary' },
+  warning: { border: 'border-accent-warning/30', bg: 'bg-accent-warning/5', text: 'text-accent-warning' }
 };
 
 const ICON_MAP = {

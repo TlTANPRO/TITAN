@@ -31,6 +31,10 @@ export function AccountPatterns({ insights }) {
               <span className="font-semibold text-text-primary tabular-nums">{postingCadence.score}/100</span>
             </div>
             <div className="flex justify-between border-b border-border-subtle/50 pb-2">
+              <span className="text-text-secondary">Median Jeda</span>
+              <span className="text-text-primary tabular-nums">{(postingCadence.medianGapDays ?? 0).toFixed(1)} hari</span>
+            </div>
+            <div className="flex justify-between border-b border-border-subtle/50 pb-2">
               <span className="text-text-secondary">Rata-rata Jeda</span>
               <span className="text-text-primary tabular-nums">{postingCadence.avgGapDays.toFixed(1)} hari</span>
             </div>
@@ -40,7 +44,7 @@ export function AccountPatterns({ insights }) {
             </div>
             <div className="flex justify-between border-b border-border-subtle/50 pb-2">
               <span className="text-text-secondary">Jeda Terlama</span>
-              <span className="text-text-primary tabular-nums">{Math.round(postingCadence.longestGapDays)} hari</span>
+              <span className="text-text-primary tabular-nums">{Math.min(730, Math.round(postingCadence.longestGapDays))} hari</span>
             </div>
             <div className="flex justify-between">
               <span className="text-text-secondary">Post Terakhir</span>

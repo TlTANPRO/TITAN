@@ -8,6 +8,13 @@ import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
 import { formatNumber, formatCompact } from '../lib/format.js';
 import { proxiedImage } from '../lib/imageProxy.js';
 
+// V25.2: token-based rank palette (V23: no raw Tailwind colors)
+const RANK_COLORS = [
+  'text-accent-warning',   // gold
+  'text-text-secondary',   // silver
+  'text-accent-secondary'  // bronze (purple)
+];
+
 function relativeTime(timestamp) {
   if (!timestamp) return '';
   const diff = Date.now() - timestamp;
@@ -28,6 +35,8 @@ function relativeTime(timestamp) {
 export function ViralPostCard({ post, rank }) {
   if (!post) return null;
   const mediaIsVideo = post.mediaType === 'VIDEO' || post.mediaType === 'REEL';
+  // V25.2: evaluate proxiedImage once; '' means session-bound URL or missing — show placeholder.
+  const thumbSrc = proxiedImage(post.thumbnailUrl, 320);
   return (
     <Link
       to={`/account/${post.slug}`}
@@ -55,8 +64,8 @@ export function ViralPostCard({ post, rank }) {
           ) : null}
           {rank ? (
             <span
-              className={`flex items-center gap-0.5 font-bold tabular-nums ${
-                rank === 1 ? 'text-yellow-500' : rank === 2 ? 'text-zinc-400' : 'text-orange-700'
+              className={`flex items-center gap-0.5 font-semibold tabular-nums ${
+                RANK_COLORS[rank - 1] ?? RANK_COLORS[2]
               }`}
             >
               <TrendingUp className="w-3 h-3" />
@@ -67,25 +76,21 @@ export function ViralPostCard({ post, rank }) {
       </div>
 
       <div className="relative aspect-square bg-bg-tertiary rounded overflow-hidden">
-        {(() => {
-          // proxiedImage() returns '' for IG/TT session-bound URLs.
-          // Skip the <img> entirely so the placeholder gradient shows.
-          const thumbSrc = proxiedImage(post.thumbnailUrl, 320);
-          return thumbSrc ? (
-            <img
-              src={thumbSrc}
-              alt=""
-              loading="lazy"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.nextElementSibling?.classList.remove('hidden');
-              }}
-            />
-          ) : null;
-        })()}
+        {thumbSrc ? (
+          <img
+            src={thumbSrc}
+            alt=""
+            loading="lazy"
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+        ) : null}
+        {/* V25.2: hide placeholder only when thumb is actually rendered (thumbSrc truthy) */}
         <div
-          className={`${post.thumbnailUrl ? 'hidden' : ''} absolute inset-0 flex items-center justify-center bg-gradient-to-br from-bg-tertiary to-bg-primary`}
+          className={`${thumbSrc ? 'hidden' : ''} absolute inset-0 flex items-center justify-center bg-gradient-to-br from-bg-tertiary to-bg-primary`}
         >
           <PlatformIcon platform={post.platform} className="w-12 h-12 text-text-muted opacity-50" />
         </div>

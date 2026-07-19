@@ -80,7 +80,7 @@ export function WeeklyBriefing({ accounts }) {
           <ul className="space-y-2 text-sm text-text-secondary">
             {recap.patterns.map((line, i) => (
               <li key={i} className="flex gap-2">
-                <span className="text-accent-secondary mt-0.5 font-bold tabular-nums">{i + 1}.</span>
+                <span className="text-accent-secondary mt-0.5 font-semibold tabular-nums">{i + 1}.</span>
                 <span className="leading-relaxed">{line}</span>
               </li>
             ))}
@@ -96,7 +96,7 @@ export function WeeklyBriefing({ accounts }) {
           <ul className="space-y-2 text-sm text-text-secondary">
             {recap.recommendations.map((line, i) => (
               <li key={i} className="flex gap-2">
-                <span className="text-accent-warning mt-0.5 font-bold tabular-nums">{i + 1}.</span>
+                <span className="text-accent-warning mt-0.5 font-semibold tabular-nums">{i + 1}.</span>
                 <span className="leading-relaxed">{line}</span>
               </li>
             ))}
@@ -134,7 +134,7 @@ export function WeeklyBriefing({ accounts }) {
                 className="surface p-2 hover:border-accent-primary transition-colors"
               >
                 <div className="flex items-center justify-between text-[10px] text-text-muted mb-1">
-                  <span className="font-bold text-accent-warning">#{i + 1}</span>
+                  <span className="font-semibold text-accent-warning">#{i + 1}</span>
                   <span className="truncate">@{p.username}</span>
                 </div>
                 <div className="text-[11px] text-text-secondary line-clamp-2 min-h-[2.2em]">

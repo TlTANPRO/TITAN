@@ -1,11 +1,12 @@
-// GrowthStrategy — projection chart + 10+ tactical recommendations + AI insight
+// GrowthStrategy — projection chart + 10+ tactical recommendations
 // V11: 10+ recs, AI prefix replaced with platform-anchored label, Y-axis
 // domain auto for chart stability when ER has wide range.
+// V25.7: removed Bot icon, font-bold → font-semibold.
 import { useMemo } from 'react';
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine
 } from 'recharts';
-import { TrendingUp, Target, CheckCircle2, Bot } from 'lucide-react';
+import { TrendingUp, Target, CheckCircle2, Lightbulb } from 'lucide-react';
 import { formatPercent } from '../lib/format.js';
 import { performanceByMonth } from '../lib/analytics.js';
 import { getInsight } from '../lib/insights.js';
@@ -248,7 +249,7 @@ export function GrowthStrategy({ insights, account }) {
             {recs.map((r, i) => (
               <div key={i} className="surface p-3 bg-bg-tertiary/40">
                 <div className="text-sm font-semibold text-text-primary mb-1 flex items-center gap-1.5">
-                  <span className="w-5 h-5 rounded-full bg-accent-primary text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">{i + 1}</span>
+                  <span className="w-5 h-5 rounded-full bg-accent-primary text-white text-[10px] font-semibold flex items-center justify-center flex-shrink-0">{i + 1}</span>
                   {r.title}
                 </div>
                 <div className="text-xs text-text-secondary leading-relaxed">{r.detail}</div>
@@ -258,11 +259,11 @@ export function GrowthStrategy({ insights, account }) {
         </div>
       </div>
 
-      {/* AI insight (pre-generated) */}
+      {/* Pre-generated insight (analytics-only fallback when AI text unavailable) */}
       {aiText && (
         <div className="surface p-3 mt-4 border border-accent-primary/30 bg-accent-primary/5">
           <div className="flex items-center gap-2 text-xs font-semibold text-accent-primary uppercase tracking-wider mb-2">
-            <Bot className="w-3.5 h-3.5" />
+            <Lightbulb className="w-3.5 h-3.5" />
             {platformLabel(account?.platform)} Insight — Proyeksi & Taktik 3-6 Bulan
           </div>
           <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">{aiText}</p>

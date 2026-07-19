@@ -1,14 +1,13 @@
 // V21: /ai — Global Insight & Rekomendasi view (ViralRecipe, GrowthStrategy, StrategyBrief, WeeklyBriefing).
 // Tabbed view across all 9 accounts. Shows pre-cached text from ai-insights.json.
+// V25.7: removed Bot icon, removed "Pre-cached" chip + "AI" language, font-bold → font-semibold.
 import { useState, useEffect } from 'react';
-import { Bot, Sparkles, TrendingUp, FileText, Calendar } from 'lucide-react';
+import { Lightbulb, Sparkles, TrendingUp, FileText, Calendar } from 'lucide-react';
 import { useAccounts } from '../hooks/useAccount.js';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
-import { EmptyState, ErrorState } from '../components/ui/EmptyState.jsx';
-import { Chip } from '../components/ui/Chip.jsx';
+import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
 import { getInsight, getInsightsMeta, getWeeklyBriefing } from '../lib/insights.js';
-import { formatNumber } from '../lib/format.js';
 
 const TABS = [
   { value: 'strategy', label: 'Strategy Brief', icon: FileText },
@@ -45,14 +44,14 @@ export default function AiInsights() {
   return (
     <div className="p-4 md:p-6 space-y-4 max-w-7xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-text-primary flex items-center gap-2">
-          <Bot className="w-6 h-6 text-accent-primary" />
+        <h1 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
+          <Lightbulb className="w-6 h-6 text-accent-primary" />
           Insight & Rekomendasi
         </h1>
         <p className="text-sm text-text-muted mt-0.5">
           {meta.generatedAt
-            ? `Last generated: ${new Date(meta.generatedAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })} · ${meta.accountCount} akun`
-            : 'Belum ada insight yang di-generate'
+            ? `Tersimpan lokal · ${new Date(meta.generatedAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })} · ${meta.accountCount} akun`
+            : 'Belum ada insight yang tersimpan'
           }
         </p>
       </div>
@@ -125,9 +124,8 @@ export default function AiInsights() {
         ) : activeText ? (
           <div>
             <div className="flex items-center gap-2 mb-3 text-xs text-accent-primary">
-              <Bot className="w-3.5 h-3.5" />
+              <Lightbulb className="w-3.5 h-3.5" />
               <span className="font-semibold uppercase tracking-wider">Rekomendasi</span>
-              <Chip size="sm" tone="info">Pre-cached</Chip>
             </div>
             <div className="text-sm text-text-primary leading-relaxed whitespace-pre-line">
               {activeText}
