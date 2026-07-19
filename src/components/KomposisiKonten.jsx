@@ -54,18 +54,13 @@ function buildKomposisi(accounts) {
 }
 
 export function KomposisiKonten({ accounts }) {
+  // V27.9: ALL hooks must run before any conditional return.
+  // Previously `useMemo(platformAgg)` was placed AFTER the `if (grandTotal === 0)` guard,
+  // which violated the Rules of Hooks when accounts went from empty → populated
+  // (third hook added on the second render → "Rendered more hooks than during the
+  // previous render" → Home subtree crash). Compute platformAgg unconditionally.
   const { rows, grandTotal } = useMemo(() => buildKomposisi(accounts), [accounts]);
   const [view, setView] = useState('chart'); // 'chart' | 'table'
-
-  if (grandTotal === 0) {
-    return (
-      <div className="surface p-6 text-center text-text-muted text-sm">
-        Belum ada data konten.
-      </div>
-    );
-  }
-
-  // Aggregate per platform for the platform-level summary
   const platformAgg = useMemo(() => {
     const map = new Map();
     for (const r of rows) {
@@ -76,6 +71,14 @@ export function KomposisiKonten({ accounts }) {
     }
     return [...map.values()].sort((a, b) => b.count - a.count);
   }, [rows]);
+
+  if (grandTotal === 0) {
+    return (
+      <div className="surface p-6 text-center text-text-muted text-sm">
+        Belum ada data konten.
+      </div>
+    );
+  }
 
   return (
     <div className="surface p-5">
