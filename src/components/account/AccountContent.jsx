@@ -1,4 +1,5 @@
 // V21.1: Account Content tab — PostExplorer, content mix, hook classification, pillars, hashtags, mentions.
+// V27.5: bumped content-mix bar from h-2.5 to h-5 so it's clearly visible (parity with Home).
 import { Layers, Tag, BookOpen, Hash, Users } from 'lucide-react';
 import { PostExplorer } from '../PostExplorer.jsx';
 import { SectionHeader } from '../ui/SectionHeader.jsx';
@@ -37,12 +38,17 @@ export function AccountContent({ account, insights }) {
       {contentMixID.length > 0 && (
         <div className="surface p-5">
           <SectionHeader icon={Layers} title="Komposisi Format Konten" subtitle="Proporsi tipe media yang dipublikasikan" />
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {contentMixID.map((c) => (
               <div key={c.key} className="flex items-center gap-3 text-sm">
                 <span className="w-32 text-text-secondary text-xs flex-shrink-0">{c.label}</span>
-                <div className="flex-1 bg-bg-tertiary rounded-full h-2.5 overflow-hidden">
-                  <div className="h-full bg-accent-primary" style={{ width: `${c.pct}%` }} />
+                <div className="flex-1 bg-bg-tertiary rounded-full h-5 overflow-hidden flex items-center">
+                  <div
+                    className="h-full bg-accent-primary flex items-center justify-end px-2 text-[10px] font-semibold text-white tabular-nums"
+                    style={{ width: `${c.pct}%`, minWidth: '2.5rem' }}
+                  >
+                    {c.pct >= 8 ? `${Math.round(c.pct)}%` : ''}
+                  </div>
                 </div>
                 <span className="w-20 text-right text-text-muted text-xs tabular-nums">{c.count} ({Math.round(c.pct)}%)</span>
               </div>

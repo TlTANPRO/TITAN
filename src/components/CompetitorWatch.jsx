@@ -72,13 +72,15 @@ export function CompetitorWatch({ account }) {
     );
   }
 
-  // Find nearest peer by follower count for radar
+  // Find nearest peer by follower count for radar. Peers use `handle` not
+  // `username` — resolve to a unified label for the radar legend.
   const sorted = [...peerList].sort(
     (a, b) =>
       Math.abs((a.followerCount ?? 0) - (account?.followerCount ?? 0)) -
       Math.abs((b.followerCount ?? 0) - (account?.followerCount ?? 0))
   );
   const primary = sorted[0];
+  const peerLabel = primary?.handle || primary?.username || 'peer';
   const radarData = buildRadarData(account ?? {}, primary);
   const gap = competitorGap(
     {
@@ -106,7 +108,7 @@ export function CompetitorWatch({ account }) {
         <div>
           <div className="text-xs text-text-muted mb-2 flex items-center gap-1.5">
             <PlatformIcon platform={account?.platform} className="w-3 h-3" />
-            Radar vs @{primary.username} (akun dengan pengikut terdekat)
+            Radar vs @{peerLabel} (akun dengan pengikut terdekat)
           </div>
           <ResponsiveContainer width="100%" height={240}>
             <RadarChart data={radarData} margin={{ top: 8, right: 16, left: 16, bottom: 8 }}>
@@ -114,7 +116,7 @@ export function CompetitorWatch({ account }) {
               <PolarAngleAxis dataKey="metric" tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} />
               <PolarRadiusAxis tick={{ fontSize: 8 }} stroke="var(--border-subtle)" domain={[0, 100]} />
               <Radar name="Anda" dataKey="mine" stroke="oklch(0.65 0.22 350)" fill="oklch(0.65 0.22 350)" fillOpacity={0.4} />
-              <Radar name={primary.username} dataKey="peer" stroke="oklch(0.65 0.16 200)" fill="oklch(0.65 0.16 200)" fillOpacity={0.3} />
+              <Radar name={peerLabel} dataKey="peer" stroke="oklch(0.65 0.16 200)" fill="oklch(0.65 0.16 200)" fillOpacity={0.3} />
               <Legend wrapperStyle={{ fontSize: 10 }} />
             </RadarChart>
           </ResponsiveContainer>
@@ -179,25 +181,30 @@ function GapRow({ label, mine, peer, fmt }) {
   return (
     <div className="flex items-center gap-2 text-sm surface p-2 bg-bg-tertiary/30">
       <span className="text-text-secondary text-xs w-20">{label}</span>
-      <span className="font-bold text-text-primary tabular-nums flex-1 text-right">
+      <span className="font-semibold text-text-primary tabular-nums flex-1 text-right">
         {safeMine != null ? fmt(safeMine) : '—'}
       </span>
       <span
-        className={`text-xs font-semibold tabular-nums w-16 text-right ${
-          positive ? 'text-accent-success' : diff < 0 ? 'text-accent-danger' : 'text-text-muted'
+        className={`text-xs font-semibold tabular-nums w-20 text-right ${
+          safeMine == null || safePeer == null
+            ? 'text-text-muted'
+            : positive
+            ? 'text-accent-success'
+            : diff < 0
+            ? 'text-accent-danger'
+            : 'text-text-muted'
         }`}
       >
         {safeMine == null || safePeer == null
           ? '—'
           : positive
-          ? '↑'
+          ? `+${fmt(Math.abs(diff))} ↑`
           : diff < 0
-          ? '↓'
-          : '→'}{' '}
-        {safeMine != null && safePeer != null ? fmt(Math.abs(diff)) : ''}
+          ? `−${fmt(Math.abs(diff))} ↓`
+          : '± 0 →'}
       </span>
       <span className="text-text-muted text-xs tabular-nums w-16 text-right">
-        vs {safePeer != null ? fmt(safePeer) : '—'}
+        peer {safePeer != null ? fmt(safePeer) : '—'}
       </span>
     </div>
   );

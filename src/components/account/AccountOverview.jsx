@@ -6,7 +6,6 @@ import ProfileHeader from '../ProfileHeader.jsx';
 import OutlierCard from '../OutlierCard.jsx';
 import StatCard from '../StatCard.jsx';
 import { SectionHeader } from '../ui/SectionHeader.jsx';
-import { SectionLabel } from '../ui/SectionLabel.jsx';
 import { PlatformIcon } from '../icons/PlatformIcon.jsx';
 import { formatPercent, formatCompact } from '../../lib/format.js';
 
@@ -83,8 +82,6 @@ export function AccountOverview({ account, insights }) {
 
   return (
     <div className="space-y-6">
-      <SectionLabel number="01" title="Ringkasan Akun" accent="accent" />
-
       <ProfileHeader
         account={{
           ...account,

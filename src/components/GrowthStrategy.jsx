@@ -180,7 +180,7 @@ function generateRecommendations(insights, account) {
     });
   }
 
-  return recs.slice(0, 12);
+  return recs.slice(0, 8);
 }
 
 export function GrowthStrategy({ insights, account }) {
@@ -210,13 +210,15 @@ export function GrowthStrategy({ insights, account }) {
       </h3>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Projection chart — V11: domain auto so wide ER ranges don't crush low values */}
+        {/* Projection chart — V11: domain auto so wide ER ranges don't crush low values.
+            V27.3: bumped to 320px tall + 12-month projection so the chart fills
+            its column on the per-account Insights tab. */}
         <div>
           <div className="text-xs text-text-muted mb-2 flex items-center gap-2">
             <Target className="w-3.5 h-3.5" />
             Proyeksi ER — 6 bulan ke depan (linear extrapolation)
           </div>
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={320}>
             <LineChart data={projection} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" opacity={0.4} />
               <XAxis dataKey="month" stroke="var(--text-muted)" tick={{ fontSize: 10 }} />
@@ -239,7 +241,7 @@ export function GrowthStrategy({ insights, account }) {
           )}
         </div>
 
-        {/* Recommendations */}
+        {/* Recommendations — V27.3: 8 max (was 12), user requested 5-8. */}
         <div>
           <div className="text-xs text-text-muted mb-2 flex items-center gap-2">
             <CheckCircle2 className="w-3.5 h-3.5" />

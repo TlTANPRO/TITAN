@@ -14,7 +14,7 @@ import { Hero } from '../components/Hero.jsx';
 import { AccountHealthGrid } from '../components/AccountHealthGrid.jsx';
 import { LiveActivityFeed } from '../components/LiveActivityFeed.jsx';
 import { CrossAccountTimeline } from '../components/CrossAccountTimeline.jsx';
-import { ContentSunburst } from '../components/ContentSunburst.jsx';
+import { KomposisiKonten } from '../components/KomposisiKonten.jsx';
 import { WeeklyBriefing } from '../components/WeeklyBriefing.jsx';
 import { CombinedHeatmap } from '../components/CombinedHeatmap.jsx';
 import { EnhancedTable } from '../components/EnhancedTable.jsx';
@@ -22,7 +22,7 @@ import { ViralPostCard } from '../components/ViralPostCard.jsx';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { BentoGrid, BentoItem } from '../components/ui/BentoGrid.jsx';
 import { SectionLabel } from '../components/ui/SectionLabel.jsx';
-import { formatNumber, formatPercent, formatCompact } from '../lib/format.js';
+import { formatNumber, formatPercent } from '../lib/format.js';
 import { dataAvailability } from '../lib/analytics.js';
 import { weeklyTopViral } from '../lib/weeklyRecap.js';
 
@@ -96,27 +96,8 @@ export default function Home() {
     return weeklyTopViral(rawAccounts, 7, 5);
   }, [rawAccounts]);
 
-  // Content mix stat (Foto/Reel/Video/Carousel breakdown)
-  // V25.3: token-based colors (use chart-1/chart-4/chart-5/chart-3 from tokens.css)
-  const contentMix = useMemo(() => {
-    const mix = { IMAGE: 0, REEL: 0, VIDEO: 0, CAROUSEL_ALBUM: 0, OTHER: 0 };
-    for (const a of accounts) {
-      for (const p of a.posts ?? []) {
-        const mt = p.mediaType ?? 'IMAGE';
-        mix[mt] = (mix[mt] ?? 0) + 1;
-      }
-    }
-    const total = Object.values(mix).reduce((s, v) => s + v, 0) || 1;
-    return {
-      breakdown: [
-        { key: 'IMAGE', label: 'Foto', count: mix.IMAGE, color: 'bg-accent-primary' },
-        { key: 'REEL', label: 'Reels', count: mix.REEL, color: 'bg-accent-secondary' },
-        { key: 'VIDEO', label: 'Video', count: mix.VIDEO, color: 'bg-chart-5' },
-        { key: 'CAROUSEL_ALBUM', label: 'Carousel', count: mix.CAROUSEL_ALBUM, color: 'bg-accent-warning' }
-      ].filter((x) => x.count > 0),
-      total
-    };
-  }, [accounts]);
+  // V27.5: Content mix moved into KomposisiKonten (chart + table toggle).
+  // Single source of truth = the KomposisiKonten component.
 
   return (
     <div className="bg-bg-primary">
@@ -241,45 +222,16 @@ export default function Home() {
           />
         </BentoGrid>
 
-        {/* ===== ROW 6: Konten & Timing — Sunburst (4) + Heatmap (8) ===== */}
+        {/* ===== ROW 6: Konten & Timing — KomposisiKonten (5) + Heatmap (7) =====
+            V27.5: Sunburst replaced by KomposisiKonten (chart+table toggle,
+            per-account breakdown). Heatmap moved next to it. */}
         <BentoGrid>
-          <BentoItem colSpan="col-4" padding="p-4">
-            <ContentSunburst accounts={accounts} />
+          <BentoItem colSpan="col-5" padding="p-4">
+            <KomposisiKonten accounts={accounts} />
           </BentoItem>
 
-          <BentoItem colSpan="col-8" padding="p-4">
+          <BentoItem colSpan="col-7" padding="p-4">
             <CombinedHeatmap accounts={accounts} />
-          </BentoItem>
-        </BentoGrid>
-
-        {/* ===== ROW 7: Content Mix bars (full width) ===== */}
-        <BentoGrid>
-          <BentoItem colSpan="col-12" padding="p-4">
-            <SectionLabel number="07" title="Content Mix" accent="accent-secondary" className="mb-3" />
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {contentMix.breakdown.map((b) => {
-                const pct = (b.count / contentMix.total) * 100;
-                return (
-                  <div key={b.key}>
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="text-text-secondary font-medium">{b.label}</span>
-                      <span className="text-text-muted tabular-nums">
-                        {formatCompact(b.count)} <span className="opacity-60">({pct.toFixed(1)}%)</span>
-                      </span>
-                    </div>
-                    <div className="h-1.5 bg-bg-tertiary rounded-full overflow-hidden">
-                      <div
-                        className={`h-full ${b.color} transition-all`}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="pt-2 mt-3 border-t border-border-subtle text-[10px] text-text-muted">
-              Total {formatNumber(contentMix.total)} post lintas 9 akun
-            </div>
           </BentoItem>
         </BentoGrid>
 
