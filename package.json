@@ -23,7 +23,9 @@
     "test": "vitest run",
     "deploy": "node scripts/deploy.mjs",
     "deploy:dry": "node scripts/deploy.mjs --dry-run",
-    "deploy:nopush": "node scripts/deploy.mjs --skip-push"
+    "deploy:nopush": "node scripts/deploy.mjs --skip-push",
+    "setup:audit-infra": "bash scripts/hooks/install-audit-infra.sh",
+    "audit:pre-session": "node scripts/hooks/pre-session.cjs"
   },
   "dependencies": {
     "react": "^18.3.1",

@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:/Users/Syahfalah/TITAN/.claude/hooks/pre-session.cjs\""
+          }
+        ]
+      }
+    ]
+  }
+}
