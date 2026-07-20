@@ -60,9 +60,14 @@ jobs:
     env:
       # GH PAT (set in repo Secrets → Actions → New repository secret)
       GH_PAT: ${{ secrets.GH_PAT }}
-      # Scraper API keys (also Secrets)
-      TITAN_ENSEMBLEDATA_TOKEN: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
-      TITAN_JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
+      # Scraper API keys (also Secrets).
+      # V27.15: Map singular secrets (TITAN_ENSEMBLEDATA_TOKEN) to the plural
+      # CSV env var (ENSEMBLEDATA_TOKENS) that scripts/lib/tokenPool.mjs reads.
+      # Without this mapping, the TokenPool throws "ENSEMBLEDATA_TOKENS not
+      # set in .env" on first instantiation. The GH Secret value can be a
+      # comma-separated list of tokens for round-robin rotation.
+      ENSEMBLEDATA_TOKENS: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
+      JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
     steps:
       - name: Checkout repo (with PAT)
         uses: actions/checkout@v4

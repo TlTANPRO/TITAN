@@ -55,6 +55,14 @@ jobs:
     env:
       # Fail loud on validation errors, fail soft on scrape errors
       FAIL_LATEST: true
+      # V27.15: Map singular secret (TITAN_ENSEMBLEDATA_TOKEN) to the plural
+      # CSV env var (ENSEMBLEDATA_TOKENS) that scripts/lib/tokenPool.mjs reads.
+      # Without this mapping, the TokenPool throws "ENSEMBLEDATA_TOKENS not
+      # set in .env" on first instantiation and the scrape step hard-fails.
+      # We can map multiple comma-separated tokens by setting the GH Secret
+      # to "tok1,tok2,tok3" — pool does round-robin across all of them.
+      ENSEMBLEDATA_TOKENS: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
+      JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -90,6 +98,7 @@ jobs:
       # files → post-write guard fails. Hydrate from the bundled
       # src/data/accounts-full.json (which IS committed) before scraping.
       - name: Bootstrap scraped/ from bundled data
+        if: success()
         run: node scripts/bootstrap-scraped-from-bundled.mjs
 
       # ============== SCRAPE PHASE (fail soft) ==============
@@ -112,6 +121,10 @@ jobs:
       - name: Scrape Instagram
         if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ig' || github.event.inputs.platform == '' }}
         env:
+          # V27.15: also pass through to step-level (job-level env is the
+          # default, but explicit is safer if anyone reorders the steps).
+          ENSEMBLEDATA_TOKENS: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
+          JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
           IG_SESSION: ${{ secrets.IG_SESSION }}
         run: |
           if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ] || [ "${{ steps.cadence.outputs.weekly_full }}" = "true" ]; then
@@ -131,6 +144,10 @@ jobs:
 
       - name: Scrape TikTok
         if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '' }}
+        env:
+          # V27.15: same as IG — explicit per-step env to be safe.
+          ENSEMBLEDATA_TOKENS: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
+          JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
         run: |
           if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ] || [ "${{ steps.cadence.outputs.weekly_full }}" = "true" ]; then
             echo "Full TT scrape"
