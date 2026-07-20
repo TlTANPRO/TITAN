@@ -193,7 +193,15 @@ jobs:
 
       # ============== BUILD PHASE ==============
 
+      # V28.1: VITE_LLM_PROXY_URL is PUBLIC (the Worker URL is bundled into
+      # the client, not a secret). Bake it into the build so the live site
+      # chat panel auto-connects to the Worker instead of falling back to
+      # direct mode (which requires API keys in localStorage). Without
+      # this, every GitHub Actions deploy produces a bundle that asks the
+      # user to enter a Google/OpenRouter API key.
       - name: Build production bundle
+        env:
+          VITE_LLM_PROXY_URL: https://titan-llm-proxy.nickasad10007.workers.dev
         run: pnpm run build
 
       # ============== DEPLOY PHASE ==============

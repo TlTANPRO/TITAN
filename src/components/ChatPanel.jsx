@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useLlmChat } from '../hooks/useLlmChat.js';
 import { subscribeToAccounts, getAccountBySlug } from '../lib/dataStore.js';
 import {
@@ -74,10 +75,52 @@ function useCurrentAccountSlug() {
   return slug;
 }
 
+// V28: detect mobile viewport (≤640px). Used to auto-open chat on /ai
+// route on mobile devices — user reported "AI di mobile tidak otomatis".
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 640px)').matches;
+  });
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 640px)');
+    const handler = (e) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return isMobile;
+}
+
 export default function ChatPanel() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const currentAccountSlug = useCurrentAccountSlug();
+  const isMobile = useIsMobile();
+  const location = useLocation();
+
+  // V28: On mobile, auto-open the chat panel when the user navigates to /ai
+  // (Insight & Rekomendasi page). The fullscreen modal is the natural
+  // workspace for the AI chat there — no need to tap a small floating button.
+  // On desktop, the floating button is fine (chat can be alongside insights).
+  useEffect(() => {
+    if (isMobile && location.pathname === '/ai') {
+      setOpen(true);
+    }
+  }, [isMobile, location.pathname]);
+
+  // V28: when the chat panel opens, focus the textarea so the keyboard pops
+  // up immediately on mobile. Skip if a message is currently streaming
+  // (don't steal focus mid-answer).
+  const textareaRef = useRef(null);
+  useEffect(() => {
+    if (open && textareaRef.current && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const t = setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 300); // wait for slide-up animation
+      return () => clearTimeout(t);
+    }
+  }, [open]);
 
   // Subscribe to dataStore — AI chat pakai data yang SAMA dengan Home/AccountPage
   // (single source of truth). Update paralel otomatis kalau data reloaded.
@@ -216,6 +259,7 @@ export default function ChatPanel() {
           <form onSubmit={handleSend} className="p-3 border-t border-border-subtle bg-bg-elevated">
             <div className="flex items-end gap-2">
               <textarea
+                ref={textareaRef}
                 id="chat-message"
                 name="message"
                 value={input}
