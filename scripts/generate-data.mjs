@@ -95,8 +95,13 @@ async function main() {
     throw new Error(`Post-write: expected 9 accounts, got ${verify.length}`);
   }
   const verifyTotalPosts = verify.reduce((s, a) => s + (a.posts?.length ?? 0), 0);
-  if (verifyTotalPosts < 4000) {
-    throw new Error(`Post-write: post count ${verifyTotalPosts} < 4000 (likely data loss)`);
+  // V29.1: lower threshold from 4000 to 3500. SSOT pre-dedup was 4134 (with 453 in-file
+  // duplicate records per shortcode, 2 ID formats coexisting). After V29 composite-key
+  // dedup, expected ~3705 (24 unique posts gained from scraped/, 429 redundant dup
+  // removed). 3500 is the new defense-in-depth floor — buffer of ~200 below expected.
+  // See plan peppy-discovering-cherny.md for V29.1 audit.
+  if (verifyTotalPosts < 3500) {
+    throw new Error(`Post-write: post count ${verifyTotalPosts} < 3500 (likely data loss)`);
   }
   const seenKeys = new Map();
   let crossDup = 0;

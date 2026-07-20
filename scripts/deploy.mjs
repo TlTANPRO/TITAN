@@ -111,8 +111,10 @@ async function main() {
     preFlightErrors.push(`Expected 9 accounts in accounts-full.json, got ${accFull.length}`);
   }
   const totalPosts = accFull.reduce((s, a) => s + (a.posts?.length || 0), 0);
-  if (totalPosts < 4000) {
-    preFlightErrors.push(`Post count ${totalPosts} too low (expected >= 4000, likely data loss)`);
+  // V29.1: lower threshold from 4000 to 3500 (see generate-data.mjs for full rationale).
+  // Defense in depth — buffer below V29.1 expected ~3705 posts.
+  if (totalPosts < 3500) {
+    preFlightErrors.push(`Post count ${totalPosts} too low (expected >= 3500, likely data loss)`);
   }
   // Cross-account dup check (cheap O(n) pre-flight)
   const seenKeys = new Map();

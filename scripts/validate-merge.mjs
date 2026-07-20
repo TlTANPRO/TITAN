@@ -30,8 +30,9 @@ function validateSchema(data, slug) {
 function dedupePostsInFile(posts) {
   const seen = new Map();
   for (const post of posts) {
-    if (!post.id) continue;
-    if (!seen.has(post.id)) seen.set(post.id, post);
+    const k = dedupKey(post);
+    if (!k) continue;
+    if (!seen.has(k)) seen.set(k, post);
   }
   return [...seen.values()];
 }
@@ -57,40 +58,65 @@ function sanityCheck(data) {
 }
 
 /**
- * Cross-file dedup. Posts yang punya ID sama di multiple file akan di-keep
- * di file dengan followerCount tertinggi (akun "paling authoritative").
+ * Build a composite dedup key for a post. Shortcode is the human-stable
+ * identifier on IG (the same photo can be reposted, the shortcode survives).
+ * For TT, aweme_id (== post.id) is already unique per video, but shortcode
+ * acts as a stable fallback when present.
+ *
+ * V29: previously this function used `post.id` only. That missed IG reposts
+ * where two accounts had the SAME shortcode but different internal id values
+ * (e.g. one file kept the long form, the other the truncated form). Live
+ * verification showed 2 such cross-dups survived (ig-syahfalahproperti ↔
+ * ig-ardiantanah) — caught only by generate-data.mjs post-write check.
+ *
+ * Composite key = `${platform}:${shortcode || id}` — same as the post-write
+ * check, so the two layers agree.
+ */
+function dedupKey(post) {
+  if (!post) return null;
+  const platform = post.platform ?? '';
+  const key = post.shortcode || post.id;
+  if (!key) return null;
+  return `${platform}:${key}`;
+}
+
+/**
+ * Cross-file dedup. Posts yang punya composite key (platform:shortcode||id)
+ * sama di multiple file akan di-keep di file dengan followerCount tertinggi
+ * (akun "paling authoritative").
  *
  * @returns {{ removedCounts: Record<string, number>, summary: string }}
  */
 function crossFileDedupe(fileData) {
-  // Map id → [fileSlug, post] occurrences
-  const idToOccurrences = new Map();
+  // Map composite-key → [fileSlug, post] occurrences
+  const keyToOccurrences = new Map();
   for (const [slug, data] of Object.entries(fileData)) {
     for (const post of data.posts ?? []) {
-      if (!post.id) continue;
-      if (!idToOccurrences.has(post.id)) {
-        idToOccurrences.set(post.id, []);
+      const k = dedupKey(post);
+      if (!k) continue;
+      if (!keyToOccurrences.has(k)) {
+        keyToOccurrences.set(k, []);
       }
-      idToOccurrences.get(post.id).push({ slug, post });
+      keyToOccurrences.get(k).push({ slug, post });
     }
   }
 
-  // Cari IDs yang muncul di multiple file
-  const duplicateIds = [];
-  for (const [id, occurrences] of idToOccurrences.entries()) {
+  // Cari keys yang muncul di multiple file
+  const duplicateKeys = [];
+  for (const [key, occurrences] of keyToOccurrences.entries()) {
     const uniqueSlugs = new Set(occurrences.map((o) => o.slug));
     if (uniqueSlugs.size > 1) {
-      duplicateIds.push({ id, occurrences });
+      duplicateKeys.push({ key, occurrences });
     }
   }
 
-  if (duplicateIds.length === 0) {
+  if (duplicateKeys.length === 0) {
     return { removedCounts: {}, summary: 'No cross-file duplicates' };
   }
 
-  // Untuk setiap duplicate id, tentukan "winner" file (followerCount tertinggi)
+  // Untuk setiap duplicate key, tentukan "winner" file (followerCount tertinggi)
   const removedCounts = {};
-  for (const { id, occurrences } of duplicateIds) {
+  for (const { key, occurrences } of duplicateKeys) {
     let winner = occurrences[0];
     for (const occ of occurrences) {
       const occFollowers = fileData[occ.slug]?.account?.followerCount ?? 0;
@@ -105,7 +131,8 @@ function crossFileDedupe(fileData) {
       if (occ.slug === winner.slug) continue;
       const data = fileData[occ.slug];
       if (!data) continue;
-      const idx = data.posts.findIndex((p) => p.id === id);
+      const k = dedupKey(occ.post);
+      const idx = data.posts.findIndex((p) => dedupKey(p) === k);
       if (idx >= 0) {
         data.posts.splice(idx, 1);
         removedCounts[occ.slug] = (removedCounts[occ.slug] ?? 0) + 1;
@@ -113,7 +140,7 @@ function crossFileDedupe(fileData) {
     }
   }
 
-  return { removedCounts, summary: `Removed ${duplicateIds.length} cross-file duplicates` };
+  return { removedCounts, summary: `Removed ${duplicateKeys.length} cross-file duplicates` };
 }
 
 async function main() {
