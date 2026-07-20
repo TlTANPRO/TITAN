@@ -68,6 +68,11 @@ jobs:
       # comma-separated list of tokens for round-robin rotation.
       ENSEMBLEDATA_TOKENS: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
       JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
+      # V27.16: Skip ENSEMBLEDATA scraping when only 1 valid token remains
+      # (see scripts/validate-tokens-now.mjs for current state). The
+      # bootstrap step (V27.12/V27.14) keeps the dashboard stable using
+      # existing bundled data. Set to "false" to re-enable scraping.
+      ENSEMBLEDATA_TOKENS_SKIP: "true"
     steps:
       - name: Checkout repo (with PAT)
         uses: actions/checkout@v4

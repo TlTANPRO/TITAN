@@ -63,6 +63,14 @@ jobs:
       # to "tok1,tok2,tok3" — pool does round-robin across all of them.
       ENSEMBLEDATA_TOKENS: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
       JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
+      # V27.16: If user confirms only 1 valid token remaining (see
+      # scripts/validate-tokens-now.mjs on 20 Jul 2026: 1 valid of 26),
+      # the cron should skip ENSEMBLEDATA entirely to preserve the last
+      # token for emergency top-ups. Set to "true" to skip. The bundled
+      # data + bootstrap (V27.12) keeps the dashboard stable.
+      # To re-enable scraping once more tokens are available, set to "false"
+      # and ensure TITAN_ENSEMBLEDATA_TOKEN has 2+ comma-separated tokens.
+      ENSEMBLEDATA_TOKENS_SKIP: "true"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4

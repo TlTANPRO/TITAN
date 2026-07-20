@@ -241,6 +241,14 @@ async function scrapeAccount(account, tokenPool, opts = {}) {
 
 async function main() {
   await fs.mkdir(OUT_DIR, { recursive: true });
+  // V27.16: if ENSEMBLEDATA is skipped, exit cleanly so the workflow
+  // pipeline (validate → generate → deploy) still runs. Bootstrap will
+  // use the existing bundled data; no new posts will be collected.
+  if (process.env.ENSEMBLEDATA_TOKENS_SKIP === 'true') {
+    console.log('[TT] ⚠️  ENSEMBLEDATA_TOKENS_SKIP=true — scraping skipped, no new posts will be added.');
+    console.log('[TT] Bootstrap will use existing bundled data; pipeline continues with current state.');
+    return;
+  }
   const tokenPool = new TokenPool();
 
   // Skip accounts that already have a complete scrape file

@@ -3,6 +3,20 @@ import 'dotenv/config';
 
 export class TokenPool {
   constructor() {
+    // V27.16: explicit skip flag. If set, the pool is empty and every fetch
+    // call will throw "no tokens available" — letting the caller decide
+    // whether to skip enrichment entirely. Used by workflows when only 1
+    // token is active (1 token = single point of failure, not sustainable
+    // for daily cron, better to preserve the quota for emergency top-ups).
+    if (process.env.ENSEMBLEDATA_TOKENS_SKIP === 'true') {
+      this.tokens = [];
+      this.exhausted = new Set();
+      this.pointer = 0;
+      this.skipping = true;
+      console.log('[TokenPool] ⚠️  ENSEMBLEDATA_TOKENS_SKIP=true — pool is empty, all fetches will fail-fast');
+      return;
+    }
+
     const raw = process.env.ENSEMBLEDATA_TOKENS || '';
     const all = raw.split(',').map((t) => t.trim()).filter(Boolean);
     // Optional: filter to a specific subset via ENSEMBLEDATA_TOKENS_FILTER (comma-separated prefixes)
@@ -12,6 +26,7 @@ export class TokenPool {
       : all;
     this.exhausted = new Set(); // token yang 495 hari ini
     this.pointer = 0;
+    this.skipping = false;
     if (this.tokens.length === 0) {
       throw new Error(
         filter.length > 0
@@ -76,6 +91,11 @@ export async function ensembledataFetch(platform, path, params = {}, tokenPool) 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     const token = tokenPool.next();
     if (!token) {
+      // V27.16: distinguish "skipped via env flag" from "all tokens hit 495".
+      // Both leave tokens unavailable but the caller wants to know which.
+      if (tokenPool.skipping) {
+        throw new Error('ENSEMBLEDATA_TOKENS_SKIP=true — enrichment disabled by workflow');
+      }
       throw new Error('All ENSEMBLEDATA tokens exhausted for today');
     }
 

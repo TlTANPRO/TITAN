@@ -376,6 +376,15 @@ async function scrapeAccount(account, tokenPool) {
 
 async function main() {
   await fs.mkdir(OUT_DIR, { recursive: true });
+  // V27.16: if ENSEMBLEDATA is skipped, the scraper is useless — every
+  // fetchIgProfile call would throw. Exit 0 cleanly so the workflow
+  // pipeline (validate → generate → deploy) still runs and produces a
+  // stable dashboard based on the existing bundled data.
+  if (process.env.ENSEMBLEDATA_TOKENS_SKIP === 'true') {
+    console.log('[IG] ⚠️  ENSEMBLEDATA_TOKENS_SKIP=true — scraping skipped, no new posts will be added.');
+    console.log('[IG] Bootstrap will use existing bundled data; pipeline continues with current state.');
+    return;
+  }
   const tokenPool = new TokenPool();
 
   // CLI flags (parity with scrape-tt.mjs):

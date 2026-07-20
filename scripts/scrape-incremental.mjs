@@ -360,6 +360,14 @@ async function incrementalTt(account, opts, tokenPool) {
 async function main() {
   const opts = parseArgs();
   await fs.mkdir(OUT_DIR, { recursive: true });
+  // V27.16: if ENSEMBLEDATA is skipped, exit cleanly so the workflow
+  // pipeline (validate → generate → deploy) still runs. Bootstrap will
+  // use the existing bundled data; no new posts will be collected.
+  if (process.env.ENSEMBLEDATA_TOKENS_SKIP === 'true') {
+    console.log('[INCREMENTAL] ⚠️  ENSEMBLEDATA_TOKENS_SKIP=true — scraping skipped, no new posts will be added.');
+    console.log('[INCREMENTAL] Bootstrap will use existing bundled data; pipeline continues with current state.');
+    return;
+  }
   const tokenPool = new TokenPool();
 
   const targets = [];
