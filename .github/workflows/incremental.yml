@@ -60,18 +60,15 @@ jobs:
     env:
       # GH PAT (set in repo Secrets → Actions → New repository secret)
       GH_PAT: ${{ secrets.GH_PAT }}
-      # Scraper API keys (also Secrets).
-      # V27.15: Map singular secrets (TITAN_ENSEMBLEDATA_TOKEN) to the plural
-      # CSV env var (ENSEMBLEDATA_TOKENS) that scripts/lib/tokenPool.mjs reads.
-      # Without this mapping, the TokenPool throws "ENSEMBLEDATA_TOKENS not
-      # set in .env" on first instantiation. The GH Secret value can be a
-      # comma-separated list of tokens for round-robin rotation.
-      ENSEMBLEDATA_TOKENS: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
+      # V28: All scrapers are now FREE methods. JINA_API_KEY is used by
+      # TikWM / Jina proxies in scripts/scrape-{ig,tt}-free.mjs.
       JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
-      # V27.16: Skip ENSEMBLEDATA scraping when only 1 valid token remains
-      # (see scripts/validate-tokens-now.mjs for current state). The
-      # bootstrap step (V27.12/V27.14) keeps the dashboard stable using
-      # existing bundled data. Set to "false" to re-enable scraping.
+      # Backward-compat: kept so the wrapper scripts (which still
+      # import tokenPool.mjs) don't throw "ENSEMBLEDATA_TOKENS not set".
+      # The wrapper ignores these after the V28 refactor.
+      ENSEMBLEDATA_TOKENS: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
+      # V27.16: kill switch. V28 wrapper treats this as a no-op
+      # (free scrapers run regardless). Kept for safety.
       ENSEMBLEDATA_TOKENS_SKIP: "true"
     steps:
       - name: Checkout repo (with PAT)

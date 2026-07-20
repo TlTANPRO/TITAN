@@ -61,6 +61,65 @@ async function getProfile(uniqueId) {
   };
 }
 
+// V28: NEW free method — Jina reader for tiktok.com/@user web profile.
+// Renders the public profile page and extracts Followers/Following/Likes counts.
+// Faster than TikWM /user/info (no rate limit), but doesn't return avatar or bio
+// as reliably. Used as primary source; falls back to TikWM if parsing fails.
+//
+// Jina returns Markdown-like content with bold counts: **9902**Followers
+// Returns: { ok, followerCount, followingCount, heartCount, bio, source }
+async function getProfileJina(uniqueId) {
+  const url = `https://www.tiktok.com/@${uniqueId}`;
+  const proxyUrl = `${JINA_BASE}/${url}`;
+  const r = await fetch(proxyUrl, {
+    headers: { 'Accept': 'application/json', 'X-Respond-With': 'json' },
+    signal: AbortSignal.timeout(20000)
+  });
+  const text = await r.text();
+  if (!r.ok) throw new Error(`Jina HTTP ${r.status}: ${text.slice(0, 200)}`);
+  let j;
+  try { j = JSON.parse(text); } catch { throw new Error(`Jina non-JSON: ${text.slice(0, 200)}`); }
+  const c = j?.data?.content;
+  if (!c) throw new Error('Jina missing data.content');
+
+  // Counts: **180**Following / **9902**Followers / **29.3K**Likes
+  // Use lookbehind to require the bold-marker (**) before the number.
+  const m = (re) => {
+    const match = c.match(re);
+    if (!match) return 0;
+    return parseCountString(match[1]);
+  };
+  const followingCount = m(/\*\*([\d.,KMB]+)\*\*\s*Following/i);
+  const followerCount = m(/\*\*([\d.,KMB]+)\*\*\s*Followers/i);
+  const heartCount = m(/\*\*([\d.,KMB]+)\*\*\s*Likes/i);
+
+  // Bio: first ## line that isn't a count header. Some profiles have the
+  // "## suka bercanda..." bio section, others have a 2nd "## " line with
+  // a translation note. Skip any line whose body starts with ** (bolded counts).
+  const bioMatch = c.match(/## ([^*\n#][^\n#]+)/);
+  const bio = bioMatch ? bioMatch[1].trim() : '';
+
+  return {
+    followerCount,
+    followingCount,
+    heartCount,
+    bio,
+    source: 'jina-web'
+  };
+}
+
+// Parse "29.3K" / "1.2M" / "9902" → integer
+function parseCountString(s) {
+  if (!s) return 0;
+  const cleaned = String(s).replace(/,/g, '').trim();
+  const m = cleaned.match(/^([\d.]+)\s*([KMB]?)$/i);
+  if (!m) return 0;
+  const num = parseFloat(m[1]);
+  const suffix = (m[2] || '').toUpperCase();
+  const mult = suffix === 'K' ? 1e3 : suffix === 'M' ? 1e6 : suffix === 'B' ? 1e9 : 1;
+  return Math.round(num * mult);
+}
+
 async function searchVideos(keyword, maxPages = 3) {
   const allVideos = [];
   let cursor = 0;
@@ -180,13 +239,45 @@ async function scrapeAccount(account) {
     console.log(`  no existing file`);
   }
 
-  // Profile (always works via Jina)
+  // Profile: try Jina web profile (NEW, V28) first — faster, no rate limit.
+  // Falls back to TikWM /user/info if Jina fails or returns incomplete data.
   let profile = null;
+  let jinaFailed = null;
   try {
-    profile = await getProfile(username);
-    console.log(`  TikWM profile: ${profile.followerCount} followers, ${profile.videoCount} videos, ${profile.nickname}`);
+    const jinaProfile = await getProfileJina(username);
+    if (jinaProfile.followerCount > 0) {
+      const existingAccInner = existing?.account ?? account;
+      profile = {
+        username,
+        uniqueId: username,
+        nickname: existingAccInner.nickname || existingAccInner.fullName || username,
+        fullName: existingAccInner.fullName || existingAccInner.nickname || username,
+        avatarUrl: existingAccInner.avatarUrl || '',
+        signature: jinaProfile.bio || existingAccInner.signature || '',
+        bio: jinaProfile.bio || existingAccInner.bio || '',
+        biography: jinaProfile.bio || existingAccInner.biography || '',
+        verified: existingAccInner.verified ?? false,
+        followerCount: jinaProfile.followerCount,
+        followingCount: jinaProfile.followingCount,
+        heartCount: jinaProfile.heartCount,
+        videoCount: existingAccInner.videoCount || existingAccInner.postCount || 0,
+        postCount: existingAccInner.postCount || existingAccInner.videoCount || 0
+      };
+      console.log(`  Jina profile: ${profile.followerCount} followers, ${profile.followingCount} following, ${profile.heartCount} likes`);
+    } else {
+      jinaFailed = 'Jina returned 0 followers (profile may be private or page changed)';
+    }
   } catch (e) {
-    console.log(`  profile fetch failed: ${e.message.slice(0, 80)}`);
+    jinaFailed = e.message.slice(0, 80);
+  }
+
+  if (!profile) {
+    try {
+      profile = await getProfile(username);
+      console.log(`  TikWM fallback: ${profile.followerCount} followers, ${profile.videoCount} videos, ${profile.nickname}${jinaFailed ? ` (Jina: ${jinaFailed})` : ''}`);
+    } catch (e) {
+      console.log(`  profile fetch failed: ${e.message.slice(0, 80)}`);
+    }
   }
 
   // Search posts (best effort)

@@ -55,21 +55,15 @@ jobs:
     env:
       # Fail loud on validation errors, fail soft on scrape errors
       FAIL_LATEST: true
-      # V27.15: Map singular secret (TITAN_ENSEMBLEDATA_TOKEN) to the plural
-      # CSV env var (ENSEMBLEDATA_TOKENS) that scripts/lib/tokenPool.mjs reads.
-      # Without this mapping, the TokenPool throws "ENSEMBLEDATA_TOKENS not
-      # set in .env" on first instantiation and the scrape step hard-fails.
-      # We can map multiple comma-separated tokens by setting the GH Secret
-      # to "tok1,tok2,tok3" — pool does round-robin across all of them.
-      ENSEMBLEDATA_TOKENS: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
+      # V28: All scrapers are now FREE methods (i.instagram.com /clips/user/,
+      # TikWM via Jina, Jina web profile for TT). No API key required.
+      # The JINA_API_KEY and ENSEMBLEDATA_TOKENS below are kept for
+      # backward-compat with the scraper wrappers (they read them but
+      # don't use them anymore).
       JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
-      # V27.16: If user confirms only 1 valid token remaining (see
-      # scripts/validate-tokens-now.mjs on 20 Jul 2026: 1 valid of 26),
-      # the cron should skip ENSEMBLEDATA entirely to preserve the last
-      # token for emergency top-ups. Set to "true" to skip. The bundled
-      # data + bootstrap (V27.12) keeps the dashboard stable.
-      # To re-enable scraping once more tokens are available, set to "false"
-      # and ensure TITAN_ENSEMBLEDATA_TOKEN has 2+ comma-separated tokens.
+      ENSEMBLEDATA_TOKENS: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
+      # V27.16: kill switch. Now that V28 uses free methods, this is a
+      # no-op (the wrapper just logs and continues). Kept for safety.
       ENSEMBLEDATA_TOKENS_SKIP: "true"
     steps:
       - name: Checkout repo
@@ -129,18 +123,14 @@ jobs:
       - name: Scrape Instagram
         if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ig' || github.event.inputs.platform == '' }}
         env:
-          # V27.15: also pass through to step-level (job-level env is the
-          # default, but explicit is safer if anyone reorders the steps).
-          ENSEMBLEDATA_TOKENS: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
           JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
-          IG_SESSION: ${{ secrets.IG_SESSION }}
         run: |
           if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ] || [ "${{ steps.cadence.outputs.weekly_full }}" = "true" ]; then
-            echo "Full IG scrape"
+            echo "Full IG scrape (V28 free: i.instagram.com /clips/user/ + /feed/user/)"
             node scripts/scrape-ig.mjs --force
           else
-            echo "Incremental IG scrape (1-day window)"
-            node scripts/scrape-ig.mjs --days=1
+            echo "Incremental IG scrape (V28 free, no --days needed)"
+            node scripts/scrape-ig.mjs
           fi
         continue-on-error: true
         id: scrape-ig
@@ -153,16 +143,14 @@ jobs:
       - name: Scrape TikTok
         if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '' }}
         env:
-          # V27.15: same as IG — explicit per-step env to be safe.
-          ENSEMBLEDATA_TOKENS: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
           JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
         run: |
           if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ] || [ "${{ steps.cadence.outputs.weekly_full }}" = "true" ]; then
-            echo "Full TT scrape"
+            echo "Full TT scrape (V28 free: Jina web profile + TikWM search via Jina)"
             node scripts/scrape-tt.mjs --force
           else
-            echo "Incremental TT scrape (1-day window)"
-            node scripts/scrape-tt.mjs --days=1
+            echo "Incremental TT scrape (V28 free, no --days needed)"
+            node scripts/scrape-tt.mjs
           fi
         continue-on-error: true
         id: scrape-tt
