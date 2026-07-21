@@ -179,6 +179,16 @@ jobs:
       - name: Generate accounts-full.json
         run: node scripts/generate-data.mjs
 
+      # V30.2: re-scrape 9 profile avatars via facebookexternalhit/1.1 UA
+      # (moved from deleted incremental.yml). Avatars valid 1-2 days;
+      # daily refresh keeps dashboard showing real profile photos
+      # instead of brand-icon tiles. continue-on-error so a single
+      # rate-limit doesn't halt data refresh.
+      - name: Scrape fresh avatars
+        if: success()
+        run: node scripts/scrape-avatars.mjs
+        continue-on-error: true
+
       - name: Generate AI insights (optional, fail soft)
         env:
           VITE_LLM_PROXY_URL: ${{ secrets.LLM_PROXY_URL }}

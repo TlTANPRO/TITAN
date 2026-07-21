@@ -144,8 +144,21 @@ async function main() {
   console.log(`   ✅ 9 akun, ${totalPosts} posts, 0 cross-dup`);
 
   // Step 2: vite build (prebuild hook auto-copies data to public/)
+  // V30.1: explicitly forward VITE_LLM_PROXY_URL to the child pnpm/vite
+  // process. Workflows like daily-update.yml set this env var in the
+  // "Build production bundle" step, but the env var does NOT persist
+  // across Bash steps — so when deploy.mjs re-runs `pnpm run build`,
+  // the child shell would otherwise see undefined and the bundle would
+  // miss the Worker URL → live chat asks for an API key (V28.1 was
+  // ineffective because of this). Hardcode the Worker URL as fallback
+  // for local runs that never set the env var (the URL is PUBLIC, not
+  // a secret).
   console.log('\n[2/6] Vite build...');
-  run('pnpm run build', { stdio: 'inherit' });
+  const buildEnv = {
+    ...process.env,
+    VITE_LLM_PROXY_URL: process.env.VITE_LLM_PROXY_URL || 'https://titan-llm-proxy.nickasad10007.workers.dev'
+  };
+  run('pnpm run build', { stdio: 'inherit', env: buildEnv });
 
   if (DRY_RUN) {
     console.log('\n[dry-run] Skipping copy + git + push');
