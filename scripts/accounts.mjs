@@ -1,9 +1,9 @@
 // 9 akun target — full-scrape semua
 export const ACCOUNTS_IG = [
-  { slug: 'ig-majangmejeng_', username: 'majangmejeng_', displayName: 'Majang Mejeng' },
-  { slug: 'ig-syahfalahproperti', username: 'syahfalahproperti', displayName: 'PT. SYAHFALAH GRIYA AQUILA' },
-  { slug: 'ig-nisyanandaa', username: 'nisyanandaa', displayName: 'Nisyananda' },
-  { slug: 'ig-ardiantanah', username: 'ardiantanah', displayName: 'Achmad Ardiansyah' }
+  { slug: 'ig-majangmejeng_', username: 'majangmejeng_', displayName: 'Majang Mejeng', pk: '36883918534' },
+  { slug: 'ig-syahfalahproperti', username: 'syahfalahproperti', displayName: 'PT. SYAHFALAH GRIYA AQUILA', pk: '6516969650' },
+  { slug: 'ig-nisyanandaa', username: 'nisyanandaa', displayName: 'Nisyananda', pk: '2319759819' },
+  { slug: 'ig-ardiantanah', username: 'ardiantanah', displayName: 'Achmad Ardiansyah', pk: '3292893687' }
 ];
 
 export const ACCOUNTS_TT = [
