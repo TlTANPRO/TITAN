@@ -1,7 +1,6 @@
 // Hybrid scrape orchestrator — runs 4-pass pipeline across 9 accounts
 // Pass 1a: scrape-ig-free.mjs (P4 reels + P7 image best-effort)
 // Pass 1b: scrape-tt-free.mjs (P19 Jina profile + P2 via Jina)
-// Pass 1c: scrape-ig-scrapling.mjs (Scrapling StealthyFetcher — likes/comments/date/caption + profile)
 // Pass 2a: enrich-ig-ytdlp.mjs (per-post yt-dlp)
 // Pass 2b: enrich-tt-tikwm.mjs (per-post TikWM)
 // Each pass runs as a child process; per-account safety: one failure doesn't block next
@@ -70,7 +69,6 @@ async function runPassesForAccount(slug, platform) {
   const passes = isIG
     ? [
         { name: 'Pass 1a IG', script: 'scrape-ig-free.mjs', args: onlySlug ? [`only=${onlySlug}`] : [] },
-        { name: 'Pass 1c IG', script: 'scrape-ig-scrapling.mjs', args: onlySlug ? [`only=${onlySlug}`] : [] },
         { name: 'Pass 2a IG', script: 'enrich-ig-ytdlp.mjs', args: onlySlug ? [`only=${onlySlug}`] : [] }
       ]
     : [
