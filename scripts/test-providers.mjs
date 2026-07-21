@@ -65,6 +65,9 @@ async function testP4_IGReels() {
 }
 
 async function testP2_TikWMViaJina() {
+  // P2 v2: TikWM /api/ via Jina proxy — Jina wrapper unwraps + field remap
+  // Outer: { code: 200, data: { content: <inner JSON string>, ... } }
+  // Inner: { code: 0, data: { digg_count, play_count, comment_count, ... } }
   const jinaUrl = `https://r.jina.ai/https://www.tikwm.com/api/?url=${encodeURIComponent(TT_TEST_POST.url)}`;
   try {
     const res = await fetch(jinaUrl, {
@@ -72,15 +75,28 @@ async function testP2_TikWMViaJina() {
       signal: AbortSignal.timeout(30000)
     });
     if (!res.ok) return record('P2 TikWM via Jina', 'FAIL', `HTTP ${res.status}`);
-    const json = await res.json();
-    if (json.code !== 0 || !json.data) {
-      return record('P2 TikWM via Jina', 'FAIL', `code=${json.code} msg=${json.msg ?? '?'}`);
+    const outer = await res.json();
+    if (outer.code !== 200 || !outer.data) {
+      return record('P2 TikWM via Jina', 'FAIL', `Jina outer code=${outer.code}`);
     }
-    const d = json.data;
-    if (typeof d.like_count !== 'number') {
-      return record('P2 TikWM via Jina', 'FAIL', 'no like_count field');
+    let inner;
+    try {
+      inner = JSON.parse(outer.data.content);
+    } catch (e) {
+      return record('P2 TikWM via Jina', 'FAIL', `data.content not valid JSON: ${e.message.slice(0, 50)}`);
     }
-    return record('P2 TikWM via Jina', 'PASS', `like=${d.like_count} cmt=${d.comment_count} view=${d.view_count}`);
+    if (inner.code !== 0 || !inner.data) {
+      return record('P2 TikWM via Jina', 'FAIL', `TikWM inner code=${inner.code} msg=${inner.msg ?? '?'}`);
+    }
+    const d = inner.data;
+    // Field remap: digg_count → like_count, play_count → view_count
+    const likeCount = d.digg_count;
+    const viewCount = d.play_count;
+    const commentCount = d.comment_count;
+    if (typeof likeCount !== 'number') {
+      return record('P2 TikWM via Jina', 'FAIL', 'no digg_count field in inner data');
+    }
+    return record('P2 TikWM via Jina', 'PASS', `like=${likeCount} cmt=${commentCount} view=${viewCount}`);
   } catch (e) {
     return record('P2 TikWM via Jina', 'FAIL', e.message.slice(0, 80));
   }
