@@ -200,6 +200,25 @@ function buildCrossAccountBlock() {
     lines.push(`${i + 1}. @${a.username} (${a.platform === 'instagram' ? 'IG' : 'TT'}) — ${a.postCount} post`);
   });
 
+  // V30.3: Daftar lengkap semua akun — untuk pertanyaan "sebutkan semua akun"
+  // Top-5 ranking di atas tidak include akun yang rank 6-9 di semua kategori
+  // (mis. tt-syahfalahproperti: rank 7-9 di semua ranking → invisible ke AI
+  // → AI halusinasi jawab "akun belum masuk pipeline"). Block ini WAJIB
+  // ada supaya AI punya ground truth lengkap saat user tanya listing.
+  // Sort: IG dulu, lalu TT (primary→secondary), alphabetical dalam platform
+  // (deterministic → LLM bisa enumerate dengan benar).
+  lines.push('', `### Daftar Lengkap ${comparison.length} Akun (ground truth — pakai untuk pertanyaan \"sebutkan semua akun\")`);
+  const fullList = [...comparison].sort((a, b) => {
+    if (a.platform !== b.platform) return a.platform === 'instagram' ? -1 : 1;
+    return a.username.localeCompare(b.username);
+  });
+  fullList.forEach((a) => {
+    const er = a.hasER ? `${a.engagementRate.toFixed(2)}%` : '—';
+    const plat = a.platform === 'instagram' ? 'IG' : 'TT';
+    const fol = a.followerCount.toLocaleString('id-ID');
+    lines.push(`- @${a.username} (${plat}, ${fol} followers, ${a.postCount} posts, ER ${er})`);
+  });
+
   return lines.join('\n');
 }
 
