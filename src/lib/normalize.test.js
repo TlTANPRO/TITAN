@@ -126,3 +126,32 @@ describe('normalizeAccount — localAvatar passthrough (V17)', () => {
     }
   });
 });
+
+describe('availability matrix (V32.1)', () => {
+  it('computes per-metric coverage as fraction of posts with valid data', () => {
+    const raw = {
+      account: { slug: 'test-ig', username: 'test', followerCount: 1000, followingCount: 0, postCount: 3 },
+      posts: [
+        { id: '1', likeCount: 10, commentCount: 1, viewCount: 100, postedAt: '2026-07-22T00:00:00.000Z' },
+        { id: '2', likeCount: 0, commentCount: 0, viewCount: 0, postedAt: '2026-07-21T00:00:00.000Z' },
+        { id: '3', likeCount: 5, commentCount: 0, viewCount: 50, postedAt: '' }
+      ]
+    };
+    const out = normalizeAccount(raw, 'instagram');
+    expect(out.availability.likes.coverage).toBeCloseTo(2 / 3, 5);
+    expect(out.availability.comments.coverage).toBeCloseTo(1 / 3, 5);
+    expect(out.availability.views.coverage).toBeCloseTo(2 / 3, 5);
+    expect(out.availability.postedAt.coverage).toBeCloseTo(2 / 3, 5);
+    expect(out.availability.following.hasData).toBe(false);
+    expect(out.availability.following.value).toBe(0);
+  });
+
+  it('returns zero-coverage matrix for accounts with no posts', () => {
+    const raw = { account: { slug: 'empty', username: 'empty' }, posts: [] };
+    const out = normalizeAccount(raw, 'instagram');
+    expect(out.availability.likes.coverage).toBe(0);
+    expect(out.availability.comments.coverage).toBe(0);
+    expect(out.availability.postedAt.coverage).toBe(0);
+    expect(out.availability.following.hasData).toBe(false);
+  });
+});

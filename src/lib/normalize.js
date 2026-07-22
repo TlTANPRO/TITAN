@@ -133,6 +133,42 @@ export function normalizeAccount(raw, platform) {
     localAvatar: a.localAvatar ?? '',
     scrapedAt: raw.scrapedAt ?? new Date().toISOString(),
     posts: Array.isArray(raw.posts) ? raw.posts.map((p) => normalizePost(p, platform)).filter(Boolean) : [],
+    // V32.1: availability matrix per metric (coverage % of posts with valid data)
+    // Single source of truth so UI (Task 3) can render honest "Tidak tersedia"
+    // pills instead of fake zeros for low-coverage metrics.
+    availability: (() => {
+      const posts = Array.isArray(raw.posts) ? raw.posts : [];
+      const total = posts.length;
+      if (total === 0) {
+        return {
+          likes: { coverage: 0 },
+          comments: { coverage: 0 },
+          views: { coverage: 0 },
+          shares: { coverage: 0 },
+          saves: { coverage: 0 },
+          postedAt: { coverage: 0 },
+          following: { value: 0, hasData: false }
+        };
+      }
+      const count = (pred) => posts.filter(pred).length;
+      return {
+        likes: { coverage: count((p) => Number(p.likeCount ?? 0) > 0) / total },
+        comments: { coverage: count((p) => Number(p.commentCount ?? 0) > 0) / total },
+        views: { coverage: count((p) => Number(p.viewCount ?? 0) > 0) / total },
+        shares: { coverage: count((p) => Number(p.shareCount ?? 0) > 0) / total },
+        saves: { coverage: count((p) => Number(p.saveCount ?? 0) > 0) / total },
+        postedAt: {
+          coverage: count((p) => {
+            const iso = p.postedAt;
+            return typeof iso === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(iso);
+          }) / total
+        },
+        following: {
+          value: Number(a.followingCount ?? a.following_count ?? 0),
+          hasData: Number(a.followingCount ?? a.following_count ?? 0) > 0
+        }
+      };
+    })(),
     // V21 (Phase 6): derived freshness — most recent post timestamp + total count.
     // UI uses lastPostAt for "X hari sejak post terakhir" badge.
     lastPostAt: (() => {
