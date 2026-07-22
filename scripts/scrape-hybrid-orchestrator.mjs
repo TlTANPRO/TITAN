@@ -9,11 +9,39 @@
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import fsSync from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { ACCOUNTS_IG, ACCOUNTS_TT } from './accounts.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SCRAPED_DIR = path.join(__dirname, 'scraped');
+
+// V32.0: Idempotent ISO postedAt derivation (Pass 3)
+// Auto-detects seconds vs ms (1e12 threshold). Skips posts that already
+// have an ISO-8601 postedAt (regex /^\d{4}-\d{2}-\d{2}T/) so re-runs are no-op.
+function derivePostedAt(epoch) {
+  if (!epoch || epoch <= 0) return null;
+  const ms = epoch > 1e12 ? epoch : epoch * 1000;
+  const iso = new Date(ms).toISOString();
+  return Number.isNaN(Date.parse(iso)) ? null : iso;
+}
+
+function applyPostedAtPass(slug) {
+  const fp = path.join(__dirname, 'scraped', `${slug}.json`);
+  if (!fsSync.existsSync(fp)) return { slug, updated: 0, skipped: 0 };
+  const j = JSON.parse(fsSync.readFileSync(fp, 'utf-8'));
+  let updated = 0, skipped = 0;
+  for (const p of j.posts ?? []) {
+    if (typeof p.postedAt === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(p.postedAt)) {
+      skipped++; continue;
+    }
+    const epoch = p.createTime ?? p.timestamp ?? 0;
+    const iso = derivePostedAt(epoch);
+    if (iso) { p.postedAt = iso; updated++; }
+  }
+  if (updated > 0) fsSync.writeFileSync(fp, JSON.stringify(j, null, 2), 'utf-8');
+  return { slug, updated, skipped };
+}
 
 const argv = process.argv.slice(2);
 const isDryRun = argv.includes('--dry-run');
@@ -85,6 +113,14 @@ async function runPassesForAccount(slug, platform) {
     } else {
       record(slug, pass.name, 'FAIL', `exit=${result.code} stderr=${result.stderr.slice(0, 100)}`);
     }
+  }
+
+  // Pass 3: derive ISO postedAt (idempotent — V32.0)
+  try {
+    const iso = applyPostedAtPass(slug);
+    console.log(`  ISO pass: updated=${iso.updated} skipped=${iso.skipped}`);
+  } catch (e) {
+    console.warn(`  ISO pass failed: ${e.message.slice(0, 100)}`);
   }
 
   const after = isDryRun ? before : await countPosts(slug);
