@@ -37,14 +37,14 @@ export default function AccountMetadata({ account, aggregates }) {
           return (
             <div
               key={key}
-              className="surface-2 border border-border-default rounded-xl p-3 flex flex-col gap-1.5 motion-safe:animate-sunburst-in transition-all duration-base ease-out hover:-translate-y-0.5 hover:border-border-strong"
+              className="surface-2 border border-border-default rounded-xl p-3 flex flex-col gap-1.5 motion-safe:animate-sunburst-in transition-all duration-base ease-out hover:-translate-y-0.5 hover:border-border-strong min-w-0 overflow-hidden"
               style={{ animationDelay: `${delayMs}ms` }}
             >
-              <div className="flex items-center gap-2 text-text-muted text-[10px] uppercase tracking-wider font-medium">
-                <Icon className="w-3.5 h-3.5" strokeWidth={1.5} aria-hidden="true" />
-                {label}
+              <div className="flex items-center gap-1.5 text-text-muted text-[10px] uppercase tracking-wider font-medium min-w-0">
+                <Icon className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                <span className="truncate">{label}</span>
               </div>
-              <div className="text-lg font-semibold tabular-nums text-text-primary">
+              <div className="text-base sm:text-lg font-semibold tabular-nums text-text-primary truncate">
                 {hasData ? formatCompact(value) : 'Tidak tersedia'}
               </div>
               {cov !== undefined && (
