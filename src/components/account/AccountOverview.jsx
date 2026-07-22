@@ -3,6 +3,7 @@
 // First tab of /account/:slug.
 import { Eye, Heart, MessageSquare, Sparkles, Award, TrendingUp, Activity, Target } from 'lucide-react';
 import ProfileHeader from '../ProfileHeader.jsx';
+import AccountMetadata from '../AccountMetadata.jsx';
 import OutlierCard from '../OutlierCard.jsx';
 import StatCard from '../StatCard.jsx';
 import { SectionHeader } from '../ui/SectionHeader.jsx';
@@ -92,6 +93,9 @@ export function AccountOverview({ account, insights }) {
           cadence: insights.postingCadence
         }}
       />
+
+      {/* V32.2: Akun & Metadata bento — 8 cards with per-metric coverage bars */}
+      <AccountMetadata account={account} aggregates={aggregates} />
 
       {availability.message && (
         <div className="surface p-4 border border-accent-warning/30 bg-accent-warning/5 flex items-start gap-3">
