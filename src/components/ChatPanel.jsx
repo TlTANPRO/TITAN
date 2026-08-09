@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLlmChat } from '../hooks/useLlmChat.js';
 import { subscribeToAccounts, getAccountBySlug } from '../lib/dataStore.js';
+import { getAdminSummary } from '../lib/adminHashtags.js';
 import {
   Send, X, MessageSquare, Trash2, Square, AlertCircle
 } from 'lucide-react';
@@ -158,8 +159,26 @@ export default function ChatPanel() {
     });
   }, [currentAccountSlug]);
 
+  // V32.5: compute admin summary on /admin route so AI chat can answer
+  // questions like "postingan admin Rifqi bulan ini" or "admin mana yang
+  // paling aktif". Subscribes to dataStore so updates from the daily cron
+  // (accounts-full.json reload) flow through automatically.
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const [adminAccounts, setAdminAccounts] = useState(() => {
+    // Initial snapshot — may be empty on first render, useMemo recomputes.
+    return [];
+  });
+  useEffect(() => {
+    if (!isAdminRoute) return undefined;
+    return subscribeToAccounts((list) => setAdminAccounts(list));
+  }, [isAdminRoute]);
+  const adminSummary = useMemo(
+    () => (isAdminRoute ? getAdminSummary(adminAccounts) : null),
+    [isAdminRoute, adminAccounts]
+  );
+
   const { messages, isStreaming, error, send, stop, clear } =
-    useLlmChat(currentAccountSlug, accountData);
+    useLlmChat(currentAccountSlug, accountData, adminSummary);
 
   const scrollRef = useRef(null);
   useEffect(() => {
@@ -195,6 +214,8 @@ export default function ChatPanel() {
               <span className="text-sm font-semibold text-text-primary">TITAN AI</span>
               {currentAccountSlug ? (
                 <span className="text-xs text-text-muted">· @{currentAccountSlug.replace(/^(ig|tt)-/, '')}</span>
+              ) : isAdminRoute ? (
+                <span className="text-xs text-text-muted">· Admin Tracker</span>
               ) : (
                 <span className="text-xs text-text-muted">· Global</span>
               )}
@@ -225,7 +246,9 @@ export default function ChatPanel() {
                 <p className="mb-1 font-medium text-text-secondary">
                   {currentAccountSlug
                     ? `Tanya apa saja tentang @${currentAccountSlug.replace(/^(ig|tt)-/, '')}.`
-                    : 'Tanya apa saja.'}
+                    : isAdminRoute
+                      ? 'Tanya tentang admin — jumlah post, performa, atau rekomendasi.'
+                      : 'Tanya apa saja.'}
                 </p>
               </div>
             )}

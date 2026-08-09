@@ -191,3 +191,33 @@ describe('normalizePost — createTime fallback to timestamp (V32.3)', () => {
     expect(result.createTime).toBe(1786273205);
   });
 });
+
+describe('normalizePost — TT postUrl fallback (V32.5)', () => {
+  // Bug: free TT scraper leaves raw.videoUrl empty → normalizePost.postUrl
+  // fell through to the IG branch and produced instagram.com URL for a TT
+  // post. Admin table "Buka" link broken. Fix: pass accountUsername and
+  // construct https://www.tiktok.com/@{username}/video/{id}.
+  it('builds tiktok.com URL when videoUrl is empty but accountUsername provided', () => {
+    const raw = { id: '7671952452672818440', caption: 'x' };
+    const result = normalizePost(raw, 'tiktok', 'majangmejeng_');
+    expect(result.postUrl).toBe('https://www.tiktok.com/@majangmejeng_/video/7671952452672818440');
+  });
+
+  it('prefers raw.videoUrl when present (TT)', () => {
+    const raw = {
+      id: '7671952452672818440',
+      videoUrl: 'https://example.com/proxy/video.mp4',
+      caption: 'x'
+    };
+    const result = normalizePost(raw, 'tiktok', 'majangmejeng_');
+    // videoUrl is non-empty so we keep it (Buka link → actual play URL).
+    // We do NOT want to silently replace a valid videoUrl with the canonical page URL.
+    expect(result.postUrl).toBe('https://example.com/proxy/video.mp4');
+  });
+
+  it('builds instagram.com URL for IG posts when shortcode present', () => {
+    const raw = { id: 'abc', shortcode: 'DavGLefkwbZ', caption: 'x' };
+    const result = normalizePost(raw, 'instagram');
+    expect(result.postUrl).toBe('https://www.instagram.com/p/DavGLefkwbZ/');
+  });
+});

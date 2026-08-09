@@ -222,7 +222,7 @@ function buildCrossAccountBlock() {
   return lines.join('\n');
 }
 
-export async function buildSystemPrompt(accountSlug, accountData = null) {
+export async function buildSystemPrompt(accountSlug, accountData = null, adminSummary = null) {
   // Ensure dataStore loaded sebelum baca data — kalau dataStore belum ready
   // (mis. race condition first load), tunggu sampai selesai. Setelah loaded
   // pertama kali, ini no-op karena cached.
@@ -270,6 +270,33 @@ export async function buildSystemPrompt(accountSlug, accountData = null) {
   const crossBlock = buildCrossAccountBlock();
   if (crossBlock) {
     lines.push(crossBlock);
+  }
+
+  // 4. Admin tracker — kalau user membuka /admin, inject ringkasan per admin
+  // + daftar post terbaru per admin supaya AI bisa jawab pertanyaan seperti
+  // "post Rifqi bulan ini" atau "admin mana yang paling aktif".
+  if (adminSummary && adminSummary.length > 0) {
+    lines.push('', '## Admin Tracker (auto-computed dari hashtag #AgustusXX)');
+    const totalPosts = adminSummary.reduce((s, a) => s + a.postCount, 0);
+    const totalLikes = adminSummary.reduce((s, a) => s + a.totalLikes, 0);
+    lines.push(`- Total admin posts: ${totalPosts} dari ${adminSummary.filter((a) => a.postCount > 0).length} admin`);
+    lines.push(`- Total likes (admin posts): ${fmtCompact(totalLikes)}`);
+    lines.push('', '### Ringkasan per Admin');
+    for (const adm of adminSummary) {
+      const avg = adm.postCount > 0 ? Math.round(adm.totalLikes / adm.postCount) : 0;
+      lines.push(`- ${adm.name} (${adm.hashtag}): ${adm.postCount} post | ${fmtCompact(adm.totalLikes)} likes (avg ${avg}) | ${fmtCompact(adm.totalViews)} views`);
+    }
+    // Top 5 post admin terbaru — kasih konteks konkret kalau AI ditanya detail
+    const allPosts = adminSummary.flatMap((adm) => adm.posts.map((p) => ({ ...p, _admin: adm.name })));
+    allPosts.sort((a, b) => (b.createTime ?? 0) - (a.createTime ?? 0));
+    if (allPosts.length > 0) {
+      lines.push('', '### Post Admin Terbaru (top 5)');
+      for (const p of allPosts.slice(0, 5)) {
+        const when = p.createTime ? new Date((p.createTime > 1e12 ? p.createTime : p.createTime * 1000)).toISOString().slice(0, 10) : '—';
+        const cap = (p.caption || '').slice(0, 70).replace(/\n/g, ' ');
+        lines.push(`- [${p._admin} @ ${p._accountUsername} ${when}] "${cap}…" (${fmtCompact(p.likeCount)} likes, ${fmtCompact(p.viewCount)} views)`);
+      }
+    }
   }
 
   // 4. Memory layers (existing)

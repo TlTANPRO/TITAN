@@ -1,6 +1,10 @@
 // Normalize post → unified shape for analytics + UI
 // Handles both real scraped data (likeCount, viewCount, etc.) and dummy data (likes, views, etc.)
-export function normalizePost(raw, platform) {
+//
+// `accountUsername` (optional) — passed in by normalizeAccount so TT posts
+// without a stored `videoUrl` can still produce a valid tiktok.com URL:
+// https://www.tiktok.com/@{username}/video/{id}
+export function normalizePost(raw, platform, accountUsername = '') {
   if (!raw) return null;
   const id = String(raw.id ?? raw.pk ?? raw.shortcode ?? raw.aweme_id ?? '');
   if (!id) return null;
@@ -55,7 +59,17 @@ export function normalizePost(raw, platform) {
       raw.cover_url ??
       '',
     videoUrl: raw.videoUrl ?? raw.video_url ?? raw.share_url ?? '',
-    postUrl: raw.postUrl ?? (platform === 'tiktok' ? raw.videoUrl : `https://www.instagram.com/p/${raw.shortcode ?? id}/`),
+    postUrl: raw.postUrl
+      ?? raw.share_url
+      ?? (platform === 'tiktok'
+        // TT free scraper often leaves videoUrl empty; fall back to canonical
+        // tiktok.com/@{username}/video/{id} so the Buka link still works.
+        ? (raw.videoUrl && raw.videoUrl.length > 0
+            ? raw.videoUrl
+            : (accountUsername
+                ? `https://www.tiktok.com/@${accountUsername}/video/${id}`
+                : ''))
+        : `https://www.instagram.com/p/${raw.shortcode ?? id}/`),
     mediaType,
     type: mediaType,
     isVideo: mediaType === 'VIDEO' || mediaType === 'REEL' || mediaType === 'GRAPHVIDEO',
@@ -139,7 +153,7 @@ export function normalizeAccount(raw, platform) {
     // photo instead of fetching session-bound CDN URLs.
     localAvatar: a.localAvatar ?? '',
     scrapedAt: raw.scrapedAt ?? new Date().toISOString(),
-    posts: Array.isArray(raw.posts) ? raw.posts.map((p) => normalizePost(p, platform)).filter(Boolean) : [],
+    posts: Array.isArray(raw.posts) ? raw.posts.map((p) => normalizePost(p, platform, a.username ?? a.uniqueId ?? a.unique_id ?? '')).filter(Boolean) : [],
     // V32.1: availability matrix per metric (coverage % of posts with valid data)
     // Single source of truth so UI (Task 3) can render honest "Tidak tersedia"
     // pills instead of fake zeros for low-coverage metrics.

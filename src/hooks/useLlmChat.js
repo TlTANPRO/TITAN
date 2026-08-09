@@ -14,7 +14,7 @@ import {
   formatSearchContext
 } from '../lib/webAccess.js';
 
-export function useLlmChat(accountSlug, accountData) {
+export function useLlmChat(accountSlug, accountData, adminSummary = null) {
   const [messages, setMessages] = useState(() => loadHistory());
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState(null);
@@ -111,7 +111,7 @@ export function useLlmChat(accountSlug, accountData) {
       saveHistory([...loadHistory().slice(0, -1), enrichedUserMsg]); // keep enriched version persistent
 
       // Build system prompt with all memory layers
-      const systemPrompt = await buildSystemPrompt(accountSlug, accountData);
+      const systemPrompt = await buildSystemPrompt(accountSlug, accountData, adminSummary);
 
       const apiMessages = [
         { role: 'system', content: systemPrompt },
@@ -170,7 +170,7 @@ export function useLlmChat(accountSlug, accountData) {
         abortRef.current = null;
       }
     },
-    [messages, isStreaming, accountSlug, accountData]
+    [messages, isStreaming, accountSlug, accountData, adminSummary]
   );
 
   const stop = useCallback(() => {
