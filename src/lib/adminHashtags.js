@@ -17,32 +17,41 @@ export const ADMIN_HASHTAGS = [
 // Returns the lowercase hashtag pattern as a Set for fast O(1) lookups.
 const HASHTAG_SET = new Set(ADMIN_HASHTAGS.map((a) => a.hashtag));
 
-// Return the admin object for a given hashtag (case-insensitive), or null
-// if the tag isn't a known admin marker.
+// Return the admin object for a given hashtag (case-insensitive, hash-agnostic),
+// or null if the tag isn't a known admin marker.
 export function findAdminByHashtag(tag) {
   if (!tag) return null;
-  const needle = String(tag).toLowerCase();
-  return ADMIN_HASHTAGS.find((a) => a.hashtag === needle) ?? null;
+  const needle = String(tag).replace(/^#/, '').toLowerCase();
+  return ADMIN_HASHTAGS.find((a) => a.hashtag.replace(/^#/, '').toLowerCase() === needle) ?? null;
 }
 
 // All posts across all accounts that carry the admin's hashtag. Each post
 // is decorated with _account metadata so the table can render account UI
 // without re-walking accounts.
+//
+// TITAN's normalized shape nests account info under `.account` (e.g.
+// `a.account.username`, `a.account.slug`). Older drafts exposed
+// `a.username` directly, so we unwrap both shapes defensively.
+//
+// Hashtag normalization: `ADMIN_HASHTAGS[i].hashtag` keeps the leading `#`
+// for display, but live `p.hashtags[]` may or may not include `#`. Strip
+// it on both sides so matching is hash-prefix-agnostic.
 export function getAdminPosts(accounts, admin) {
   if (!admin || !accounts) return [];
-  const needle = admin.hashtag.toLowerCase();
+  const needle = admin.hashtag.replace(/^#/, '').toLowerCase();
   const out = [];
   for (const a of accounts) {
+    const meta = a.account ?? a;
     for (const p of (a.posts ?? [])) {
-      const tags = (p.hashtags ?? []).map((t) => String(t).toLowerCase());
+      const tags = (p.hashtags ?? []).map((t) => String(t).replace(/^#/, '').toLowerCase());
       if (tags.includes(needle)) {
         out.push({
           ...p,
-          _account: a,
-          _accountSlug: a.slug,
-          _accountUsername: a.username,
-          _accountPlatform: a.platform,
-          _accountAvatar: a.localAvatar || a.profilePicUrl
+          _account: meta,
+          _accountSlug: meta.slug,
+          _accountUsername: meta.username,
+          _accountPlatform: meta.platform ?? a.platform,
+          _accountAvatar: meta.localAvatar || meta.profilePicUrl
         });
       }
     }
