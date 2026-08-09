@@ -1,15 +1,15 @@
 // SectionLabel — Linear-style section header with number + colored accent bar.
 // Used in Home bento to visually separate content categories.
 // Variants:
-//   accent (default blue) | pink | purple | cyan | emerald
-//   tone="solid" (default) | "muted"
+//   accent (default blue) | pink | purple | cyan | emerald | warning
+// V33: all accent classes use semantic tokens (no raw Tailwind pink-500 etc.).
 export function SectionLabel({ number, title, accent = 'accent', action, className = '' }) {
   const accentClass = {
     accent: 'bg-accent-primary',
-    pink: 'bg-pink-500',
-    purple: 'bg-purple-500',
-    cyan: 'bg-cyan-500',
-    emerald: 'bg-emerald-500',
+    pink: 'bg-accent-instagram',
+    purple: 'bg-accent-secondary',
+    cyan: 'bg-accent-tiktok',
+    emerald: 'bg-accent-success',
     warning: 'bg-accent-warning'
   }[accent] || 'bg-accent-primary';
 

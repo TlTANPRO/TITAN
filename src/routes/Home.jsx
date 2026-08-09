@@ -5,6 +5,8 @@
 // and shrinks Sunburst to 180×180 so both panels sit comfortably side-by-side.
 // V25.3: Top Engagement Rate empty state, token-based rank colors, font-bold → font-semibold,
 // Bot icon removed, TopPerformersCard icon colors migrated to tokens.
+// V33: 3-zone reorganization (PULSE / DEEP-DIVE / PATTERNS) for analytics
+// panel feel. Adds ZoneDivider separator + uppercase zone labels.
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Trophy, TrendingUp, Activity, Sparkles, Heart, MessageCircle, Eye, ArrowRight } from 'lucide-react';
@@ -25,6 +27,19 @@ import { SectionLabel } from '../components/ui/SectionLabel.jsx';
 import { formatNumber, formatPercent } from '../lib/format.js';
 import { dataAvailability } from '../lib/analytics.js';
 import { weeklyTopViral } from '../lib/weeklyRecap.js';
+
+// V33: Zone separator — thin track + mono index + uppercase zone label.
+// Mirrors Grafana / Datadog dashboard zone bands.
+function ZoneDivider({ index, label }) {
+  return (
+    <div className="flex items-center gap-3 pt-2" role="separator" aria-label={`Zone ${label}`}>
+      <span className="text-[10px] font-mono tracking-widest uppercase text-text-muted tabular-nums">{index}</span>
+      <span className="h-px flex-1 bg-border-subtle" aria-hidden="true" />
+      <span className="text-[10px] font-semibold tracking-widest uppercase text-text-secondary">{label}</span>
+      <span className="h-px flex-1 bg-border-subtle" aria-hidden="true" />
+    </div>
+  );
+}
 
 function withAvailability(account) {
   if (!account) return account;
@@ -135,6 +150,9 @@ export default function Home() {
           </BentoGrid>
         )}
 
+        {/* V33: ZONE 1 → ZONE 2 divider */}
+        <ZoneDivider index="02" label="Akun & Performa" />
+
         {/* ===== ROW 3: Account Health (12) ===== */}
         <BentoGrid>
           <BentoItem colSpan="col-12" padding="p-4">
@@ -221,6 +239,9 @@ export default function Home() {
             suffix="post"
           />
         </BentoGrid>
+
+        {/* V33: ZONE 2 → ZONE 3 divider */}
+        <ZoneDivider index="03" label="Pola & Timing" />
 
         {/* ===== ROW 6: Komposisi Konten (full width, standalone) =====
             V27.13: Moved out of the col-5/col-7 split with CombinedHeatmap
