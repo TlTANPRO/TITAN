@@ -8,11 +8,18 @@ export function normalizePost(raw, platform) {
   const caption = raw.caption ?? raw.desc ?? raw.description ?? raw.accessibility_caption ?? '';
 
   // CreateTime fallback chain: many IG scrapers store seconds-since-epoch in
-  // taken_at / taken_at_timestamp. When ALL of those are missing (e.g. ardiantanah
-  // 187/679 posts), fall back to the `timestamp` field which is typically ms.
-  const createTime = Number(
-    raw.createTime ?? raw.taken_at ?? raw.taken_at_timestamp ?? 0
+  // taken_at / taken_at_timestamp. When ALL of those are missing (e.g. free
+  // IG scraper V28 only writes `timestamp`), fall back to `timestamp` field
+  // which can be either ms (ENSEMBLEDATA history) or sec (free scraper).
+  const rawCreateTime = Number(
+    raw.createTime ?? raw.taken_at ?? raw.taken_at_timestamp ?? raw.timestamp ?? 0
   );
+  // V32.3: normalize to seconds — all downstream consumers (dataStore sort,
+  // LiveActivityFeed relativeTime, FreshnessBadge lastPostAt) assume
+  // seconds-unit. Mixed units would silently filter out newer posts.
+  const createTime = rawCreateTime > 1e12
+    ? Math.floor(rawCreateTime / 1000)
+    : rawCreateTime;
   const timestampMs = createTime > 0
     ? (createTime > 1e12 ? createTime : createTime * 1000)
     : Number(raw.timestamp ?? 0);

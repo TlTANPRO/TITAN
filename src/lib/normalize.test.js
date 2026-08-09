@@ -7,7 +7,7 @@
 // normalizeAccount dropped the localAvatar field, causing all 9 accounts to
 // show the brand-icon tile fallback instead of the real photo.
 import { describe, it, expect } from 'vitest';
-import { extractHashtags, extractMentions, normalizeAccount } from './normalize.js';
+import { extractHashtags, extractMentions, normalizeAccount, normalizePost } from './normalize.js';
 
 describe('extractHashtags', () => {
   it('returns empty array for null/undefined/empty input', () => {
@@ -153,5 +153,41 @@ describe('availability matrix (V32.1)', () => {
     expect(out.availability.comments.coverage).toBe(0);
     expect(out.availability.postedAt.coverage).toBe(0);
     expect(out.availability.following.hasData).toBe(false);
+  });
+});
+
+describe('normalizePost — createTime fallback to timestamp (V32.3)', () => {
+  // Bug: free IG scraper V28 only writes `timestamp` field, never `createTime`.
+  // normalizePost fallback chain used to skip raw.timestamp → normalized
+  // post.createTime = 0 → dataStore filter excluded from Live Activity Feed.
+  // Fix: add raw.timestamp to fallback + normalize to sec.
+  it('picks timestamp when no createTime/taken_at present (free IG scraper output)', () => {
+    const raw = {
+      id: '3959869110041692153',
+      timestamp: 1786273205, // sec (free scraper writes taken_at here)
+      caption: 'test'
+    };
+    const result = normalizePost(raw, 'instagram');
+    expect(result.createTime).toBe(1786273205);
+    expect(result.timestamp).toBe(1786273205000);
+  });
+
+  it('normalizes ms timestamp to seconds when used as createTime fallback', () => {
+    const raw = {
+      id: 'old-ig-post',
+      timestamp: 1783945430000 // ms (ENSEMBLEDATA history)
+    };
+    const result = normalizePost(raw, 'instagram');
+    expect(result.createTime).toBe(1783945430);
+  });
+
+  it('prefers raw.createTime over timestamp fallback', () => {
+    const raw = {
+      id: 'has-both',
+      createTime: 1786273205,
+      timestamp: 99999999
+    };
+    const result = normalizePost(raw, 'instagram');
+    expect(result.createTime).toBe(1786273205);
   });
 });
