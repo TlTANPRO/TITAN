@@ -350,7 +350,7 @@ async function main() {
     if (onlySlug && account.slug !== onlySlug) continue;
     try {
       const r = await scrapeAccount(account);
-      results.push({ slug: account.slug, ok: true, total: r.posts.length });
+      results.push({ slug: account.slug, ok: true, total: r.posts.length, added: r.stats?.newPostsAdded ?? 0 });
     } catch (err) {
       console.error(`[TT-FREE] @${account.username} — FAILED: ${err.message}`);
       results.push({ slug: account.slug, ok: false, error: err.message });
@@ -360,6 +360,19 @@ async function main() {
   console.log(`\n=== TT-FREE SCRAPE COMPLETE ===`);
   console.log('Results:', JSON.stringify(results, null, 2));
   const failed = results.filter((r) => !r.ok);
+  // V32.4: detect silent zero-new scrape (Jina or TikWM returned empty for
+  // every account — usually means search endpoint blocked / account private).
+  // Don't fail the whole run, but warn loudly and exit non-zero so
+  // daily-update.yml surfaces the problem instead of silently deploying
+  // yesterday's data again.
+  const okResults = results.filter((r) => r.ok);
+  const zeroNew = okResults.filter((r) => (r.added ?? 0) === 0).length;
+  if (okResults.length > 0 && zeroNew === okResults.length) {
+    console.log(`\n⚠️  V32.4: ${zeroNew}/${okResults.length} TT account(s) returned 0 new posts.`);
+    console.log(`   Likely cause: Jina / TikWM /feed/search blocked or rate-limited.`);
+    console.log(`   Existing data preserved, but today's deploy has the SAME posts as yesterday.`);
+    process.exit(2);
+  }
   if (failed.length > 0) {
     console.log(`\n${failed.length} account(s) failed:`, failed);
     process.exit(1);
