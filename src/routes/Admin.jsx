@@ -6,7 +6,7 @@
 // so scrapers, future exports, and other pages can reuse it.
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, MessageCircle, Eye, ExternalLink, Hash, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Heart, MessageCircle, Eye, ExternalLink, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { useAccounts } from '../hooks/useAccount.js';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PlatformIcon, platformLabel } from '../components/icons/PlatformIcon.jsx';
@@ -34,7 +34,7 @@ const ADMIN_ACCENTS = [
   { ring: 'ring-accent-primary', text: 'text-accent-primary', chip: 'bg-accent-primary/10 text-accent-primary border-accent-primary/30' },
   { ring: 'ring-accent-success', text: 'text-accent-success', chip: 'bg-accent-success/10 text-accent-success border-accent-success/30' },
   { ring: 'ring-accent-warning', text: 'text-accent-warning', chip: 'bg-accent-warning/10 text-accent-warning border-accent-warning/30' },
-  { ring: 'ring-accent-secondary', text: 'text-accent-secondary', chip: 'bg-accent-secondary/10 text-accent-secondary border-accent-secondary/30' }
+  { ring: 'ring-accent-instagram', text: 'text-accent-instagram', chip: 'bg-accent-instagram/10 text-accent-instagram border-accent-instagram/30' }
 ];
 
 const ADMIN_BY_NAME = new Map(ADMIN_HASHTAGS_PLACEHOLDER());
@@ -156,10 +156,6 @@ export default function Admin() {
                   </div>
                   <div className="min-w-0">
                     <div className="text-sm font-bold text-text-primary truncate">{admin.name}</div>
-                    <div className={`inline-flex items-center gap-1 mt-0.5 px-1.5 py-0.5 text-[10px] font-semibold rounded border ${accent.chip}`}>
-                      <Hash className="w-2.5 h-2.5" />
-                      {admin.source}
-                    </div>
                   </div>
                 </div>
               </div>
@@ -199,7 +195,6 @@ export default function Admin() {
                 onClick={() => setAdminFilter(admin.name)}
                 className={`chip transition-colors inline-flex items-center gap-1 ${active ? 'bg-accent-primary text-white' : 'bg-bg-tertiary text-text-secondary hover:text-text-primary'}`}
               >
-                <Hash className="w-3 h-3" />
                 {admin.name}
                 <span className={`ml-1 px-1.5 text-[10px] font-semibold rounded-full ${active ? 'bg-white/20' : 'bg-bg-primary/40'}`}>
                   {admin.postCount}
@@ -278,10 +273,6 @@ export default function Admin() {
                           </div>
                           <div className="min-w-0">
                             <div className="text-sm font-semibold text-text-primary truncate">{p._admin.name}</div>
-                            <div className={`inline-flex items-center gap-1 mt-0.5 px-1.5 py-0.5 text-[10px] font-semibold rounded border ${accent.chip}`}>
-                              <Hash className="w-2.5 h-2.5" />
-                              {p._admin.source}
-                            </div>
                           </div>
                         </div>
                       </td>
