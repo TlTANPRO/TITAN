@@ -1,0 +1,35 @@
+<!doctype html>
+<!--
+  TITAN 404.html — GH Pages SPA fallback.
+
+  GH Pages serves static files only — /TITAN/settings returns 404 instead of
+  serving index.html (no nginx rewrite available). This 404.html captures the
+  requested path in sessionStorage and redirects to root, where main.jsx reads
+  the stored path and <Navigate>s to the correct React route.
+
+  This lets reload + hard refresh work on any sub-route, not just root.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>TITAN</title>
+    <script>
+      // GH Pages preserves the original URL when serving 404.html, so we can
+      // recover the path the user actually wanted. Store it, then redirect.
+      (function () {
+        try {
+          var p = window.location.pathname + window.location.search + window.location.hash;
+          // Strip leading /TITAN/ (or any case variant) since root URL is /TITAN/
+          p = p.replace(/^\/titan\//i, '/');
+          sessionStorage.setItem('titan:redirect', p);
+        } catch (e) {}
+        window.location.replace('/TITAN/');
+      })();
+    </script>
+  </head>
+  <body>
+    <noscript>
+      <p>JavaScript required. <a href="/TITAN/">Return to TITAN dashboard</a>.</p>
+    </noscript>
+  </body>
+</html>

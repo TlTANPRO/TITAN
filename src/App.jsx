@@ -1,7 +1,14 @@
 // V21: App routes wrapped in AppShell (Sidebar + Topbar + Outlet).
 // New routes: /account (list), /compare, /calendar, /library, /ai, /settings.
-import { Routes, Route } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+//
+// SPA fallback: when GH Pages serves 404.html for an unknown path, that
+// handler stores the requested sub-route in sessionStorage under
+// 'titan:redirect' and redirects to /TITAN/. Before rendering <Routes>,
+// if that key is set, render a <Navigate> to the original path so the user
+// lands on the route they actually wanted. Clear the key after consuming
+// so browser back/forward doesn't loop.
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
 import ChatPanel from './components/ChatPanel.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import SkeletonCard from './components/SkeletonCard.jsx';
@@ -32,12 +39,27 @@ function PageLoader() {
   );
 }
 
+function RedirectBootstrap() {
+  // Read 404.html's stored path, push to it once, then clear the key so
+  // back/forward navigation doesn't re-trigger the redirect.
+  const location = useLocation();
+  const target = typeof window !== 'undefined' ? sessionStorage.getItem('titan:redirect') : null;
+  useEffect(() => {
+    if (target) sessionStorage.removeItem('titan:redirect');
+  }, [target]);
+  if (target && location.pathname === '/') {
+    return <Navigate to={target} replace />;
+  }
+  return null;
+}
+
 export default function App() {
   return (
     <MemoryProvider>
       <ErrorBoundary>
         <a href="#main-content" className="skip-link">Langsung ke konten utama</a>
         <Suspense fallback={<PageLoader />}>
+          <RedirectBootstrap />
           <Routes>
             <Route element={<AppShell />}>
               <Route path="/" element={<Home />} />
