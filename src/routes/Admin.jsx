@@ -38,15 +38,66 @@ function adminInitials(name) {
 // 4 distinct accent colors. Julian moved from secondary (purple) to
 // instagram (pink) so he's visually distinct from Reni/Rifqi/Reta.
 const ADMIN_ACCENTS = [
-  { ring: 'ring-accent-primary',   text: 'text-accent-primary',   chip: 'bg-accent-primary/10 text-accent-primary border-accent-primary/30',   hex: '#3b82f6' },
-  { ring: 'ring-accent-success',   text: 'text-accent-success',   chip: 'bg-accent-success/10 text-accent-success border-accent-success/30',   hex: '#10b981' },
-  { ring: 'ring-accent-warning',   text: 'text-accent-warning',   chip: 'bg-accent-warning/10 text-accent-warning border-accent-warning/30',   hex: '#f59e0b' },
-  { ring: 'ring-accent-instagram', text: 'text-accent-instagram', chip: 'bg-accent-instagram/10 text-accent-instagram border-accent-instagram/30', hex: '#E1306C' }
+  { ring: 'ring-accent-primary',   text: 'text-accent-primary',   chip: 'bg-accent-primary/10 text-accent-primary border-accent-primary/30',   hex: '#3b82f6', bar: 'bg-accent-primary' },
+  { ring: 'ring-accent-success',   text: 'text-accent-success',   chip: 'bg-accent-success/10 text-accent-success border-accent-success/30',   hex: '#10b981', bar: 'bg-accent-success' },
+  { ring: 'ring-accent-warning',   text: 'text-accent-warning',   chip: 'bg-accent-warning/10 text-accent-warning border-accent-warning/30',   hex: '#f59e0b', bar: 'bg-accent-warning' },
+  { ring: 'ring-accent-instagram', text: 'text-accent-instagram', chip: 'bg-accent-instagram/10 text-accent-instagram border-accent-instagram/30', hex: '#E1306C', bar: 'bg-accent-instagram' }
 ];
 
 function SortIcon({ active, dir }) {
   if (!active) return <ArrowUpDown className="w-3 h-3 opacity-30" />;
   return dir === 'asc' ? <ArrowUp className="w-3 h-3 text-accent-primary" /> : <ArrowDown className="w-3 h-3 text-accent-primary" />;
+}
+
+// Hero KPI tile — large display number + colored icon + uppercase label.
+// Inspired by the design canon (display typography + single accent per tile).
+const KPI_TONE = {
+  primary:   { text: 'text-accent-primary',   bar: 'bg-accent-primary',   iconBg: 'bg-accent-primary/10' },
+  success:   { text: 'text-accent-success',   bar: 'bg-accent-success',   iconBg: 'bg-accent-success/10' },
+  warning:   { text: 'text-accent-warning',   bar: 'bg-accent-warning',   iconBg: 'bg-accent-warning/10' },
+  danger:    { text: 'text-accent-danger',    bar: 'bg-accent-danger',    iconBg: 'bg-accent-danger/10' },
+  instagram: { text: 'text-accent-instagram', bar: 'bg-accent-instagram', iconBg: 'bg-accent-instagram/10' }
+};
+
+function KpiTile({ icon, label, value, accent = 'primary' }) {
+  const tone = KPI_TONE[accent] ?? KPI_TONE.primary;
+  return (
+    <div className="relative surface p-4 overflow-hidden">
+      <div className={`absolute top-0 left-0 right-0 h-0.5 ${tone.bar}`} aria-hidden="true" />
+      <div className="flex items-center gap-2 mb-1.5">
+        <span className={`inline-flex items-center justify-center w-7 h-7 rounded-md ${tone.iconBg} ${tone.text}`}>
+          {icon}
+        </span>
+        <span className="text-[10px] uppercase tracking-wider text-text-muted font-medium">{label}</span>
+      </div>
+      <div className="text-display-lg text-text-primary tabular-nums leading-none">{formatNumber(value)}</div>
+    </div>
+  );
+}
+
+// Tiny inline-SVG sparkline — no recharts overhead, used inside admin cards.
+// `data` is a flat number array. Renders a path + filled area underneath.
+function Sparkline({ data, color, width = 80, height = 24 }) {
+  if (!data || data.length === 0) return null;
+  const max = Math.max(1, ...data);
+  const step = data.length > 1 ? width / (data.length - 1) : 0;
+  const points = data.map((v, i) => {
+    const x = i * step;
+    const y = height - (v / max) * (height - 4) - 2;
+    return [x, y];
+  });
+  const linePath = points.map((p, i) => (i === 0 ? `M ${p[0]} ${p[1]}` : `L ${p[0]} ${p[1]}`)).join(' ');
+  const areaPath = `${linePath} L ${width} ${height} L 0 ${height} Z`;
+  const baseline = points.length === 1 ? `M 0 ${points[0][1]} L ${width} ${points[0][1]}` : linePath;
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
+      <path d={areaPath} fill={color} opacity="0.12" />
+      <path d={baseline} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      {points.map((p, i) => (
+        <circle key={i} cx={p[0]} cy={p[1]} r={i === points.length - 1 ? 2.5 : 0} fill={color} />
+      ))}
+    </svg>
+  );
 }
 
 // Build per-day aggregates across all admin posts (combined timeline).
@@ -68,6 +119,23 @@ function buildDailyTotals(rows) {
     data: [...byDay.values()].sort((a, b) => a.day.localeCompare(b.day)),
     adminNames: [...adminNames]
   };
+}
+
+// Build a sparkline series for one admin — last `days` days of post counts.
+// Empty days left as null so recharts skips the dot instead of showing zero.
+function buildSparkline(posts, days = 7) {
+  const nowSec = Date.now() / 1000;
+  const cutoff = nowSec - days * 86400;
+  // Bucket 0..days-1 from oldest to newest.
+  const counts = new Array(days).fill(0);
+  for (const p of posts) {
+    if (!p.createTime) continue;
+    const ageSec = nowSec - p.createTime;
+    if (ageSec < 0 || ageSec > days * 86400) continue;
+    const idx = days - 1 - Math.floor(ageSec / 86400);
+    if (idx >= 0 && idx < days) counts[idx] += 1;
+  }
+  return counts;
 }
 
 // Build ranking rows for the Admin Ranking table.
@@ -179,6 +247,14 @@ export default function Admin() {
         <h1 className="text-2xl font-bold text-text-primary">Admin</h1>
       </div>
 
+      {/* Hero KPI strip — 4 platform-style tiles */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <KpiTile icon={<TrendingUp className="w-3.5 h-3.5" />} label="Total Post" value={totalAdminPosts} accent="primary" />
+        <KpiTile icon={<Heart className="w-3.5 h-3.5" />} label="Total Suka" value={totalLikes} accent="danger" />
+        <KpiTile icon={<MessageCircle className="w-3.5 h-3.5" />} label="Total Komentar" value={totalComments} accent="warning" />
+        <KpiTile icon={<Eye className="w-3.5 h-3.5" />} label="Total Views" value={totalViews} accent="instagram" />
+      </div>
+
       {/* Admin cards — expanded metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {summary.map((admin, i) => {
@@ -187,12 +263,19 @@ export default function Admin() {
           const avgComments = admin.postCount > 0 ? admin.totalComments / admin.postCount : 0;
           const avgViews = admin.postCount > 0 ? admin.totalViews / admin.postCount : 0;
           return (
-            <div key={admin.name} className="surface p-4 hover:border-border-default transition-colors">
-              <div className="flex items-center gap-2.5 mb-3">
-                <div className={`w-10 h-10 rounded-full ring-2 ${accent.ring} bg-bg-tertiary flex items-center justify-center text-sm font-bold ${accent.text}`}>
-                  {adminInitials(admin.name)}
+            <div key={admin.name} className="relative surface p-4 pt-5 overflow-hidden transition-colors hover:border-border-default">
+              <div className={`absolute top-0 left-0 right-0 h-0.5 ${accent.bar}`} aria-hidden="true" />
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-10 h-10 rounded-full ring-2 ${accent.ring} bg-bg-tertiary flex items-center justify-center text-sm font-bold ${accent.text}`}>
+                    {adminInitials(admin.name)}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-text-primary truncate">{admin.name}</div>
+                    <div className="text-[10px] text-text-muted uppercase tracking-wider">7d sparkline</div>
+                  </div>
                 </div>
-                <div className="text-sm font-bold text-text-primary truncate">{admin.name}</div>
+                <Sparkline data={buildSparkline(admin.posts, 7)} color={accent.hex} />
               </div>
               <div className="grid grid-cols-2 gap-x-3 gap-y-2 pt-3 border-t border-border-subtle text-xs">
                 <div>
@@ -234,9 +317,11 @@ export default function Admin() {
         {/* Combined daily line — all admin posts per day */}
         <div className="surface p-4">
           <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="w-4 h-4 text-accent-primary" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-text-secondary">Pertumbuhan Harian</h3>
-            <span className="ml-auto text-[10px] text-text-muted tabular-nums">{dailyTotals.data.length} hari aktif</span>
+            <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-accent-primary/10 text-accent-primary">
+              <TrendingUp className="w-3.5 h-3.5" />
+            </span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Pertumbuhan Harian</span>
+            <span className="ml-auto text-[10px] text-text-muted tabular-nums px-2 py-0.5 rounded-full bg-bg-tertiary">{dailyTotals.data.length} hari aktif</span>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={dailyTotals.data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
@@ -269,9 +354,11 @@ export default function Admin() {
         {/* Stacked bar — total posts per admin per day */}
         <div className="surface p-4">
           <div className="flex items-center gap-2 mb-3">
-            <BarChart3 className="w-4 h-4 text-accent-instagram" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-text-secondary">Komposisi Post per Admin</h3>
-            <span className="ml-auto text-[10px] text-text-muted">{dailyTotals.adminNames.length} admin</span>
+            <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-accent-instagram/10 text-accent-instagram">
+              <BarChart3 className="w-3.5 h-3.5" />
+            </span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Komposisi Post per Admin</span>
+            <span className="ml-auto text-[10px] text-text-muted px-2 py-0.5 rounded-full bg-bg-tertiary">{dailyTotals.adminNames.length} admin</span>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={dailyTotals.data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
@@ -310,8 +397,10 @@ export default function Admin() {
       {/* Admin ranking table */}
       <div className="surface overflow-hidden">
         <div className="flex items-center gap-2 p-3 border-b border-border-subtle flex-wrap">
-          <Trophy className="w-4 h-4 text-accent-warning" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-text-secondary">Ranking Admin</h3>
+          <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-accent-warning/10 text-accent-warning">
+            <Trophy className="w-3.5 h-3.5" />
+          </span>
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Ranking Admin</span>
           <span className="ml-auto flex items-center gap-2 flex-wrap">
             <span className="text-[10px] text-text-muted uppercase tracking-wider">Sortir:</span>
             <select
