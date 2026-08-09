@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Home, Users, GitCompareArrows, Calendar as CalIcon, Library, Sparkles, Settings,
-  ChevronLeft, ChevronRight, X
+  UserCog, ChevronLeft, ChevronRight, X
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -15,7 +15,8 @@ const NAV_ITEMS = [
   { to: '/calendar', label: 'Kalender', icon: CalIcon },
   { to: '/library', label: 'Library', icon: Library },
   { to: '/ai', label: 'Insight', icon: Sparkles },
-  { to: '/settings', label: 'Settings', icon: Settings }
+  { to: '/settings', label: 'Settings', icon: Settings },
+  { to: '/admin', label: 'Admin', icon: UserCog }
 ];
 
 const STORAGE_KEY = 'titan.sidebar.collapsed.v1';

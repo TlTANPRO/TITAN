@@ -23,6 +23,7 @@ const Calendar = lazy(() => import('./routes/Calendar.jsx'));
 const Library = lazy(() => import('./routes/Library.jsx'));
 const AiInsights = lazy(() => import('./routes/AiInsights.jsx'));
 const Settings = lazy(() => import('./routes/Settings.jsx'));
+const Admin = lazy(() => import('./routes/Admin.jsx'));
 const NotFound = lazy(() => import('./routes/NotFound.jsx'));
 
 function PageLoader() {
@@ -70,6 +71,7 @@ export default function App() {
               <Route path="/library" element={<Library />} />
               <Route path="/ai" element={<AiInsights />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/admin" element={<Admin />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
