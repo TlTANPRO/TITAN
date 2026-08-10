@@ -4,7 +4,7 @@
 // surfaces every post that carries that hashtag in a single unified table
 // + per-admin summary, daily growth, and ranking. Single source of truth
 // for the mapping lives in src/lib/adminHashtags.js.
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Heart, MessageCircle, Eye, ExternalLink, ArrowUpDown, ArrowUp, ArrowDown,
@@ -100,9 +100,22 @@ function Sparkline({ data, color, width = 80, height = 24 }) {
   );
 }
 
-// Build per-day aggregates across all admin posts (combined timeline).
+// Range selector for daily growth chart. Mirrors CrossAccountTimeline.RANGES
+// pattern. `month` is sentinel — caller derives month list from data.
+const RANGES_ADMIN = {
+  '7d': 7 * 86400,
+  '30d': 30 * 86400,
+  '90d': 90 * 86400,
+  all: null,
+  month: 'month'
+};
+const RANGE_LABELS = { '7d': '7H', '30d': '30H', '90d': '90H', all: 'Semua', month: 'Bulan' };
+
+// Per-day aggregates across all admin posts (combined timeline).
 // Returns sorted array of { day: 'YYYY-MM-DD', total: N, perAdmin: { name: N } }.
-function buildDailyTotals(rows) {
+// `metricKey` selects which numeric field per post to sum — postCount default
+// counts rows, others sum likeCount/commentCount/viewCount.
+function buildDailyTotals(rows, metricKey = 'postCount') {
   const byDay = new Map();
   const adminNames = new Set();
   for (const p of rows) {
@@ -111,14 +124,48 @@ function buildDailyTotals(rows) {
       .toISOString().slice(0, 10);
     if (!byDay.has(day)) byDay.set(day, { day, total: 0 });
     const slot = byDay.get(day);
-    slot.total += 1;
-    slot[p._admin.name] = (slot[p._admin.name] ?? 0) + 1;
+    if (metricKey === 'postCount') {
+      slot.total += 1;
+      slot[p._admin.name] = (slot[p._admin.name] ?? 0) + 1;
+    } else {
+      const v = Number(p[metricKey]) || 0;
+      slot.total += v;
+      slot[p._admin.name] = (slot[p._admin.name] ?? 0) + v;
+    }
     adminNames.add(p._admin.name);
   }
   return {
     data: [...byDay.values()].sort((a, b) => a.day.localeCompare(b.day)),
     adminNames: [...adminNames]
   };
+}
+
+// Filter daily totals by selected range. `monthKey` is 'YYYY-MM' (e.g. '2026-08').
+function filterByRange(data, rangeKey, monthKey) {
+  if (rangeKey === 'all') return data;
+  if (rangeKey === 'month') {
+    if (!monthKey) return data;
+    return data.filter((d) => d.day.startsWith(monthKey));
+  }
+  const seconds = RANGES_ADMIN[rangeKey];
+  if (!seconds) return data;
+  const cutoff = new Date(Date.now() - seconds * 1000).toISOString().slice(0, 10);
+  return data.filter((d) => d.day >= cutoff);
+}
+
+// Distinct months (desc) across the full data, for the month picker.
+function listMonths(data) {
+  const set = new Set();
+  for (const d of data) set.add(d.day.slice(0, 7));
+  return [...set].sort().reverse();
+}
+
+// Posts in the last 7 days for one admin — used by the 7d progress bar strip.
+function countPostsLast7Days(posts) {
+  const cutoff = Date.now() / 1000 - 7 * 86400;
+  let n = 0;
+  for (const p of posts) if (p.createTime && p.createTime >= cutoff) n += 1;
+  return n;
 }
 
 // Build a sparkline series for one admin — last `days` days of post counts.
@@ -166,7 +213,27 @@ export default function Admin() {
     return out;
   }, [summary]);
 
-  const dailyTotals = useMemo(() => buildDailyTotals(allRows), [allRows]);
+  const dailyTotals = useMemo(
+    () => buildDailyTotals(allRows, growthMetric),
+    [allRows, growthMetric]
+  );
+
+  // V33.2: range + monthly picker + drill-down focus state for both chart panels.
+  const [range, setRange] = useState('all');
+  const [monthKey, setMonthKey] = useState(null);
+  const [activeAdmin, setActiveAdmin] = useState(null); // null = combined view
+  const [growthMetric, setGrowthMetric] = useState('postCount'); // postCount | totalLikes | totalComments | totalViews
+
+  // Reset monthKey if user switches away from 'month' range
+  useEffect(() => {
+    if (range !== 'month') setMonthKey(null);
+  }, [range]);
+
+  const filteredDaily = useMemo(
+    () => filterByRange(dailyTotals.data, range, monthKey),
+    [dailyTotals.data, range, monthKey]
+  );
+  const monthOptions = useMemo(() => listMonths(dailyTotals.data), [dailyTotals.data]);
 
   // Per-admin ranking — extend with derived avg metrics so ranking covers
   // both volume and quality.
@@ -314,17 +381,53 @@ export default function Admin() {
 
       {/* Daily growth charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        {/* Combined daily line — all admin posts per day */}
+        {/* Combined daily line — multi-line per admin + drill-down + range/metric toggles.
+            V33.2: replaced single total line with per-admin lines so each admin's
+            posting trajectory is visible at a glance. Tab strip highlights one
+            admin on click. */}
         <div className="surface p-4">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-accent-primary/10 text-accent-primary">
               <TrendingUp className="w-3.5 h-3.5" />
             </span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Pertumbuhan Harian</span>
-            <span className="ml-auto text-[10px] text-text-muted tabular-nums px-2 py-0.5 rounded-full bg-bg-tertiary">{dailyTotals.data.length} hari aktif</span>
+            <span className="ml-auto text-[10px] text-text-muted tabular-nums px-2 py-0.5 rounded-full bg-bg-tertiary">{filteredDaily.length} hari aktif</span>
           </div>
+
+          {/* Tab strip: Gabungan + each admin. Click to drill down. */}
+          <div className="flex items-center gap-1 mb-3 flex-wrap">
+            <button
+              onClick={() => setActiveAdmin(null)}
+              className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded transition-colors ${
+                activeAdmin === null ? 'bg-accent-primary text-white' : 'bg-bg-tertiary text-text-muted hover:text-text-primary'
+              }`}
+            >
+              Gabungan
+            </button>
+            {summary.map((admin, i) => {
+              const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
+              const isActive = activeAdmin === admin.name;
+              return (
+                <button
+                  key={admin.name}
+                  onClick={() => setActiveAdmin(isActive ? null : admin.name)}
+                  className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded transition-colors inline-flex items-center gap-1.5 ${
+                    isActive ? 'text-white' : 'text-text-muted hover:text-text-primary'
+                  }`}
+                  style={isActive ? { backgroundColor: accent.hex } : {}}
+                >
+                  <span
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: isActive ? '#fff' : accent.hex }}
+                  />
+                  {admin.name}
+                </button>
+              );
+            })}
+          </div>
+
           <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={dailyTotals.data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+            <LineChart data={filteredDaily} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" opacity={0.4} />
               <XAxis
                 dataKey="day"
@@ -338,30 +441,93 @@ export default function Admin() {
                 labelStyle={{ color: 'var(--text-primary)' }}
                 labelFormatter={(d) => `Tanggal ${d}`}
               />
-              <Line
-                type="monotone"
-                dataKey="total"
-                name="Total Post"
-                stroke="#3b82f6"
-                strokeWidth={2.5}
-                dot={{ r: 3, fill: '#3b82f6' }}
-                connectNulls
-              />
+              <Legend wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
+              {summary.map((admin, i) => {
+                const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
+                const isFocus = activeAdmin === admin.name;
+                const isFaded = activeAdmin !== null && !isFocus;
+                return (
+                  <Line
+                    key={admin.name}
+                    type="monotone"
+                    dataKey={admin.name}
+                    name={admin.name}
+                    stroke={accent.hex}
+                    strokeWidth={isFocus ? 3 : 2}
+                    strokeOpacity={isFaded ? 0.15 : 1}
+                    dot={false}
+                    connectNulls
+                  />
+                );
+              })}
             </LineChart>
           </ResponsiveContainer>
+
+          {/* Range + metric controls */}
+          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border-subtle flex-wrap">
+            <span className="text-[10px] text-text-muted uppercase tracking-wider">Range:</span>
+            <div className="flex gap-1 bg-bg-tertiary rounded p-0.5">
+              {Object.keys(RANGES_ADMIN).map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRange(r)}
+                  className={`text-[10px] px-2 py-1 rounded font-medium transition-colors ${
+                    range === r ? 'bg-accent-primary text-white' : 'text-text-muted hover:text-text-primary'
+                  }`}
+                >
+                  {RANGE_LABELS[r]}
+                </button>
+              ))}
+            </div>
+            {range === 'month' && (
+              <select
+                value={monthKey ?? ''}
+                onChange={(e) => setMonthKey(e.target.value || null)}
+                className="bg-bg-tertiary border border-border-subtle rounded px-2 py-1 text-[10px] text-text-primary focus:outline-none focus:border-accent-primary"
+              >
+                <option value="">Pilih bulan</option>
+                {monthOptions.map((m) => {
+                  const [y, mo] = m.split('-');
+                  const label = new Date(`${m}-01T00:00:00Z`).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+                  return <option key={m} value={m}>{label}</option>;
+                })}
+              </select>
+            )}
+            <span className="text-[10px] text-text-muted uppercase tracking-wider ml-auto">Metrik:</span>
+            <div className="flex gap-1 bg-bg-tertiary rounded p-0.5">
+              {[
+                { k: 'postCount', l: 'Post' },
+                { k: 'totalLikes', l: 'Suka' },
+                { k: 'totalComments', l: 'Komen' },
+                { k: 'totalViews', l: 'Views' }
+              ].map((m) => (
+                <button
+                  key={m.k}
+                  onClick={() => setGrowthMetric(m.k)}
+                  className={`text-[10px] px-2 py-1 rounded font-medium transition-colors ${
+                    growthMetric === m.k ? 'bg-accent-primary text-white' : 'text-text-muted hover:text-text-primary'
+                  }`}
+                >
+                  {m.l}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Stacked bar — total posts per admin per day */}
+        {/* Stacked bar — total posts per admin per day + winner pill row + 7d progress.
+            V33.2: switched source to filteredDaily (respects growth range/month picker).
+            Added Top Admin badge per day and 7d progress strip below the chart. */}
         <div className="surface p-4">
           <div className="flex items-center gap-2 mb-3">
             <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-accent-instagram/10 text-accent-instagram">
               <BarChart3 className="w-3.5 h-3.5" />
             </span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Komposisi Post per Admin</span>
-            <span className="ml-auto text-[10px] text-text-muted px-2 py-0.5 rounded-full bg-bg-tertiary">{dailyTotals.adminNames.length} admin</span>
+            <span className="ml-auto text-[10px] text-text-muted px-2 py-0.5 rounded-full bg-bg-tertiary">{summary.length} admin</span>
           </div>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={dailyTotals.data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+            <BarChart data={filteredDaily} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" opacity={0.4} />
               <XAxis
                 dataKey="day"
@@ -375,14 +541,13 @@ export default function Admin() {
                 labelStyle={{ color: 'var(--text-primary)' }}
                 labelFormatter={(d) => `Tanggal ${d}`}
               />
-              {dailyTotals.adminNames.map((name) => {
-                const idx = summary.findIndex((a) => a.name === name);
-                const accent = ADMIN_ACCENTS[idx % ADMIN_ACCENTS.length];
+              {summary.map((admin, i) => {
+                const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
                 return (
                   <Bar
-                    key={name}
-                    dataKey={name}
-                    name={name}
+                    key={admin.name}
+                    dataKey={admin.name}
+                    name={admin.name}
                     stackId="a"
                     fill={accent.hex}
                     radius={[2, 2, 0, 0]}
@@ -391,6 +556,73 @@ export default function Admin() {
               })}
             </BarChart>
           </ResponsiveContainer>
+
+          {/* Top admin per day — horizontal pill row, scrollable on mobile */}
+          <div className="mt-3 pt-3 border-t border-border-subtle">
+            <div className="text-[10px] text-text-muted uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <Trophy className="w-3 h-3 text-accent-warning" />
+              Top Admin per Hari
+            </div>
+            <div className="flex gap-1.5 overflow-x-auto pb-1" style={{ scrollbarWidth: 'thin' }}>
+              {filteredDaily.filter((d) => d.total > 0).length === 0 ? (
+                <span className="text-[10px] text-text-muted">Tidak ada post dalam rentang ini.</span>
+              ) : (
+                filteredDaily.filter((d) => d.total > 0).map((d) => {
+                  // Find admin with max value in this day (skip non-admin keys)
+                  let topName = '';
+                  let topVal = 0;
+                  for (const admin of summary) {
+                    const v = d[admin.name] ?? 0;
+                    if (v > topVal) { topVal = v; topName = admin.name; }
+                  }
+                  if (!topName) return null;
+                  const idx = summary.findIndex((a) => a.name === topName);
+                  const accent = ADMIN_ACCENTS[idx % ADMIN_ACCENTS.length];
+                  return (
+                    <div
+                      key={d.day}
+                      className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1 rounded bg-bg-tertiary/40 border border-border-subtle min-w-[64px]"
+                      title={`${topName} memimpin pada ${d.day} dengan ${topVal} post`}
+                    >
+                      <span className="text-[9px] text-text-muted tabular-nums">{d.day.slice(5)}</span>
+                      <span className={`text-[10px] font-bold ${accent.text}`}>{topName}</span>
+                      <span className="text-[10px] text-text-primary tabular-nums">{topVal}</span>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
+          {/* 7d progress strip — target 1 post/hari × 7 hari = 7 */}
+          <div className="mt-3 pt-3 border-t border-border-subtle">
+            <div className="text-[10px] text-text-muted uppercase tracking-wider mb-2">
+              Progress 7 Hari <span className="text-text-primary">· target {summary.length > 0 ? 7 : 0} post</span>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+              {summary.map((admin, i) => {
+                const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
+                const count = countPostsLast7Days(admin.posts);
+                const target = 7;
+                const pct = Math.min(100, (count / target) * 100);
+                const hit = count >= target;
+                return (
+                  <div key={admin.name} className="flex items-center gap-2">
+                    <span className={`text-[10px] font-bold ${accent.text} w-12 truncate`}>{admin.name}</span>
+                    <div className="flex-1 h-1.5 bg-bg-tertiary rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${accent.bar} transition-all`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className={`text-[10px] tabular-nums w-10 text-right ${hit ? 'text-accent-success font-semibold' : 'text-text-muted'}`}>
+                      {count}/{target}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
