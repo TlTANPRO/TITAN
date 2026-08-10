@@ -59,17 +59,17 @@ function TopPerformersCard({ title, icon, accounts, metricKey, suffix }) {
     .slice(0, 3);
   if (top.length === 0) {
     return (
-      <BentoItem colSpan="col-6" padding="p-4" className="min-h-[140px]">
+      <div className="surface p-4 min-h-[140px]">
         <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3 flex items-center gap-1.5">
           {icon}
           {title}
         </h3>
         <div className="text-xs text-text-muted text-center py-4">Data tidak tersedia</div>
-      </BentoItem>
+      </div>
     );
   }
   return (
-    <BentoItem colSpan="col-3" padding="p-4" className="min-h-[140px]">
+    <div className="surface p-4 min-h-[140px]">
       <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3 flex items-center gap-1.5">
         {icon}
         {title}
@@ -94,7 +94,7 @@ function TopPerformersCard({ title, icon, accounts, metricKey, suffix }) {
           </li>
         ))}
       </ol>
-    </BentoItem>
+    </div>
   );
 }
 
@@ -161,58 +161,19 @@ export default function Home() {
           </BentoItem>
         </BentoGrid>
 
-        {/* ===== ROW 4: Weekly Briefing (8) + Top ER (4) ===== */}
+        {/* ===== ROW 4: Weekly Briefing (full width) ===== */}
         <BentoGrid>
-          <BentoItem colSpan="col-8" padding="p-4">
+          <BentoItem colSpan="col-12" padding="p-4">
             <SectionLabel number="04" title="Weekly Recap" accent="accent" className="mb-3" />
             <WeeklyBriefing accounts={accounts} />
           </BentoItem>
-
-          <BentoItem colSpan="col-4" padding="p-4">
-            <SectionLabel number="05" title="Top Engagement Rate" accent="pink" className="mb-3" />
-            {(() => {
-              const ranked = comparison
-                .filter((a) => Number.isFinite(a.engagementRate) && a.engagementRate > 0)
-                .sort((a, b) => b.engagementRate - a.engagementRate)
-                .slice(0, 3);
-              if (ranked.length === 0) {
-                return (
-                  <div className="text-xs text-text-muted text-center py-6 leading-relaxed">
-                    Data ER belum tersedia.
-                    <br />
-                    Enrich IG via <code className="bg-bg-tertiary px-1 rounded text-[10px]">/media/info</code> untuk 9 akun.
-                  </div>
-                );
-              }
-              return (
-                <ol className="space-y-2">
-                  {ranked.map((a, i) => (
-                    <li key={a.slug}>
-                      <Link
-                        to={`/account/${a.slug}`}
-                        className="flex items-center gap-2 p-1.5 -m-1.5 rounded hover:bg-bg-tertiary/40 transition-colors"
-                      >
-                        <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-semibold border flex-shrink-0 ${RANK_COLORS[i] ?? RANK_COLORS[2]}`}>
-                          {i + 1}
-                        </span>
-                        <ProxiedAvatar account={a} size={20} className="flex-shrink-0" />
-                        <span className="text-xs font-medium text-text-primary truncate flex-1">
-                          @{a.username}
-                        </span>
-                        <span className="text-sm font-semibold text-accent-primary tabular-nums flex-shrink-0">
-                          {formatPercent(a.engagementRate)}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ol>
-              );
-            })()}
-          </BentoItem>
         </BentoGrid>
 
-        {/* ===== ROW 5: 4 Top Performer tiles ===== */}
-        <BentoGrid>
+        {/* ===== ROW 5: 5 Top Performer tiles (Views, Likes, Comments, Posts/Minggu, ER) =====
+            V33.1: Top ER moved from ROW 4 col-4 to here as 5th tile so all 5
+            tiles share the same width. Uses plain grid (2/3/5 cols) instead
+            of BentoGrid 12-col system (5 × col-3 = 15 cols, would overflow). */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           <TopPerformersCard
             title="Top Views"
             icon={<Eye className="w-3.5 h-3.5 text-chart-6" />}
@@ -238,7 +199,13 @@ export default function Home() {
             metricKey="postsPerWeek"
             suffix="post"
           />
-        </BentoGrid>
+          <TopPerformersCard
+            title="Top ER"
+            icon={<TrendingUp className="w-3.5 h-3.5 text-accent-instagram" />}
+            accounts={comparison}
+            metricKey="engagementRate"
+          />
+        </div>
 
         {/* V33: ZONE 2 → ZONE 3 divider */}
         <ZoneDivider index="03" label="Pola & Timing" />

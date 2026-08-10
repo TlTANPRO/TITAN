@@ -87,6 +87,36 @@ export function CrossAccountTimeline({ accounts }) {
     [accounts, metric, range]
   );
 
+  // V33.1: detect IG accounts with no posts in the latest month — explain
+  // the gap inline so a single flat 0-line on the chart is not mistaken
+  // for a dashboard bug. Looks at the post populate timestamp directly
+  // from the input accounts (performanceByMonth does not preserve posts).
+  const igStaleInfo = useMemo(() => {
+    if (data.length === 0) return null;
+    const latestMonth = data[data.length - 1].month;
+    const igAccounts = perAccount.filter((a) => a.platform === 'instagram');
+    if (igAccounts.length === 0) return null;
+    const staleness = igAccounts.map((a) => {
+      const monthData = a.data.find((m) => m.month === latestMonth);
+      const raw = monthData?.[METRICS[metric].key];
+      const noData = !Number.isFinite(raw) || raw === 0;
+      const acc = accounts.find((x) => x.slug === a.slug);
+      const tsList = (acc?.posts ?? [])
+        .map((p) => p.timestamp ?? p.createTime * 1000)
+        .filter((t) => t > 0)
+        .sort((x, y) => y - x);
+      const lastPost = tsList[0] ?? null;
+      return { slug: a.slug, username: a.username, noData, lastPost };
+    });
+    const staleCount = staleness.filter((s) => s.noData).length;
+    if (staleCount === 0) return null;
+    const oldestLastPost = staleness
+      .filter((s) => s.noData && s.lastPost)
+      .map((s) => s.lastPost)
+      .sort((x, y) => x - y)[0] ?? null;
+    return { staleCount, igCount: igAccounts.length, lastPost: oldestLastPost };
+  }, [data, perAccount, metric, accounts]);
+
   if (data.length === 0) {
     return (
       <div className="surface p-6 text-center text-text-muted text-sm">
@@ -154,6 +184,18 @@ export function CrossAccountTimeline({ accounts }) {
           ))}
         </LineChart>
       </ResponsiveContainer>
+
+      {igStaleInfo && (
+        <div className="text-[10px] text-text-muted mt-3 text-center">
+          {igStaleInfo.staleCount}/{igStaleInfo.igCount} akun IG belum punya post di bulan {
+            data[data.length - 1].month
+          }{
+            igStaleInfo.lastPost
+              ? ` · post IG terakhir ${new Date(igStaleInfo.lastPost).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}`
+              : ''
+          }
+        </div>
+      )}
     </div>
   );
 }

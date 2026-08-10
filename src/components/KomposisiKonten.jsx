@@ -96,31 +96,35 @@ export function KomposisiKonten({ accounts }) {
 
       {view === 'chart' ? (
         <div className="space-y-4">
-          {/* Platform-level stacked bar */}
+          {/* Platform-level stacked bar. V33.1: removed minWidth so segments
+              render at true % width; capped container to max-w-3xl so bar
+              doesn't stretch too wide on big screens. */}
           <div>
             <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1.5">Per Platform</div>
-            <div className="h-8 bg-bg-tertiary rounded-md overflow-hidden flex">
-              {platformAgg.map((p) => {
-                const pct = (p.count / grandTotal) * 100;
-                if (pct < 0.5) return null;
-                return (
-                  <div
-                    key={p.name}
-                    className="h-full flex items-center justify-center text-[10px] font-semibold text-white tabular-nums"
-                    style={{ width: `${pct}%`, minWidth: '2.5rem', backgroundColor: PLATFORM_COLORS[p.name] ?? FALLBACK }}
-                    title={`${platformLabel(p.name)} · ${formatNumber(p.count)} (${pct.toFixed(1)}%)`}
-                  >
-                    {pct >= 8 ? `${pct.toFixed(0)}%` : ''}
-                  </div>
-                );
-              })}
+            <div className="max-w-3xl">
+              <div className="h-8 bg-bg-tertiary rounded-md overflow-hidden flex">
+                {platformAgg.map((p) => {
+                  const pct = (p.count / grandTotal) * 100;
+                  if (pct < 0.5) return null;
+                  return (
+                    <div
+                      key={p.name}
+                      className="h-full flex items-center justify-center text-[10px] font-semibold text-white tabular-nums flex-shrink-0"
+                      style={{ width: `${pct}%`, backgroundColor: PLATFORM_COLORS[p.name] ?? FALLBACK }}
+                      title={`${platformLabel(p.name)} · ${formatNumber(p.count)} (${pct.toFixed(1)}%)`}
+                    >
+                      {pct >= 8 ? `${pct.toFixed(0)}%` : ''}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
           {/* Per-account horizontal bars (one per account, stacked by media type) */}
           <div>
             <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1.5">Per Akun (Top {Math.min(rows.length, 9)})</div>
-            <div className="space-y-1.5">
+            <div className="max-w-3xl space-y-1.5">
               {rows.slice(0, 9).map((r) => (
                 <div key={r.slug} className="flex items-center gap-2">
                   <div className="w-24 flex items-center gap-1.5 flex-shrink-0">
@@ -134,8 +138,8 @@ export function KomposisiKonten({ accounts }) {
                       return (
                         <div
                           key={type}
-                          className="h-full flex items-center justify-center text-[9px] font-semibold text-white tabular-nums"
-                          style={{ width: `${pct}%`, minWidth: '1.5rem', backgroundColor: MEDIA_COLORS[type] ?? FALLBACK }}
+                          className="h-full flex items-center justify-center text-[9px] font-semibold text-white tabular-nums flex-shrink-0"
+                          style={{ width: `${pct}%`, backgroundColor: MEDIA_COLORS[type] ?? FALLBACK }}
                           title={`${MEDIA_LABELS[type] ?? type} · ${count} (${pct.toFixed(1)}%)`}
                         >
                           {pct >= 12 ? `${pct.toFixed(0)}%` : ''}
