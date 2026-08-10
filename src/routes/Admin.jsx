@@ -263,11 +263,14 @@ function detectCrossPosts(posts) {
     const igs = items.filter((i) => i.platform === 'instagram');
     const tts = items.filter((i) => i.platform === 'tiktok');
     if (igs.length === 0 || tts.length === 0) continue;
-    // For each IG, pair with closest TT within 12h (caption already matched)
-    for (const igItem of igs) {
+    // Greedy match: each TT used once. Sort by IG count desc, pair each IG
+    // with the closest still-available TT (closest by timestamp delta).
+    const availableTts = [...tts];
+    const sortedIgs = [...igs].sort((a, b) => a.tsMs - b.tsMs);
+    for (const igItem of sortedIgs) {
       let best = null;
       let bestDelta = Infinity;
-      for (const ttItem of tts) {
+      for (const ttItem of availableTts) {
         const delta = Math.abs(igItem.tsMs - ttItem.tsMs);
         if (delta < bestDelta) {
           best = ttItem;
@@ -278,7 +281,10 @@ function detectCrossPosts(posts) {
         pairs.push({ ig: igItem.p, tt: best.p, score: 1.0, method: 'caption' });
         crossIds.add(igItem.p.id);
         crossIds.add(best.p.id);
+        const idx = availableTts.indexOf(best);
+        if (idx >= 0) availableTts.splice(idx, 1);
       }
+      if (availableTts.length === 0) break;
     }
   }
 
@@ -287,16 +293,18 @@ function detectCrossPosts(posts) {
   const unmatchedTt = tt.filter((i) => !crossIds.has(i.p.id));
   const PROXIMITY_MS = 6 * 3600 * 1000; // 6 hours
 
-  for (const igItem of unmatchedIg) {
+  // Greedy 1-TT-per-IG matching for layer 2 also.
+  const sortedUnmatchedIg = [...unmatchedIg].sort((a, b) => a.tsMs - b.tsMs);
+  for (const igItem of sortedUnmatchedIg) {
+    const igCap = normalizeCaption(igItem.p.caption ?? igItem.p.desc ?? '');
+    if (igCap.length === 0) continue;
     let best = null;
     let bestDelta = Infinity;
     for (const ttItem of unmatchedTt) {
       const delta = Math.abs(igItem.tsMs - ttItem.tsMs);
       if (delta > PROXIMITY_MS) continue;
-      // Require caption similarity > 50% (length-based, fast)
-      const igCap = normalizeCaption(igItem.p.caption ?? igItem.p.desc ?? '');
       const ttCap = normalizeCaption(ttItem.p.caption ?? ttItem.p.desc ?? '');
-      if (igCap.length === 0 || ttCap.length === 0) continue;
+      if (ttCap.length === 0) continue;
       const minLen = Math.min(igCap.length, ttCap.length);
       const prefixMatch = igCap.slice(0, minLen) === ttCap.slice(0, minLen);
       const overlap = Math.min(igCap.length, ttCap.length) / Math.max(igCap.length, ttCap.length);
@@ -310,7 +318,10 @@ function detectCrossPosts(posts) {
       pairs.push({ ig: igItem.p, tt: best.p, score: 0.5, method: 'timestamp' });
       crossIds.add(igItem.p.id);
       crossIds.add(best.p.id);
+      const idx = unmatchedTt.indexOf(best);
+      if (idx >= 0) unmatchedTt.splice(idx, 1);
     }
+    if (unmatchedTt.length === 0) break;
   }
 
   return { crossIds, pairs };
@@ -329,21 +340,23 @@ function buildCrossPlatformKpi(summary, accounts) {
     }));
     const { crossIds, pairs } = detectCrossPosts(tagged);
 
-    let igRaw = 0, ttRaw = 0, crossCount = 0;
+    let igRaw = 0, ttRaw = 0;
     let totalLikes = 0, totalComments = 0, totalViews = 0;
     for (const post of admin.posts) {
-      const isCross = crossIds.has(post.id);
       const platform = post._accountPlatform ?? post.platform ?? null;
       totalLikes += Number(post.likeCount) || 0;
       totalComments += Number(post.commentCount) || 0;
       totalViews += Number(post.viewCount) || 0;
       if (platform === 'instagram') igRaw += 1;
       else if (platform === 'tiktok') ttRaw += 1;
-      if (isCross) crossCount += 1;
     }
-    // IG/TT = raw platform counts (what user sees today, includes duplicates).
-    // Cross = number of cross-posts (counted once).
-    // Unique = IG + TT − Cross (no double-count).
+    // Cross = number of paired cross-posts (each pair = 1 unique content piece,
+    // 2 raw posts). User's intent: 1 IG + 1 TT same caption → Total = 1, not 0.
+    const crossCount = pairs.length;
+    // Total Post = jumlah konten unik setelah cross-post IG↔TT dihitung sekali.
+    //   = igOnly + ttOnly + crossCount
+    //   = (igRaw - crossPairsTouchingIG) + (ttRaw - crossPairsTouchingTT) + crossCount
+    // With 1 IG + 1 TT per pair: unique = igRaw + ttRaw - crossCount.
     const unique = igRaw + ttRaw - crossCount;
 
     // ER per admin — total engagement / total followers
