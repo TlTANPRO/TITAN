@@ -124,15 +124,23 @@ const METRIC_TO_POST_FIELD = {
   totalViews: 'viewCount'
 };
 
+// Normalize post timestamp to milliseconds. IG scraper writes `timestamp`
+// in SECONDS (matching `createTime`), TT writes it in MILLISECONDS. Anything
+// < 1e12 = sec (year ≤ 2001 in ms is impossible for real posts), multiply.
+function postTimestampMs(p) {
+  const ts = p.timestamp ?? null;
+  const ct = p.createTime ?? null;
+  if (ts != null && ts > 0) return ts < 1e12 ? ts * 1000 : ts;
+  if (ct != null && ct > 0) return ct * 1000;
+  return 0;
+}
+
 function buildDailyTotals(rows, metricKey = 'postCount') {
   const postField = METRIC_TO_POST_FIELD[metricKey] ?? null;
   const byDay = new Map();
   const adminNames = new Set();
   for (const p of rows) {
-    // Use timestamp (ms) OR createTime (sec) — V32.3 fallback chain. IG
-    // free scraper only writes `timestamp`, so 603/3999 posts lack createTime
-    // and silently dropped from the daily chart without this fallback.
-    const tsMs = p.timestamp ?? (p.createTime ? p.createTime * 1000 : 0);
+    const tsMs = postTimestampMs(p);
     if (!tsMs) continue;
     const day = new Date(tsMs).toISOString().slice(0, 10);
     if (!byDay.has(day)) byDay.set(day, { day, total: 0 });
@@ -178,7 +186,7 @@ function countPostsLast7Days(posts) {
   const cutoffMs = Date.now() - 7 * 86400 * 1000;
   let n = 0;
   for (const p of posts) {
-    const tsMs = p.timestamp ?? (p.createTime ? p.createTime * 1000 : 0);
+    const tsMs = postTimestampMs(p);
     if (tsMs && tsMs >= cutoffMs) n += 1;
   }
   return n;
@@ -187,15 +195,16 @@ function countPostsLast7Days(posts) {
 // Build a sparkline series for one admin — last `days` days of post counts.
 // Empty days left as null so recharts skips the dot instead of showing zero.
 function buildSparkline(posts, days = 7) {
-  const nowSec = Date.now() / 1000;
-  const cutoff = nowSec - days * 86400;
+  const nowMs = Date.now();
+  const cutoffMs = nowMs - days * 86400 * 1000;
   // Bucket 0..days-1 from oldest to newest.
   const counts = new Array(days).fill(0);
   for (const p of posts) {
-    if (!p.createTime) continue;
-    const ageSec = nowSec - p.createTime;
-    if (ageSec < 0 || ageSec > days * 86400) continue;
-    const idx = days - 1 - Math.floor(ageSec / 86400);
+    const tsMs = postTimestampMs(p);
+    if (!tsMs) continue;
+    const ageMs = nowMs - tsMs;
+    if (ageMs < 0 || ageMs > days * 86400 * 1000) continue;
+    const idx = days - 1 - Math.floor(ageMs / 86400 / 1000);
     if (idx >= 0 && idx < days) counts[idx] += 1;
   }
   return counts;
@@ -234,7 +243,7 @@ export default function Admin() {
         out.push({ ...p, _admin: admin, _adminIndex: i, _key: `${admin.name}-${p._accountSlug}-${p.id}` });
       }
     });
-    out.sort((a, b) => (b.createTime ?? 0) - (a.createTime ?? 0));
+    out.sort((a, b) => postTimestampMs(b) - postTimestampMs(a));
     return out;
   }, [summary]);
 
