@@ -114,21 +114,34 @@ const RANGE_LABELS = { '7d': '7H', '30d': '30H', '90d': '90H', all: 'Semua', mon
 // Per-day aggregates across all admin posts (combined timeline).
 // Returns sorted array of { day: 'YYYY-MM-DD', total: N, perAdmin: { name: N } }.
 // `metricKey` selects which numeric field per post to sum — postCount default
-// counts rows, others sum likeCount/commentCount/viewCount.
+// counts rows, others sum likeCount/commentCount/viewCount (the per-post fields;
+// admin aggregate fields totalLikes/totalComments/totalViews do NOT exist on
+// individual posts — use the per-post field name).
+const METRIC_TO_POST_FIELD = {
+  postCount: null, // count rows
+  totalLikes: 'likeCount',
+  totalComments: 'commentCount',
+  totalViews: 'viewCount'
+};
+
 function buildDailyTotals(rows, metricKey = 'postCount') {
+  const postField = METRIC_TO_POST_FIELD[metricKey] ?? null;
   const byDay = new Map();
   const adminNames = new Set();
   for (const p of rows) {
-    if (!p.createTime) continue;
-    const day = new Date(p.createTime > 1e12 ? p.createTime : p.createTime * 1000)
-      .toISOString().slice(0, 10);
+    // Use timestamp (ms) OR createTime (sec) — V32.3 fallback chain. IG
+    // free scraper only writes `timestamp`, so 603/3999 posts lack createTime
+    // and silently dropped from the daily chart without this fallback.
+    const tsMs = p.timestamp ?? (p.createTime ? p.createTime * 1000 : 0);
+    if (!tsMs) continue;
+    const day = new Date(tsMs).toISOString().slice(0, 10);
     if (!byDay.has(day)) byDay.set(day, { day, total: 0 });
     const slot = byDay.get(day);
-    if (metricKey === 'postCount') {
+    if (postField === null) {
       slot.total += 1;
       slot[p._admin.name] = (slot[p._admin.name] ?? 0) + 1;
     } else {
-      const v = Number(p[metricKey]) || 0;
+      const v = Number(p[postField]) || 0;
       slot.total += v;
       slot[p._admin.name] = (slot[p._admin.name] ?? 0) + v;
     }
@@ -162,9 +175,12 @@ function listMonths(data) {
 
 // Posts in the last 7 days for one admin — used by the 7d progress bar strip.
 function countPostsLast7Days(posts) {
-  const cutoff = Date.now() / 1000 - 7 * 86400;
+  const cutoffMs = Date.now() - 7 * 86400 * 1000;
   let n = 0;
-  for (const p of posts) if (p.createTime && p.createTime >= cutoff) n += 1;
+  for (const p of posts) {
+    const tsMs = p.timestamp ?? (p.createTime ? p.createTime * 1000 : 0);
+    if (tsMs && tsMs >= cutoffMs) n += 1;
+  }
   return n;
 }
 
@@ -235,6 +251,13 @@ export default function Admin() {
   const filteredDaily = useMemo(
     () => filterByRange(dailyTotals.data, range, monthKey),
     [dailyTotals.data, range, monthKey]
+  );
+  // Komposisi chart always counts posts (not likes/views) — keep separate
+  // from metric-aware dailyTotals. Same range filter applied.
+  const dailyPosts = useMemo(() => buildDailyTotals(allRows, 'postCount'), [allRows]);
+  const filteredDailyPosts = useMemo(
+    () => filterByRange(dailyPosts.data, range, monthKey),
+    [dailyPosts.data, range, monthKey]
   );
   const monthOptions = useMemo(() => listMonths(dailyTotals.data), [dailyTotals.data]);
 
@@ -530,7 +553,7 @@ export default function Admin() {
             <span className="ml-auto text-[10px] text-text-muted px-2 py-0.5 rounded-full bg-bg-tertiary">{summary.length} admin</span>
           </div>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={filteredDaily} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+            <BarChart data={filteredDailyPosts} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" opacity={0.4} />
               <XAxis
                 dataKey="day"
@@ -567,11 +590,11 @@ export default function Admin() {
               Top Admin per Hari
             </div>
             <div className="flex gap-1.5 overflow-x-auto pb-1" style={{ scrollbarWidth: 'thin' }}>
-              {filteredDaily.filter((d) => d.total > 0).length === 0 ? (
+              {filteredDailyPosts.filter((d) => d.total > 0).length === 0 ? (
                 <span className="text-[10px] text-text-muted">Tidak ada post dalam rentang ini.</span>
               ) : (
-                filteredDaily.filter((d) => d.total > 0).map((d) => {
-                  // Find admin with max value in this day (skip non-admin keys)
+                filteredDailyPosts.filter((d) => d.total > 0).map((d) => {
+                  // Find admin with max value in this day
                   let topName = '';
                   let topVal = 0;
                   for (const admin of summary) {
