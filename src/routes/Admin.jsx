@@ -17,7 +17,7 @@ import {
 import { useAccounts } from '../hooks/useAccount.js';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PlatformIcon, platformLabel } from '../components/icons/PlatformIcon.jsx';
-import { getAdminSummary } from '../lib/adminHashtags.js';
+import { getAdminSummary, ADMIN_HASHTAGS } from '../lib/adminHashtags.js';
 import { formatNumber, formatDate } from '../lib/format.js';
 
 // Responsive column visibility — same pattern as EnhancedTable so mobile
@@ -354,6 +354,32 @@ export default function Admin() {
   const totalComments = summary.reduce((s, a) => s + a.totalComments, 0);
   const totalViews = summary.reduce((s, a) => s + a.totalViews, 0);
 
+  // V33.2.1 Komposisi: dynamic Y-max so chart doesn't waste vertical space on
+  // sparse days. Add 1 step ceiling to give the topmost bar breathing room.
+  const dynamicYMax = useMemo(() => {
+    const max = filteredDailyPosts.reduce((m, d) => Math.max(m, d.total || 0), 0);
+    if (max <= 0) return 1;
+    // Round up to next multiple of 2 (4→4, 5→6, 7→8), +20% padding
+    const padded = Math.ceil(max * 1.2);
+    return padded <= 4 ? 4 : padded <= 8 ? 8 : padded <= 12 ? 12 : Math.ceil(padded / 4) * 4;
+  }, [filteredDailyPosts]);
+
+  // Total posts inside the active range — shown in Komposisi header badge
+  const totalPostsInRange = useMemo(
+    () => filteredDailyPosts.reduce((s, d) => s + (d.total || 0), 0),
+    [filteredDailyPosts]
+  );
+
+  // Dynamic 7d target — max(7, ceil(avg per admin × 1.5)) so the bar doesn't
+  // forever show 0/7 when reality is sparse. Caps at 14 to keep meaningful.
+  const target7d = useMemo(() => {
+    if (summary.length === 0) return 7;
+    const counts = summary.map((a) => countPostsLast7Days(a.posts));
+    const avg = counts.reduce((s, n) => s + n, 0) / counts.length;
+    const target = Math.max(7, Math.min(14, Math.ceil(avg * 1.5)));
+    return target;
+  }, [summary]);
+
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
       {/* Page header */}
@@ -569,106 +595,214 @@ export default function Admin() {
 
         {/* Stacked bar — total posts per admin per day + winner pill row + 7d progress.
             V33.2: switched source to filteredDaily (respects growth range/month picker).
-            Added Top Admin badge per day and 7d progress strip below the chart. */}
+            Added Top Admin badge per day and 7d progress strip below the chart.
+            V33.2.1: modernized — dynamic Y-max, custom tooltip, legend with totals,
+            animate on mount, empty state, sortable legend. */}
         <div className="surface p-4">
           <div className="flex items-center gap-2 mb-3">
             <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-accent-instagram/10 text-accent-instagram">
               <BarChart3 className="w-3.5 h-3.5" />
             </span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Komposisi Post per Admin</span>
-            <span className="ml-auto text-[10px] text-text-muted px-2 py-0.5 rounded-full bg-bg-tertiary">{summary.length} admin</span>
+            <span className="ml-auto flex items-center gap-1.5 text-[10px] text-text-muted">
+              <span className="tabular-nums px-2 py-0.5 rounded-full bg-bg-tertiary">
+                <span className="text-text-primary font-semibold">{totalPostsInRange}</span> post
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-bg-tertiary">{summary.length} admin</span>
+            </span>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={filteredDailyPosts} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" opacity={0.4} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" opacity={0.4} vertical={false} />
               <XAxis
                 dataKey="day"
                 stroke="var(--text-muted)"
                 tick={{ fontSize: 10 }}
                 tickFormatter={(d) => d.slice(5)}
               />
-              <YAxis stroke="var(--text-muted)" tick={{ fontSize: 10 }} allowDecimals={false} />
-              <Tooltip
-                contentStyle={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-default)', borderRadius: 8, fontSize: 12 }}
-                labelStyle={{ color: 'var(--text-primary)' }}
-                labelFormatter={(d) => `Tanggal ${d}`}
+              <YAxis
+                stroke="var(--text-muted)"
+                tick={{ fontSize: 10 }}
+                allowDecimals={false}
+                domain={[0, dynamicYMax]}
               />
-              {summary.map((admin, i) => {
-                const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
-                return (
-                  <Bar
-                    key={admin.name}
-                    dataKey={admin.name}
-                    name={admin.name}
-                    stackId="a"
-                    fill={accent.hex}
-                    radius={[2, 2, 0, 0]}
-                  />
-                );
-              })}
+              <Tooltip
+                cursor={{ fill: 'var(--bg-tertiary)', opacity: 0.4 }}
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+                  const day = label ?? '';
+                  const total = payload.reduce((s, p) => s + (Number(p.value) || 0), 0);
+                  // Stable order: sort by value desc so dominant admin on top
+                  const items = [...payload]
+                    .filter((p) => (Number(p.value) || 0) > 0)
+                    .sort((a, b) => b.value - a.value);
+                  return (
+                    <div className="bg-bg-elevated border border-border-default rounded-lg shadow-xl p-2.5 text-xs min-w-[180px]">
+                      <div className="text-[10px] uppercase tracking-wider text-text-muted mb-1.5">
+                        {day}
+                      </div>
+                      <div className="space-y-1">
+                        {items.map((it) => {
+                          const idx = summary.findIndex((a) => a.name === it.name);
+                          const accent = ADMIN_ACCENTS[idx % ADMIN_ACCENTS.length];
+                          return (
+                            <div key={it.name} className="flex items-center gap-2">
+                              <span
+                                className="w-2 h-2 rounded-sm flex-shrink-0"
+                                style={{ backgroundColor: accent.hex }}
+                              />
+                              <span className="flex-1 text-text-secondary">{it.name}</span>
+                              <span className="tabular-nums text-text-primary font-semibold">
+                                {it.value}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="mt-1.5 pt-1.5 border-t border-border-subtle flex items-center justify-between">
+                        <span className="text-text-muted">Total</span>
+                        <span className="tabular-nums text-text-primary font-bold">{total}</span>
+                      </div>
+                    </div>
+                  );
+                }}
+              />
+              {summary
+                .map((admin) => {
+                  // Stable accent by ADMIN_HASHTAGS order (NOT summary order, so
+                  // colors stay attached to Reni/Rifqi/Reta/Julian even if sort changes)
+                  const originalIdx = ADMIN_HASHTAGS.findIndex((h) => h.name === admin.name);
+                  const accent = ADMIN_ACCENTS[originalIdx >= 0 ? originalIdx % ADMIN_ACCENTS.length : 0];
+                  return (
+                    <Bar
+                      key={admin.name}
+                      dataKey={admin.name}
+                      name={admin.name}
+                      stackId="a"
+                      fill={accent.hex}
+                      radius={[2, 2, 0, 0]}
+                      isAnimationActive
+                      animationDuration={600}
+                    />
+                  );
+                })}
             </BarChart>
           </ResponsiveContainer>
 
-          {/* Top admin per day — horizontal pill row, scrollable on mobile */}
+          {/* Legend with per-admin totals (compact, two-tone) */}
+          <div className="mt-3 flex items-center gap-3 flex-wrap">
+            {summary.map((admin, i) => {
+              const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
+              const total = filteredDailyPosts.reduce((s, d) => s + (d[admin.name] ?? 0), 0);
+              return (
+                <button
+                  key={admin.name}
+                  onClick={() => setActiveAdmin(activeAdmin === admin.name ? null : admin.name)}
+                  className={`flex items-center gap-1.5 text-[10px] px-1.5 py-0.5 rounded transition-colors ${
+                    activeAdmin === admin.name ? 'bg-bg-tertiary' : 'hover:bg-bg-tertiary/50'
+                  }`}
+                  title={`Klik untuk drill-down ke ${admin.name} di Pertumbuhan`}
+                >
+                  <span
+                    className="w-2.5 h-2.5 rounded-sm"
+                    style={{ backgroundColor: accent.hex }}
+                  />
+                  <span className={activeAdmin === admin.name ? accent.text + ' font-bold' : 'text-text-secondary'}>
+                    {admin.name}
+                  </span>
+                  <span className="tabular-nums text-text-muted">{total}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Top admin per day — modernized: large day + winner + breakdown */}
           <div className="mt-3 pt-3 border-t border-border-subtle">
             <div className="text-[10px] text-text-muted uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <Trophy className="w-3 h-3 text-accent-warning" />
               Top Admin per Hari
             </div>
-            <div className="flex gap-1.5 overflow-x-auto pb-1" style={{ scrollbarWidth: 'thin' }}>
-              {filteredDailyPosts.filter((d) => d.total > 0).length === 0 ? (
-                <span className="text-[10px] text-text-muted">Tidak ada post dalam rentang ini.</span>
-              ) : (
-                filteredDailyPosts.filter((d) => d.total > 0).map((d) => {
-                  // Find admin with max value in this day
-                  let topName = '';
-                  let topVal = 0;
-                  for (const admin of summary) {
-                    const v = d[admin.name] ?? 0;
-                    if (v > topVal) { topVal = v; topName = admin.name; }
-                  }
-                  if (!topName) return null;
-                  const idx = summary.findIndex((a) => a.name === topName);
-                  const accent = ADMIN_ACCENTS[idx % ADMIN_ACCENTS.length];
-                  return (
-                    <div
-                      key={d.day}
-                      className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1 rounded bg-bg-tertiary/40 border border-border-subtle min-w-[64px]"
-                      title={`${topName} memimpin pada ${d.day} dengan ${topVal} post`}
-                    >
-                      <span className="text-[9px] text-text-muted tabular-nums">{d.day.slice(5)}</span>
-                      <span className={`text-[10px] font-bold ${accent.text}`}>{topName}</span>
-                      <span className="text-[10px] text-text-primary tabular-nums">{topVal}</span>
-                    </div>
-                  );
-                })
-              )}
-            </div>
+            {filteredDailyPosts.filter((d) => d.total > 0).length === 0 ? (
+              <div className="text-[11px] text-text-muted py-3 text-center bg-bg-tertiary/30 rounded">
+                Tidak ada post dalam rentang ini
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                {filteredDailyPosts
+                  .filter((d) => d.total > 0)
+                  .map((d) => {
+                    let topName = '';
+                    let topVal = 0;
+                    for (const admin of summary) {
+                      const v = d[admin.name] ?? 0;
+                      if (v > topVal) { topVal = v; topName = admin.name; }
+                    }
+                    if (!topName) return null;
+                    const idx = summary.findIndex((a) => a.name === topName);
+                    const accent = ADMIN_ACCENTS[idx % ADMIN_ACCENTS.length];
+                    const others = summary.length - 1;
+                    return (
+                      <div
+                        key={d.day}
+                        className="relative flex flex-col gap-1 px-2.5 py-1.5 rounded-md bg-bg-tertiary/40 border border-border-subtle hover:bg-bg-tertiary/70 transition-colors"
+                        title={`${topName} memimpin pada ${d.day} dengan ${topVal} post`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-text-muted tabular-nums font-medium">
+                            {d.day.slice(5)}
+                          </span>
+                          <Trophy className="w-2.5 h-2.5 text-accent-warning" />
+                        </div>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className={`text-sm font-bold tabular-nums ${accent.text}`}>
+                            {topVal}
+                          </span>
+                          <span className={`text-[10px] font-semibold ${accent.text} truncate`}>
+                            {topName}
+                          </span>
+                        </div>
+                        {others > 0 && (
+                          <div className="text-[9px] text-text-muted">
+                            +{others} admin lain
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
           </div>
 
-          {/* 7d progress strip — target 1 post/hari × 7 hari = 7 */}
+          {/* 7d progress strip — target = max(current posts across admins, 4) floor.
+              Avoids showing 0/7 when reality is sparse. */}
           <div className="mt-3 pt-3 border-t border-border-subtle">
             <div className="text-[10px] text-text-muted uppercase tracking-wider mb-2">
-              Progress 7 Hari <span className="text-text-primary">· target {summary.length > 0 ? 7 : 0} post</span>
+              Progress 7 Hari
+              <span className="text-text-primary"> · target {target7d} post</span>
+              <span className="ml-1 normal-case tracking-normal text-text-muted">
+                ({summary.length > 0 ? Math.round(summary.reduce((s, a) => s + countPostsLast7Days(a.posts), 0) / summary.length * 10) / 10 : 0} avg/admin)
+              </span>
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
               {summary.map((admin, i) => {
                 const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
                 const count = countPostsLast7Days(admin.posts);
-                const target = 7;
-                const pct = Math.min(100, (count / target) * 100);
-                const hit = count >= target;
+                const pct = target7d > 0 ? Math.min(100, (count / target7d) * 100) : 0;
+                const hit = count >= target7d;
                 return (
-                  <div key={admin.name} className="flex items-center gap-2">
+                  <div
+                    key={admin.name}
+                    className={`flex items-center gap-2 px-2 py-1.5 rounded ${hit ? 'bg-accent-success/5 border border-accent-success/20' : ''}`}
+                  >
                     <span className={`text-[10px] font-bold ${accent.text} w-12 truncate`}>{admin.name}</span>
                     <div className="flex-1 h-1.5 bg-bg-tertiary rounded-full overflow-hidden">
                       <div
-                        className={`h-full ${accent.bar} transition-all`}
+                        className={`h-full ${accent.bar} transition-all duration-300`}
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <span className={`text-[10px] tabular-nums w-10 text-right ${hit ? 'text-accent-success font-semibold' : 'text-text-muted'}`}>
-                      {count}/{target}
+                    <span className={`text-[10px] tabular-nums w-10 text-right ${hit ? 'text-accent-success font-bold' : 'text-text-muted'}`}>
+                      {count}/{target7d}
                     </span>
                   </div>
                 );
