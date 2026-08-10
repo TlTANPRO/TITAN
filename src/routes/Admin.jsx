@@ -1096,7 +1096,7 @@ export default function Admin() {
               {crossTotals.raw.toLocaleString('id-ID')} raw
             </span>
             <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-accent-primary/15 text-accent-primary">
-              {crossTotals.unique.toLocaleString('id-ID')} unique
+              {crossTotals.unique.toLocaleString('id-ID')} total post
             </span>
             <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400">
               {crossTotals.cross.toLocaleString('id-ID')} cross
@@ -1117,9 +1117,9 @@ export default function Admin() {
                 <th className="py-3 px-4 text-right font-medium">IG</th>
                 <th className="py-3 px-4 text-right font-medium">TT</th>
                 <th className="py-3 px-4 text-right font-medium">Cross</th>
-                <th className="py-3 px-4 text-right font-medium cursor-pointer select-none" onClick={() => setCrossSortKey('unique')}>
+                <th className="py-3 px-4 text-right font-medium cursor-pointer select-none" onClick={() => setCrossSortKey('unique')} title="Jumlah post unik setelah cross-post IG↔TT dihitung sekali">
                   <span className="inline-flex items-center gap-1.5">
-                    Unique
+                    Total Post
                     <SortIcon active={crossSortKey === 'unique'} dir="desc" />
                   </span>
                 </th>
@@ -1155,8 +1155,19 @@ export default function Admin() {
                     <td className="py-3 px-4 text-right text-amber-600 dark:text-amber-400">
                       {row.crossCount > 0 ? row.crossCount : '—'}
                     </td>
-                    <td className="py-3 px-4 text-right font-bold text-accent-primary">
-                      {row.unique.toLocaleString('id-ID')}
+                    <td className="py-3 px-4 text-right">
+                      <div className="font-bold text-accent-primary tabular-nums">
+                        {row.unique.toLocaleString('id-ID')}
+                      </div>
+                      {row.crossCount > 0 ? (
+                        <div className="text-[9px] text-text-muted tabular-nums mt-0.5">
+                          {row.igRaw}+{row.ttRaw}−{row.crossCount}
+                        </div>
+                      ) : (
+                        <div className="text-[9px] text-text-muted tabular-nums mt-0.5">
+                          {row.igRaw}+{row.ttRaw}
+                        </div>
+                      )}
                     </td>
                     <td className={`py-3 px-4 text-right text-text-secondary ${COL_RESPONSIVE.md}`}>
                       {row.er.toFixed(2)}%
