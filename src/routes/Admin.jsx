@@ -1129,7 +1129,6 @@ export default function Admin() {
         <div className="flex items-center gap-3 p-3 border-b border-border-subtle flex-wrap">
           <Layers size={14} className="text-accent-primary" />
           <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">KPI Cross-Platform</span>
-          <span className="text-[10px] text-text-muted">dedup IG ↔ TT</span>
           <div className="ml-auto flex items-center gap-2 flex-wrap">
             {/* Monthly scope picker */}
             <select
@@ -1143,23 +1142,12 @@ export default function Admin() {
                 <option key={mk} value={mk}>{monthLabel(mk)}</option>
               ))}
             </select>
-            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-bg-tertiary text-text-secondary">
-              {crossTotals.raw.toLocaleString('id-ID')} raw
-            </span>
             <span
               className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-accent-primary/15 text-accent-primary"
               title={crossMonthKey === 'all' ? 'Seluruh waktu' : `Bulan ${monthLabel(crossMonthKey)}`}
             >
               {crossTotals.unique.toLocaleString('id-ID')} total post
             </span>
-            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400">
-              {crossTotals.cross.toLocaleString('id-ID')} cross
-            </span>
-            {crossTotals.cross > 0 && (
-              <span className="text-[10px] text-text-muted">
-                -{Math.round((crossTotals.cross / Math.max(crossTotals.raw, 1)) * 100)}% duplicate
-              </span>
-            )}
           </div>
         </div>
         <div className="overflow-x-auto">
@@ -1344,9 +1332,6 @@ export default function Admin() {
               </button>
             );
           })}
-          <span className="ml-auto text-[10px] text-text-muted">
-            Tampil {Math.min(10, filteredRows.length)} dari {filteredRows.length} post · scroll untuk lihat semua
-          </span>
         </div>
         <div className="overflow-x-auto">
           <div className="max-h-[520px] overflow-y-auto">
