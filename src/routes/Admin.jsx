@@ -328,13 +328,18 @@ function detectCrossPosts(posts) {
 }
 
 // Build per-admin cross-platform KPI rows.
-// Each row: { name, igOnly, ttOnly, crossCount, unique, totalLikes, ... }
-function buildCrossPlatformKpi(summary, accounts) {
-  const adminByName = new Map(summary.map((a) => [a.name, a]));
-
+function buildCrossPlatformKpi(summary, accounts, monthKey = null) {
+  // monthKey: 'YYYY-MM' string or null = all-time. Posts are filtered to that
+  // month before cross-detection so the unique count is month-scoped.
   return summary.map((admin, i) => {
-    // Tag each post with its platform so detectCrossPosts can group
-    const tagged = admin.posts.map((post) => ({
+    const monthFiltered = monthKey
+      ? admin.posts.filter((p) => {
+          const tsMs = postTimestampMs(p);
+          if (!tsMs) return false;
+          return new Date(tsMs).toISOString().slice(0, 7) === monthKey;
+        })
+      : admin.posts;
+    const tagged = monthFiltered.map((post) => ({
       ...post,
       _accountPlatform: post._accountPlatform ?? post.platform ?? null
     }));
@@ -342,7 +347,7 @@ function buildCrossPlatformKpi(summary, accounts) {
 
     let igRaw = 0, ttRaw = 0;
     let totalLikes = 0, totalComments = 0, totalViews = 0;
-    for (const post of admin.posts) {
+    for (const post of monthFiltered) {
       const platform = post._accountPlatform ?? post.platform ?? null;
       totalLikes += Number(post.likeCount) || 0;
       totalComments += Number(post.commentCount) || 0;
@@ -350,16 +355,9 @@ function buildCrossPlatformKpi(summary, accounts) {
       if (platform === 'instagram') igRaw += 1;
       else if (platform === 'tiktok') ttRaw += 1;
     }
-    // Cross = number of paired cross-posts (each pair = 1 unique content piece,
-    // 2 raw posts). User's intent: 1 IG + 1 TT same caption → Total = 1, not 0.
     const crossCount = pairs.length;
-    // Total Post = jumlah konten unik setelah cross-post IG↔TT dihitung sekali.
-    //   = igOnly + ttOnly + crossCount
-    //   = (igRaw - crossPairsTouchingIG) + (ttRaw - crossPairsTouchingTT) + crossCount
-    // With 1 IG + 1 TT per pair: unique = igRaw + ttRaw - crossCount.
     const unique = igRaw + ttRaw - crossCount;
 
-    // ER per admin — total engagement / total followers
     const totalFollowers = accounts.reduce(
       (s, a) => s + (a.account?.followerCount ?? a.followerCount ?? 0),
       0
@@ -384,6 +382,31 @@ function buildCrossPlatformKpi(summary, accounts) {
       pairs
     };
   });
+}
+
+// List of 'YYYY-MM' keys with at least one admin-tagged post, desc by recency.
+// Used to populate the monthly KPI picker.
+function listAvailableMonths(summary) {
+  const set = new Set();
+  for (const admin of summary) {
+    for (const p of admin.posts ?? []) {
+      const tsMs = postTimestampMs(p);
+      if (!tsMs) continue;
+      set.add(new Date(tsMs).toISOString().slice(0, 7));
+    }
+  }
+  return [...set].sort().reverse();
+}
+
+// Format 'YYYY-MM' → 'Agustus 2026' (Indonesian month names).
+const MONTH_NAMES_ID = [
+  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+];
+function monthLabel(key) {
+  if (!key || key === 'all') return 'Semua Bulan';
+  const [y, m] = key.split('-');
+  return `${MONTH_NAMES_ID[Number(m) - 1]} ${y}`;
 }
 
 // Build a sparkline series for one admin — last `days` days of post counts.
@@ -494,11 +517,14 @@ export default function Admin() {
   }, [summary, accounts]);
 
   // V33.3 — Cross-platform KPI: per-admin breakdown with dedup-aware counts.
-  // Each row shows raw IG + TT (today's view, includes cross-posts twice) and
-  // Unique (= raw − cross, no double-count). Cross column shows count once.
+  // Month-scoped: crossMonthKey = 'YYYY-MM' or 'all' (default all-time).
+  // Distinct from the existing `monthKey` state which scopes the growth chart
+  // range (== null when range !== 'month').
+  const availableMonths = useMemo(() => listAvailableMonths(summary), [summary]);
+  const [crossMonthKey, setCrossMonthKey] = useState('all');
   const crossPlatformKpi = useMemo(
-    () => buildCrossPlatformKpi(summary, accounts),
-    [summary, accounts]
+    () => buildCrossPlatformKpi(summary, accounts, crossMonthKey === 'all' ? null : crossMonthKey),
+    [summary, accounts, crossMonthKey]
   );
   const [crossSortKey, setCrossSortKey] = useState('unique');
   const sortedCrossKpi = useMemo(() => {
@@ -1105,10 +1131,25 @@ export default function Admin() {
           <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">KPI Cross-Platform</span>
           <span className="text-[10px] text-text-muted">dedup IG ↔ TT</span>
           <div className="ml-auto flex items-center gap-2 flex-wrap">
+            {/* Monthly scope picker */}
+            <select
+              value={crossMonthKey}
+              onChange={(e) => setCrossMonthKey(e.target.value)}
+              className="text-[10px] font-semibold uppercase tracking-wider bg-bg-tertiary border border-border-subtle rounded px-2 py-1 text-text-primary cursor-pointer hover:bg-bg-secondary transition-colors"
+              aria-label="Pilih bulan untuk KPI Cross-Platform"
+            >
+              <option value="all">Semua Bulan</option>
+              {availableMonths.map((mk) => (
+                <option key={mk} value={mk}>{monthLabel(mk)}</option>
+              ))}
+            </select>
             <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-bg-tertiary text-text-secondary">
               {crossTotals.raw.toLocaleString('id-ID')} raw
             </span>
-            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-accent-primary/15 text-accent-primary">
+            <span
+              className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-accent-primary/15 text-accent-primary"
+              title={crossMonthKey === 'all' ? 'Seluruh waktu' : `Bulan ${monthLabel(crossMonthKey)}`}
+            >
               {crossTotals.unique.toLocaleString('id-ID')} total post
             </span>
             <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400">
