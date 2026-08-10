@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Heart, MessageCircle, Eye, ExternalLink, ArrowUpDown, ArrowUp, ArrowDown,
-  TrendingUp, Trophy, BarChart3
+  TrendingUp, Trophy, BarChart3, Layers, ChevronDown, ChevronRight, Link2
 } from 'lucide-react';
 import {
   ResponsiveContainer, LineChart, Line, BarChart, Bar,
@@ -206,6 +206,173 @@ function countPostsLast7Days(posts) {
   return n;
 }
 
+// V33.3 — Cross-platform KPI helpers.
+//
+// Normalize caption for fuzzy matching: strip URLs, hashtags, mentions,
+// extra whitespace, lowercase. Keep first 80 chars. Two captions that
+// differ only in hashtags/URLs/emoji are still considered the same post.
+function normalizeCaption(c) {
+  if (!c) return '';
+  return String(c)
+    .toLowerCase()
+    .replace(/https?:\/\/\S+/g, '') // strip URLs
+    .replace(/[@#]\w+/g, '')         // strip hashtags + mentions
+    .replace(/[^\w\s]/g, ' ')         // strip punctuation
+    .replace(/\s+/g, ' ')            // collapse whitespace
+    .trim()
+    .slice(0, 80);
+}
+
+// Detect cross-posts across IG ↔ TT for one admin's post list.
+//
+// Two-layer detection (defense-in-depth):
+//   Layer 1 (primary): exact normalized-caption match
+//   Layer 2 (fallback): same admin, posts within 6h window, caption length
+//                       similarity > 60% (catches edited captions)
+//
+// Returns {
+//   crossIds: Set<string>   — all post IDs (across both platforms) participating in cross-posts
+//   pairs: [{ ig, tt, score, method }] — for cross-detail UI
+// }
+function detectCrossPosts(posts) {
+  const ig = [];
+  const tt = [];
+  for (const p of posts) {
+    // Admin posts come from getAdminPosts which exposes _accountPlatform, not
+    // .platform. Fall back gracefully for robustness.
+    const platform = p._accountPlatform ?? p.platform ?? p._platform ?? null;
+    const tsMs = postTimestampMs(p);
+    if (!platform || !tsMs) continue;
+    if (platform === 'instagram') ig.push({ p, tsMs, platform });
+    else if (platform === 'tiktok') tt.push({ p, tsMs, platform });
+  }
+
+  // Layer 1: caption-bucket by normalized caption
+  const capBuckets = new Map(); // normCap → [{p, tsMs, platform}]
+  for (const { p, tsMs, platform } of [...ig, ...tt]) {
+    const cap = normalizeCaption(p.caption ?? p.desc ?? '');
+    if (cap.length < 25) continue; // too short to be a unique signal
+    if (!capBuckets.has(cap)) capBuckets.set(cap, []);
+    capBuckets.get(cap).push({ p, tsMs, platform });
+  }
+
+  const pairs = [];
+  const crossIds = new Set();
+
+  for (const [cap, items] of capBuckets) {
+    const igs = items.filter((i) => i.platform === 'instagram');
+    const tts = items.filter((i) => i.platform === 'tiktok');
+    if (igs.length === 0 || tts.length === 0) continue;
+    // For each IG, pair with closest TT within 12h (caption already matched)
+    for (const igItem of igs) {
+      let best = null;
+      let bestDelta = Infinity;
+      for (const ttItem of tts) {
+        const delta = Math.abs(igItem.tsMs - ttItem.tsMs);
+        if (delta < bestDelta) {
+          best = ttItem;
+          bestDelta = delta;
+        }
+      }
+      if (best) {
+        pairs.push({ ig: igItem.p, tt: best.p, score: 1.0, method: 'caption' });
+        crossIds.add(igItem.p.id);
+        crossIds.add(best.p.id);
+      }
+    }
+  }
+
+  // Layer 2: timestamp proximity for unmatched posts (caption differs)
+  const unmatchedIg = ig.filter((i) => !crossIds.has(i.p.id));
+  const unmatchedTt = tt.filter((i) => !crossIds.has(i.p.id));
+  const PROXIMITY_MS = 6 * 3600 * 1000; // 6 hours
+
+  for (const igItem of unmatchedIg) {
+    let best = null;
+    let bestDelta = Infinity;
+    for (const ttItem of unmatchedTt) {
+      const delta = Math.abs(igItem.tsMs - ttItem.tsMs);
+      if (delta > PROXIMITY_MS) continue;
+      // Require caption similarity > 50% (length-based, fast)
+      const igCap = normalizeCaption(igItem.p.caption ?? igItem.p.desc ?? '');
+      const ttCap = normalizeCaption(ttItem.p.caption ?? ttItem.p.desc ?? '');
+      if (igCap.length === 0 || ttCap.length === 0) continue;
+      const minLen = Math.min(igCap.length, ttCap.length);
+      const prefixMatch = igCap.slice(0, minLen) === ttCap.slice(0, minLen);
+      const overlap = Math.min(igCap.length, ttCap.length) / Math.max(igCap.length, ttCap.length);
+      if (!prefixMatch && overlap < 0.5) continue;
+      if (delta < bestDelta) {
+        best = ttItem;
+        bestDelta = delta;
+      }
+    }
+    if (best) {
+      pairs.push({ ig: igItem.p, tt: best.p, score: 0.5, method: 'timestamp' });
+      crossIds.add(igItem.p.id);
+      crossIds.add(best.p.id);
+    }
+  }
+
+  return { crossIds, pairs };
+}
+
+// Build per-admin cross-platform KPI rows.
+// Each row: { name, igOnly, ttOnly, crossCount, unique, totalLikes, ... }
+function buildCrossPlatformKpi(summary, accounts) {
+  const adminByName = new Map(summary.map((a) => [a.name, a]));
+
+  return summary.map((admin, i) => {
+    // Tag each post with its platform so detectCrossPosts can group
+    const tagged = admin.posts.map((post) => ({
+      ...post,
+      _accountPlatform: post._accountPlatform ?? post.platform ?? null
+    }));
+    const { crossIds, pairs } = detectCrossPosts(tagged);
+
+    let igRaw = 0, ttRaw = 0, crossCount = 0;
+    let totalLikes = 0, totalComments = 0, totalViews = 0;
+    for (const post of admin.posts) {
+      const isCross = crossIds.has(post.id);
+      const platform = post._accountPlatform ?? post.platform ?? null;
+      totalLikes += Number(post.likeCount) || 0;
+      totalComments += Number(post.commentCount) || 0;
+      totalViews += Number(post.viewCount) || 0;
+      if (platform === 'instagram') igRaw += 1;
+      else if (platform === 'tiktok') ttRaw += 1;
+      if (isCross) crossCount += 1;
+    }
+    // IG/TT = raw platform counts (what user sees today, includes duplicates).
+    // Cross = number of cross-posts (counted once).
+    // Unique = IG + TT − Cross (no double-count).
+    const unique = igRaw + ttRaw - crossCount;
+
+    // ER per admin — total engagement / total followers
+    const totalFollowers = accounts.reduce(
+      (s, a) => s + (a.account?.followerCount ?? a.followerCount ?? 0),
+      0
+    );
+    const er = totalFollowers > 0 ? ((totalLikes + totalComments) / totalFollowers) * 100 : 0;
+
+    return {
+      index: i,
+      name: admin.name,
+      igRaw,
+      ttRaw,
+      crossCount,
+      raw: igRaw + ttRaw,
+      unique,
+      totalLikes,
+      totalComments,
+      totalViews,
+      avgLikes: unique > 0 ? totalLikes / unique : 0,
+      avgComments: unique > 0 ? totalComments / unique : 0,
+      avgViews: unique > 0 ? totalViews / unique : 0,
+      er,
+      pairs
+    };
+  });
+}
+
 // Build a sparkline series for one admin — last `days` days of post counts.
 // Empty days left as null so recharts skips the dot instead of showing zero.
 function buildSparkline(posts, days = 7) {
@@ -312,6 +479,35 @@ export default function Admin() {
       };
     });
   }, [summary, accounts]);
+
+  // V33.3 — Cross-platform KPI: per-admin breakdown with dedup-aware counts.
+  // Each row shows raw IG + TT (today's view, includes cross-posts twice) and
+  // Unique (= raw − cross, no double-count). Cross column shows count once.
+  const crossPlatformKpi = useMemo(
+    () => buildCrossPlatformKpi(summary, accounts),
+    [summary, accounts]
+  );
+  const [crossSortKey, setCrossSortKey] = useState('unique');
+  const sortedCrossKpi = useMemo(() => {
+    return [...crossPlatformKpi].sort((a, b) => (b[crossSortKey] ?? 0) - (a[crossSortKey] ?? 0));
+  }, [crossPlatformKpi, crossSortKey]);
+
+  // Aggregate totals for header badge
+  const crossTotals = useMemo(() => {
+    return crossPlatformKpi.reduce(
+      (acc, r) => ({
+        raw: acc.raw + r.raw,
+        unique: acc.unique + r.unique,
+        cross: acc.cross + r.crossCount,
+        likes: acc.likes + r.totalLikes,
+        comments: acc.comments + r.totalComments,
+        views: acc.views + r.totalViews
+      }),
+      { raw: 0, unique: 0, cross: 0, likes: 0, comments: 0, views: 0 }
+    );
+  }, [crossPlatformKpi]);
+
+  const [crossDetailOpen, setCrossDetailOpen] = useState(false);
 
   // Filter + sort for the posts table.
   const [adminFilter, setAdminFilter] = useState('all');
@@ -886,6 +1082,173 @@ export default function Admin() {
               )}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* Cross-Platform KPI — per-admin IG vs TT split with cross-post dedup */}
+      <div className="surface overflow-hidden">
+        <div className="flex items-center gap-3 p-3 border-b border-border-subtle flex-wrap">
+          <Layers size={14} className="text-accent-primary" />
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">KPI Cross-Platform</span>
+          <span className="text-[10px] text-text-muted">dedup IG ↔ TT</span>
+          <div className="ml-auto flex items-center gap-2 flex-wrap">
+            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-bg-tertiary text-text-secondary">
+              {crossTotals.raw.toLocaleString('id-ID')} raw
+            </span>
+            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-accent-primary/15 text-accent-primary">
+              {crossTotals.unique.toLocaleString('id-ID')} unique
+            </span>
+            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400">
+              {crossTotals.cross.toLocaleString('id-ID')} cross
+            </span>
+            {crossTotals.cross > 0 && (
+              <span className="text-[10px] text-text-muted">
+                -{Math.round((crossTotals.cross / Math.max(crossTotals.raw, 1)) * 100)}% duplicate
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-xs text-text-muted uppercase border-b border-border-subtle">
+                <th className="py-3 px-4 text-left font-medium">#</th>
+                <th className="py-3 px-4 text-left font-medium">Admin</th>
+                <th className="py-3 px-4 text-right font-medium">IG</th>
+                <th className="py-3 px-4 text-right font-medium">TT</th>
+                <th className="py-3 px-4 text-right font-medium">Cross</th>
+                <th className="py-3 px-4 text-right font-medium cursor-pointer select-none" onClick={() => setCrossSortKey('unique')}>
+                  <span className="inline-flex items-center gap-1.5">
+                    Unique
+                    <SortIcon active={crossSortKey === 'unique'} dir="desc" />
+                  </span>
+                </th>
+                <th className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.md}`}>ER %</th>
+                <th className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.md}`}>Avg Suka</th>
+                <th className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.lg}`}>Avg Views</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedCrossKpi.map((row) => {
+                const accent = ADMIN_ACCENTS[row.index % ADMIN_ACCENTS.length];
+                const hashtag = ADMIN_HASHTAGS.find((h) => h.name === row.name);
+                return (
+                  <tr key={row.name} className="border-b border-border-subtle/50 hover:bg-bg-tertiary/40 transition-colors">
+                    <td className="py-3 px-4 text-text-muted">{row.index + 1}</td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: accent.hex }} />
+                        <div className="min-w-0">
+                          <div className="font-medium text-text-primary truncate">{row.name}</div>
+                          {hashtag && (
+                            <div className="text-[10px] text-text-muted truncate">{hashtag.tag}</div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-right text-pink-600 dark:text-pink-400 font-medium">
+                      {row.igRaw}
+                    </td>
+                    <td className="py-3 px-4 text-right text-cyan-600 dark:text-cyan-400 font-medium">
+                      {row.ttRaw}
+                    </td>
+                    <td className="py-3 px-4 text-right text-amber-600 dark:text-amber-400">
+                      {row.crossCount > 0 ? row.crossCount : '—'}
+                    </td>
+                    <td className="py-3 px-4 text-right font-bold text-accent-primary">
+                      {row.unique.toLocaleString('id-ID')}
+                    </td>
+                    <td className={`py-3 px-4 text-right text-text-secondary ${COL_RESPONSIVE.md}`}>
+                      {row.er.toFixed(2)}%
+                    </td>
+                    <td className={`py-3 px-4 text-right text-text-secondary ${COL_RESPONSIVE.md}`}>
+                      {Math.round(row.avgLikes).toLocaleString('id-ID')}
+                    </td>
+                    <td className={`py-3 px-4 text-right text-text-secondary ${COL_RESPONSIVE.lg}`}>
+                      {row.avgViews >= 1000
+                        ? `${(row.avgViews / 1000).toFixed(1)}K`
+                        : Math.round(row.avgViews).toLocaleString('id-ID')}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div className="p-3 border-t border-border-subtle">
+          <button
+            onClick={() => setCrossDetailOpen((v) => !v)}
+            className="flex items-center gap-2 text-xs text-text-secondary hover:text-text-primary transition-colors"
+          >
+            {crossDetailOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            <Link2 size={12} className="text-amber-500" />
+            <span className="font-medium">Detail Cross-Post</span>
+            <span className="text-text-muted">
+              ({crossTotals.cross} pasangan)
+            </span>
+          </button>
+          {crossDetailOpen && (
+            <div className="mt-3 space-y-2 max-h-[480px] overflow-y-auto">
+              {sortedCrossKpi.filter((r) => r.pairs.length > 0).map((row) => {
+                const accent = ADMIN_ACCENTS[row.index % ADMIN_ACCENTS.length];
+                return (
+                  <div key={row.name} className="rounded-lg border border-border-subtle bg-bg-secondary/40 p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: accent.hex }} />
+                      <span className="text-xs font-semibold text-text-primary">{row.name}</span>
+                      <span className="text-[10px] text-text-muted">{row.pairs.length} cross-post</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      {row.pairs.slice(0, 8).map((pair, idx) => (
+                        <div key={idx} className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px]">
+                          <div className="rounded bg-pink-500/5 border border-pink-500/20 p-2">
+                            <div className="flex items-center gap-1 text-[10px] text-pink-600 dark:text-pink-400 font-semibold uppercase mb-1">
+                              <span>IG</span>
+                              <span className="text-text-muted">·</span>
+                              <span>{Math.round(pair.score * 100)}% {pair.method}</span>
+                            </div>
+                            <div className="text-text-secondary line-clamp-2">
+                              {(pair.ig.caption ?? pair.ig.desc ?? '').slice(0, 140)}
+                            </div>
+                            <div className="flex gap-3 mt-1 text-text-muted">
+                              <span>♥ {pair.ig.likeCount ?? 0}</span>
+                              <span>💬 {pair.ig.commentCount ?? 0}</span>
+                              <span>▶ {pair.ig.viewCount ?? 0}</span>
+                            </div>
+                          </div>
+                          <div className="rounded bg-cyan-500/5 border border-cyan-500/20 p-2">
+                            <div className="flex items-center gap-1 text-[10px] text-cyan-600 dark:text-cyan-400 font-semibold uppercase mb-1">
+                              <span>TT</span>
+                              <span className="text-text-muted">·</span>
+                              <span>matched</span>
+                            </div>
+                            <div className="text-text-secondary line-clamp-2">
+                              {(pair.tt.caption ?? pair.tt.desc ?? '').slice(0, 140)}
+                            </div>
+                            <div className="flex gap-3 mt-1 text-text-muted">
+                              <span>♥ {pair.tt.likeCount ?? 0}</span>
+                              <span>💬 {pair.tt.commentCount ?? 0}</span>
+                              <span>▶ {pair.tt.viewCount ?? 0}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {row.pairs.length > 8 && (
+                        <div className="text-[10px] text-text-muted text-center pt-1">
+                          +{row.pairs.length - 8} cross-post lainnya
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+              {crossTotals.cross === 0 && (
+                <div className="text-xs text-text-muted text-center py-4">
+                  Tidak ada cross-post terdeteksi
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
