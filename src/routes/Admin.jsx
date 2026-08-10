@@ -202,6 +202,15 @@ export default function Admin() {
   const accounts = useAccounts();
   const summary = useMemo(() => getAdminSummary(accounts), [accounts]);
 
+  // V33.2: range + monthly picker + drill-down focus state declared BEFORE
+  // any useMemo that references them. Earlier draft put growthMetric after
+  // dailyTotals useMemo → TDZ ReferenceError at runtime (Cannot access 'b'
+  // before initialization — minified var name for growthMetric).
+  const [range, setRange] = useState('all');
+  const [monthKey, setMonthKey] = useState(null);
+  const [activeAdmin, setActiveAdmin] = useState(null); // null = combined view
+  const [growthMetric, setGrowthMetric] = useState('postCount'); // postCount | totalLikes | totalComments | totalViews
+
   const allRows = useMemo(() => {
     const out = [];
     summary.forEach((admin, i) => {
@@ -217,12 +226,6 @@ export default function Admin() {
     () => buildDailyTotals(allRows, growthMetric),
     [allRows, growthMetric]
   );
-
-  // V33.2: range + monthly picker + drill-down focus state for both chart panels.
-  const [range, setRange] = useState('all');
-  const [monthKey, setMonthKey] = useState(null);
-  const [activeAdmin, setActiveAdmin] = useState(null); // null = combined view
-  const [growthMetric, setGrowthMetric] = useState('postCount'); // postCount | totalLikes | totalComments | totalViews
 
   // Reset monthKey if user switches away from 'month' range
   useEffect(() => {
