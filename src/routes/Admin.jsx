@@ -135,15 +135,24 @@ function postTimestampMs(p) {
   return 0;
 }
 
-function buildDailyTotals(rows, metricKey = 'postCount') {
+// Build daily totals across all admin posts.
+//
+// Guarantees every admin in `adminNames` (the full roster passed in) gets a
+// numeric field on EVERY row, even days with zero posts for that admin. This
+// keeps the recharts <Line> series flat at 0 (visible) instead of dropping
+// silently — user sees every admin's curve regardless of activity.
+function buildDailyTotals(rows, metricKey = 'postCount', adminNames = []) {
   const postField = METRIC_TO_POST_FIELD[metricKey] ?? null;
   const byDay = new Map();
-  const adminNames = new Set();
   for (const p of rows) {
     const tsMs = postTimestampMs(p);
     if (!tsMs) continue;
     const day = new Date(tsMs).toISOString().slice(0, 10);
-    if (!byDay.has(day)) byDay.set(day, { day, total: 0 });
+    if (!byDay.has(day)) {
+      const empty = { day, total: 0 };
+      for (const n of adminNames) empty[n] = 0;
+      byDay.set(day, empty);
+    }
     const slot = byDay.get(day);
     if (postField === null) {
       slot.total += 1;
@@ -153,10 +162,15 @@ function buildDailyTotals(rows, metricKey = 'postCount') {
       slot.total += v;
       slot[p._admin.name] = (slot[p._admin.name] ?? 0) + v;
     }
-    adminNames.add(p._admin.name);
+  }
+  // Always return all admin fields on every row, even if no post landed on
+  // that day. Defensive — keeps series shape stable.
+  const data = [...byDay.values()].sort((a, b) => a.day.localeCompare(b.day));
+  for (const row of data) {
+    for (const n of adminNames) if (row[n] == null) row[n] = 0;
   }
   return {
-    data: [...byDay.values()].sort((a, b) => a.day.localeCompare(b.day)),
+    data,
     adminNames: [...adminNames]
   };
 }
@@ -248,8 +262,8 @@ export default function Admin() {
   }, [summary]);
 
   const dailyTotals = useMemo(
-    () => buildDailyTotals(allRows, growthMetric),
-    [allRows, growthMetric]
+    () => buildDailyTotals(allRows, growthMetric, summary.map((a) => a.name)),
+    [allRows, growthMetric, summary]
   );
 
   // Reset monthKey if user switches away from 'month' range
@@ -263,7 +277,10 @@ export default function Admin() {
   );
   // Komposisi chart always counts posts (not likes/views) — keep separate
   // from metric-aware dailyTotals. Same range filter applied.
-  const dailyPosts = useMemo(() => buildDailyTotals(allRows, 'postCount'), [allRows]);
+  const dailyPosts = useMemo(
+    () => buildDailyTotals(allRows, 'postCount', summary.map((a) => a.name)),
+    [allRows, summary]
+  );
   const filteredDailyPosts = useMemo(
     () => filterByRange(dailyPosts.data, range, monthKey),
     [dailyPosts.data, range, monthKey]
