@@ -36,7 +36,11 @@ const FALLBACK_MARKER = { Reni: '-Re', Rifqi: '-Rf', Reta: '-Rm', Julian: '-Ju' 
 
 function accentForAdmin(name) {
   const idx = ADMIN_ORDER.indexOf(name);
-  return ADMIN_ACCENTS[idx % ADMIN_ACCENTS.length];
+  if (idx >= 0) return ADMIN_ACCENTS[idx % ADMIN_ACCENTS.length];
+  // Defensive fallback: unknown admin name — first palette entry. Avoids
+  // "Cannot read .hex of undefined" if a row's admin isn't in ADMIN_ORDER
+  // (e.g. legacy data, capitalization drift, future admin added).
+  return ADMIN_ACCENTS[0];
 }
 
 function monthLabel(key) {
@@ -127,9 +131,11 @@ export function KomentarAdmin() {
     return bMax - aMax;
   }), [postsByUrl]);
 
-  // Bar chart data: per-admin total comment count.
+  // Bar chart data: per-admin total comment count. `row.admin` (NOT `row.name`)
+  // — earlier draft used `row.name` and the field was always undefined, which
+  // bubbled to accentForAdmin(undefined) → ADMIN_ACCENTS[-1] → .hex crash.
   const barData = useMemo(() => adminKpi.map((row) => ({
-    name: row.name,
+    name: row.admin,
     count: row.commentCount
   })), [adminKpi]);
 
