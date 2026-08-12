@@ -72,24 +72,51 @@ function PlatformBadge({ platform }) {
   );
 }
 
-// Build daily cumulative comment count per admin. Mirrors Admin.jsx
-// buildDailyTotals() but keyed on comments. Returns one row per active day:
-// { day: 'YYYY-MM-DD', [admin1]: n, [admin2]: n, ... }. Days without any
-// admin activity are omitted (chart x-axis stays dense with real data).
+// Build daily comment count per admin. Mirrors Admin.jsx buildDailyTotals():
+// densify timeline from min → max day so the line chart stays continuous (no
+// dropped dots when an admin skips a day), and pre-fill every admin field
+// with 0 so recharts never sees `undefined` for an admin that didn't comment.
+// Returns sorted [{ day, Reni, Rifqi, Reta, Julian, total }].
 function buildCommentDaily(comments) {
   if (!comments.length) return [];
   const dayKey = (ms) => {
     const d = new Date(ms);
     return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
   };
-  const map = new Map();
+  const counts = new Map();
+  let minMs = Infinity, maxMs = -Infinity;
   for (const c of comments) {
     const k = dayKey(c.timestampMs);
-    if (!map.has(k)) map.set(k, { day: k });
-    const row = map.get(k);
+    if (!counts.has(k)) counts.set(k, { day: k, total: 0 });
+    const row = counts.get(k);
     row[c.admin] = (row[c.admin] ?? 0) + 1;
+    row.total += 1;
+    if (c.timestampMs < minMs) minMs = c.timestampMs;
+    if (c.timestampMs > maxMs) maxMs = c.timestampMs;
   }
-  return [...map.values()].sort((a, b) => a.day.localeCompare(b.day));
+  // Densify: emit one row per calendar day from min → max, fill missing admin
+  // fields with 0. Without this, days with zero comments across all admins are
+  // absent from the x-axis → lines look disconnected.
+  const out = [];
+  const start = new Date(minMs);
+  const end = new Date(maxMs);
+  // Clamp to UTC midnight so each iteration advances exactly one day.
+  start.setUTCHours(0, 0, 0, 0);
+  end.setUTCHours(0, 0, 0, 0);
+  for (let t = start.getTime(); t <= end.getTime(); t += 86400000) {
+    const k = dayKey(t);
+    const row = { day: k, total: 0 };
+    for (const name of ADMIN_ORDER) row[name] = 0;
+    const observed = counts.get(k);
+    if (observed) {
+      row.total = observed.total;
+      for (const name of ADMIN_ORDER) {
+        if (observed[name] != null) row[name] = observed[name];
+      }
+    }
+    out.push(row);
+  }
+  return out;
 }
 
 export function KomentarAdmin() {
