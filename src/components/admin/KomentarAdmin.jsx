@@ -79,7 +79,7 @@ export function KomentarAdmin() {
   // the same files to the repo root for GH Pages.
   useEffect(() => {
     let cancelled = false;
-    fetch('/data/admin-comments.json')
+    fetch(import.meta.env.BASE_URL + 'data/admin-comments.json')
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
