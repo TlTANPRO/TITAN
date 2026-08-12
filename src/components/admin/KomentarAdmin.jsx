@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MessageCircle, ExternalLink, BarChart3, ChevronDown, ChevronRight, TrendingUp, CalendarDays, Instagram, Music2 } from 'lucide-react';
 import {
-  BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Cell,
+  BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip,
   LineChart, Line, Legend
 } from 'recharts';
 import {
@@ -187,10 +187,8 @@ export function KomentarAdmin() {
   // Bar chart data: per-admin total comment count. `row.admin` (NOT `row.name`)
   // — earlier draft used `row.name` and the field was always undefined, which
   // bubbled to accentForAdmin(undefined) → ADMIN_ACCENTS[-1] → .hex crash.
-  const barData = useMemo(() => adminKpi.map((row) => ({
-    name: row.admin,
-    count: row.commentCount
-  })), [adminKpi]);
+  // REMOVED in V34.8: replaced with stacked "Komposisi Komentar per Admin"
+  // using dailySeries directly (per-admin per-day breakdown).
 
   // Monthly KPI rows scoped to the selected month (or all if 'all').
   const monthlyKpiFiltered = useMemo(() => {
@@ -300,36 +298,122 @@ export function KomentarAdmin() {
         })}
       </div>
 
-      {/* Per-admin bar chart + Monthly KPI table (with month picker) */}
+      {/* Komposisi chart + Monthly KPI table (with month picker) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        {/* Per-admin bar chart */}
+        {/* Stacked bar — Komposisi Komentar per Admin per hari. Mirrors
+            Admin.jsx "Komposisi Post per Admin" pattern: stackId per admin,
+            light custom tooltip, sortable legend with per-admin totals. */}
         <div className="surface p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-accent-primary/10 text-accent-primary">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-accent-instagram/10 text-accent-instagram">
               <BarChart3 className="w-3.5 h-3.5" />
             </span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Per Admin</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Komposisi Komentar per Admin</span>
+            <span className="ml-auto flex items-center gap-1.5 text-[10px] text-text-muted">
+              <span className="tabular-nums px-2 py-0.5 rounded-full bg-bg-tertiary">
+                <span className="text-text-primary font-semibold">{totalComments}</span> komentar
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-bg-tertiary">{dailySeries.length} hari</span>
+            </span>
           </div>
-          <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={barData} margin={{ top: 6, right: 8, bottom: 0, left: -8 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.15)" />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'currentColor' }} axisLine={false} tickLine={false} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: 'currentColor' }} axisLine={false} tickLine={false} />
-                <Tooltip
-                  cursor={{ fill: 'rgba(148,163,184,0.08)' }}
-                  contentStyle={{ backgroundColor: 'rgba(15,23,42,0.95)', border: '1px solid rgba(148,163,184,0.3)', borderRadius: 6, fontSize: 12 }}
-                  formatter={(v) => [`${v} komentar`, 'Total']}
-                />
-                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                  {barData.map((row) => {
-                    const accent = accentForAdmin(row.name);
-                    return <Cell key={row.name} fill={accent.hex} />;
+          {dailySeries.length === 0 ? (
+            <div className="h-56 flex items-center justify-center text-sm text-text-muted">
+              Belum ada data harian
+            </div>
+          ) : (
+            <>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={dailySeries} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" opacity={0.4} vertical={false} />
+                  <XAxis
+                    dataKey="day"
+                    stroke="var(--text-muted)"
+                    tick={{ fontSize: 10 }}
+                    tickFormatter={(d) => d.slice(5)}
+                  />
+                  <YAxis
+                    stroke="var(--text-muted)"
+                    tick={{ fontSize: 10 }}
+                    allowDecimals={false}
+                    domain={[0, 'auto']}
+                  />
+                  <Tooltip
+                    cursor={{ fill: 'var(--bg-tertiary)', opacity: 0.4 }}
+                    content={({ active, payload, label }) => {
+                      if (!active || !payload?.length) return null;
+                      const day = label ?? '';
+                      const total = payload.reduce((s, p) => s + (Number(p.value) || 0), 0);
+                      const items = [...payload]
+                        .filter((p) => (Number(p.value) || 0) > 0)
+                        .sort((a, b) => b.value - a.value);
+                      return (
+                        <div className="bg-bg-elevated border border-border-default rounded-lg shadow-xl p-2.5 text-xs min-w-[180px]">
+                          <div className="text-[10px] uppercase tracking-wider text-text-muted mb-1.5">
+                            {day}
+                          </div>
+                          <div className="space-y-1">
+                            {items.map((it) => {
+                              const idx = ADMIN_ORDER.indexOf(it.name);
+                              const accent = ADMIN_ACCENTS[idx >= 0 ? idx % ADMIN_ACCENTS.length : 0];
+                              return (
+                                <div key={it.name} className="flex items-center gap-2">
+                                  <span
+                                    className="w-2 h-2 rounded-sm flex-shrink-0"
+                                    style={{ backgroundColor: accent.hex }}
+                                  />
+                                  <span className="flex-1 text-text-secondary">{it.name}</span>
+                                  <span className="tabular-nums text-text-primary font-semibold">
+                                    {it.value}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          <div className="mt-1.5 pt-1.5 border-t border-border-subtle flex items-center justify-between">
+                            <span className="text-text-muted">Total</span>
+                            <span className="tabular-nums text-text-primary font-bold">{total}</span>
+                          </div>
+                        </div>
+                      );
+                    }}
+                  />
+                  {ADMIN_ORDER.map((name, i) => {
+                    const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
+                    return (
+                      <Bar
+                        key={name}
+                        dataKey={name}
+                        name={name}
+                        stackId="a"
+                        fill={accent.hex}
+                        radius={[2, 2, 0, 0]}
+                        isAnimationActive
+                        animationDuration={600}
+                      />
+                    );
                   })}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+                </BarChart>
+              </ResponsiveContainer>
+
+              {/* Legend + per-admin totals (matches Admin.jsx "Komposisi Post") */}
+              <div className="mt-3 flex items-center gap-3 flex-wrap">
+                {ADMIN_ORDER.map((name, i) => {
+                  const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
+                  const total = adminKpi.find((r) => r.admin === name)?.commentCount ?? 0;
+                  return (
+                    <div key={name} className="inline-flex items-center gap-1.5 text-xs">
+                      <span
+                        className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
+                        style={{ backgroundColor: accent.hex }}
+                      />
+                      <span className="text-text-secondary">{name}</span>
+                      <span className="tabular-nums font-semibold text-text-primary">{total}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Monthly KPI table — mirrors Cross-Platform KPI table style */}

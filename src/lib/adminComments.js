@@ -95,8 +95,10 @@ export function buildAdminKpi(comments, adminNames = ADMIN_ORDER) {
   return adminNames.map((n) => byAdmin.get(n));
 }
 
-// Monthly KPI per admin. Returns array sorted by month DESC then admin order.
-// Row shape: { monthKey: 'YYYY-MM', admin, commentCount, ownPostCount, externalPostCount }.
+// Monthly KPI per admin. Returns array sorted by `commentCount` DESC so the
+// row with the highest comment total sits at the top — user wanted the most
+// active month+admin pair to be the headline row. Tiebreak: monthKey DESC then
+// canonical admin order. Row shape: { monthKey, admin, commentCount, ... }.
 export function buildMonthlyKpi(comments, adminNames = ADMIN_ORDER) {
   const map = new Map();
   for (const c of comments) {
@@ -112,6 +114,7 @@ export function buildMonthlyKpi(comments, adminNames = ADMIN_ORDER) {
     else slot.externalPostCount += 1;
   }
   return [...map.values()].sort((a, b) => {
+    if (b.commentCount !== a.commentCount) return b.commentCount - a.commentCount;
     if (b.monthKey !== a.monthKey) return b.monthKey.localeCompare(a.monthKey);
     return adminNames.indexOf(a.admin) - adminNames.indexOf(b.admin);
   });
