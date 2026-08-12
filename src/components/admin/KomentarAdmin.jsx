@@ -4,7 +4,7 @@
 // src/data/admin-comments.json — manual until a free IG/TT comment scraper is
 // wired. SSOT for marker detection + KPI aggregates lives in lib/adminComments.js.
 import { useEffect, useMemo, useState } from 'react';
-import { MessageCircle, ExternalLink, BarChart3, ChevronDown, ChevronRight, TrendingUp, Hash } from 'lucide-react';
+import { MessageCircle, ExternalLink, BarChart3, ChevronDown, ChevronRight, TrendingUp, CalendarDays, Instagram, Music2 } from 'lucide-react';
 import {
   BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Cell,
   LineChart, Line, Legend
@@ -18,7 +18,6 @@ import {
   previewCommentText,
   ADMIN_ORDER
 } from '../../lib/adminComments.js';
-import { ADMIN_HASHTAGS } from '../../lib/adminHashtags.js';
 import { formatNumber } from '../../lib/format.js';
 
 // 4 distinct accents — mirrors Admin.jsx palette so admin chips stay in sync.
@@ -32,17 +31,6 @@ const ADMIN_ACCENTS = [
 // Latest comments shown collapsed per post. Scrollable list caps at this
 // number per post — user can scroll OR expand.
 const SAMPLES_PER_POST = 10;
-
-// Default marker per admin — used as fallback when comment text has no marker
-// (e.g. preview stripped it). Keeps the badge readable without re-matching.
-const FALLBACK_MARKER = { Reni: '-Re', Rifqi: '-Rf', Reta: '-Rm', Julian: '-Ju' };
-
-// Display name without the leading hash (e.g. `agustusrf`). Centralized so
-// the per-admin card + KPI table stay in sync if the SSOT format ever changes.
-function displayTag(hashtag) {
-  if (!hashtag) return '';
-  return hashtag.replace(/^#/, '');
-}
 
 function accentForAdmin(name) {
   const idx = ADMIN_ORDER.indexOf(name);
@@ -72,11 +60,14 @@ function shortTime(ms) {
 
 function PlatformBadge({ platform }) {
   const isIG = platform === 'instagram';
+  const Icon = isIG ? Instagram : Music2;
+  const label = isIG ? 'Instagram' : 'TikTok';
   return (
-    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
+    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wider ${
       isIG ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/30' : 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30'
     }`}>
-      {isIG ? 'IG' : 'TT'}
+      <Icon className="w-3 h-3" />
+      {label}
     </span>
   );
 }
@@ -255,16 +246,12 @@ export function KomentarAdmin() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {adminKpi.map((row) => {
           const accent = accentForAdmin(row.admin);
-          const hashtag = ADMIN_HASHTAGS.find((h) => h.name === row.admin);
           return (
             <div key={row.admin} className="relative surface p-4 pt-5 overflow-hidden">
               <div className={`absolute top-0 left-0 right-0 h-0.5 ${accent.bar}`} aria-hidden="true" />
               <div className="flex items-center justify-between mb-2">
                 <div className="min-w-0">
                   <div className="text-sm font-bold text-text-primary truncate">{row.admin}</div>
-                  <div className="text-[10px] text-text-muted uppercase tracking-wider">
-                    {hashtag ? displayTag(hashtag.hashtag) : FALLBACK_MARKER[row.admin]}
-                  </div>
                 </div>
                 <div className={`text-[10px] px-1.5 py-0.5 rounded border ${accent.chip}`}>
                   {row.commentCount > 0 ? 'Aktif' : 'Belum'}
@@ -322,7 +309,7 @@ export function KomentarAdmin() {
         <div className="surface p-4">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-accent-success/10 text-accent-success">
-              <Hash className="w-3.5 h-3.5" />
+              <CalendarDays className="w-3.5 h-3.5" />
             </span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">KPI Bulanan</span>
             {months.length > 0 && (
@@ -573,8 +560,8 @@ export function KomentarAdmin() {
                       const preview = previewCommentText(c.commentText, 140);
                       return (
                         <div key={c.id} className="flex items-start gap-2 text-xs">
-                          <span className={`shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold border ${accent.chip}`}>
-                            {c.adminTag || FALLBACK_MARKER[c.admin]}
+                          <span className={`shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold ${accent.text}`}>
+                            {c.admin}
                           </span>
                           <span className="text-text-primary break-words leading-relaxed">{preview}</span>
                         </div>

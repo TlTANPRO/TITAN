@@ -795,6 +795,8 @@ export default function Admin() {
             </div>
             {range === 'month' && (
               <select
+                id="admin-growth-month-picker"
+                name="adminGrowthMonth"
                 value={monthKey ?? ''}
                 onChange={(e) => setMonthKey(e.target.value || null)}
                 className="bg-bg-tertiary border border-border-subtle rounded px-2 py-1 text-[10px] text-text-primary focus:outline-none focus:border-accent-primary"
@@ -1058,6 +1060,8 @@ export default function Admin() {
           <span className="ml-auto flex items-center gap-2 flex-wrap">
             <span className="text-[10px] text-text-muted uppercase tracking-wider">Sortir:</span>
             <select
+              id="admin-ranking-sort"
+              name="adminRankingSort"
               value={rankMetric}
               onChange={(e) => setRankMetric(e.target.value)}
               className="bg-bg-tertiary border border-border-subtle rounded px-2 py-1 text-xs text-text-primary focus:outline-none focus:border-accent-primary"
@@ -1133,6 +1137,8 @@ export default function Admin() {
           <div className="ml-auto flex items-center gap-2 flex-wrap">
             {/* Monthly scope picker */}
             <select
+              id="admin-cross-platform-month"
+              name="adminCrossPlatformMonth"
               value={crossMonthKey}
               onChange={(e) => setCrossMonthKey(e.target.value)}
               className="text-[10px] font-semibold uppercase tracking-wider bg-bg-tertiary border border-border-subtle rounded px-2 py-1 text-text-primary cursor-pointer hover:bg-bg-secondary transition-colors"
