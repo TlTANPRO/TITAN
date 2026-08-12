@@ -16,7 +16,7 @@
 //   3. Brand-icon tile (IG gradient or TT black) — always works
 
 import { useState } from 'react';
-import { Instagram } from 'lucide-react';
+import { IgIcon } from './icons/IgIcon.jsx';
 import { TtIcon } from './icons/TtIcon.jsx';
 
 /**
@@ -40,7 +40,7 @@ export function ProxiedAvatar({ account, size = 48, className = '' }) {
   const localAvatar = account?.localAvatar;
   const [failed, setFailed] = useState(false);
   const isIG = account?.platform === 'instagram';
-  const PlatformIcon = isIG ? Instagram : TtIcon;
+  const PlatformIcon = isIG ? IgIcon : TtIcon;
 
   // Local cached avatar — real photo, no fetch, no 502/403 noise.
   // This is the path that actually works in production.

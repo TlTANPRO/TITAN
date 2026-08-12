@@ -4,15 +4,16 @@
 // brand-icon tile (IG or TT) — never a letter.
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, AlertTriangle, Instagram } from 'lucide-react';
+import { Calendar, AlertTriangle } from 'lucide-react';
 import { formatNumber, formatPercent, relativeTime } from '../lib/format.js';
 import { ProxiedAvatar } from './ProxiedAvatar.jsx';
+import { IgIcon } from './icons/IgIcon.jsx';
 import { TtIcon } from './icons/TtIcon.jsx';
 
 export default function AccountCard({ account }) {
   const isIG = account.platform === 'instagram';
   const isLimited = account.availability && !account.availability.hasRealData;
-  const PlatformIcon = isIG ? Instagram : TtIcon;
+  const PlatformIcon = isIG ? IgIcon : TtIcon;
 
   return (
     <motion.div

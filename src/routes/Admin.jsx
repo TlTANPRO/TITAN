@@ -19,6 +19,7 @@ import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PlatformIcon, platformLabel } from '../components/icons/PlatformIcon.jsx';
 import { getAdminSummary, ADMIN_HASHTAGS } from '../lib/adminHashtags.js';
 import { formatNumber, formatDate } from '../lib/format.js';
+import { KomentarAdmin } from '../components/admin/KomentarAdmin.jsx';
 
 // Responsive column visibility — same pattern as EnhancedTable so mobile
 // users keep the essential columns visible.
@@ -1458,6 +1459,11 @@ export default function Admin() {
           </div>
         </div>
       </div>
+
+      {/* Komentar Admin — own-account comments tagged with admin markers
+          (`-Rf`/`-Rm`/`-Re`/`-Ju`). Per-admin + monthly KPIs + per-post
+          comment samples. Dry-run preview, pending scraper wiring. */}
+      <KomentarAdmin />
     </div>
   );
 }
