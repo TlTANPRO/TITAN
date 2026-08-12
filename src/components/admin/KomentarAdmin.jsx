@@ -4,8 +4,11 @@
 // src/data/admin-comments.json — manual until a free IG/TT comment scraper is
 // wired. SSOT for marker detection + KPI aggregates lives in lib/adminComments.js.
 import { useEffect, useMemo, useState } from 'react';
-import { MessageCircle, ExternalLink, BarChart3, ChevronDown, ChevronRight, Hash } from 'lucide-react';
-import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from 'recharts';
+import { MessageCircle, ExternalLink, BarChart3, ChevronDown, ChevronRight, TrendingUp, Hash } from 'lucide-react';
+import {
+  BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Cell,
+  LineChart, Line, Legend
+} from 'recharts';
 import {
   loadAdminComments,
   buildAdminKpi,
@@ -26,13 +29,20 @@ const ADMIN_ACCENTS = [
   { text: 'text-accent-instagram', bar: 'bg-accent-instagram', hex: '#E1306C', chip: 'bg-accent-instagram/10 text-accent-instagram border-accent-instagram/30' }
 ];
 
-// Returns the latest 5 comments per post. We render up to 5 samples so the
-// card stays compact; expand on demand via "show all".
-const SAMPLES_PER_POST = 5;
+// Latest comments shown collapsed per post. Scrollable list caps at this
+// number per post — user can scroll OR expand.
+const SAMPLES_PER_POST = 10;
 
 // Default marker per admin — used as fallback when comment text has no marker
 // (e.g. preview stripped it). Keeps the badge readable without re-matching.
 const FALLBACK_MARKER = { Reni: '-Re', Rifqi: '-Rf', Reta: '-Rm', Julian: '-Ju' };
+
+// Display name without the leading hash (e.g. `agustusrf`). Centralized so
+// the per-admin card + KPI table stay in sync if the SSOT format ever changes.
+function displayTag(hashtag) {
+  if (!hashtag) return '';
+  return hashtag.replace(/^#/, '');
+}
 
 function accentForAdmin(name) {
   const idx = ADMIN_ORDER.indexOf(name);
@@ -71,11 +81,32 @@ function PlatformBadge({ platform }) {
   );
 }
 
+// Build daily cumulative comment count per admin. Mirrors Admin.jsx
+// buildDailyTotals() but keyed on comments. Returns one row per active day:
+// { day: 'YYYY-MM-DD', [admin1]: n, [admin2]: n, ... }. Days without any
+// admin activity are omitted (chart x-axis stays dense with real data).
+function buildCommentDaily(comments) {
+  if (!comments.length) return [];
+  const dayKey = (ms) => {
+    const d = new Date(ms);
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+  };
+  const map = new Map();
+  for (const c of comments) {
+    const k = dayKey(c.timestampMs);
+    if (!map.has(k)) map.set(k, { day: k });
+    const row = map.get(k);
+    row[c.admin] = (row[c.admin] ?? 0) + 1;
+  }
+  return [...map.values()].sort((a, b) => a.day.localeCompare(b.day));
+}
+
 export function KomentarAdmin() {
   const [raw, setRaw] = useState(null);
   const [loadError, setLoadError] = useState(null);
   const [activeAdmin, setActiveAdmin] = useState('all');
   const [activeMonth, setActiveMonth] = useState('all');
+  const [activeGrowthAdmin, setActiveGrowthAdmin] = useState(null); // null = Gabungan
   const [expandedPosts, setExpandedPosts] = useState(new Set());
 
   // Fetch admin-comments.json once. Vite prebuild hook copies src/data/* to
@@ -106,8 +137,12 @@ export function KomentarAdmin() {
   // Monthly KPI rows, sorted month DESC then admin order.
   const monthlyKpi = useMemo(() => buildMonthlyKpi(comments), [comments]);
 
-  // Distinct months (DESC) for the month picker.
+  // Distinct months (DESC) for the monthly KPI picker.
   const months = useMemo(() => listCommentMonths(comments), [comments]);
+
+  // Daily-per-admin series for the growth chart (cumulative, no range filter —
+  // comments dataset is small enough to always render full timeline).
+  const dailySeries = useMemo(() => buildCommentDaily(comments), [comments]);
 
   // Filter comments for the per-post list. Posts section respects activeAdmin +
   // activeMonth filter; KPI tiles and monthly table stay unfiltered (overview).
@@ -123,7 +158,7 @@ export function KomentarAdmin() {
     });
   }, [comments, activeAdmin, activeMonth]);
 
-  // Group by post URL for the per-post list. Each entry capped to 5 samples.
+  // Group by post URL for the per-post list. Each entry capped to 10 samples.
   const postsByUrl = useMemo(() => groupByPost(filteredComments), [filteredComments]);
   const postList = useMemo(() => [...postsByUrl.entries()].sort((a, b) => {
     const aMax = Math.max(...a[1].map((c) => c.timestampMs));
@@ -138,6 +173,12 @@ export function KomentarAdmin() {
     name: row.admin,
     count: row.commentCount
   })), [adminKpi]);
+
+  // Monthly KPI rows scoped to the selected month (or all if 'all').
+  const monthlyKpiFiltered = useMemo(() => {
+    if (activeMonth === 'all') return monthlyKpi;
+    return monthlyKpi.filter((r) => r.monthKey === activeMonth);
+  }, [monthlyKpi, activeMonth]);
 
   // Hero KPI strip values.
   const totalComments = adminKpi.reduce((s, r) => s + r.commentCount, 0);
@@ -181,14 +222,13 @@ export function KomentarAdmin() {
 
   return (
     <div className="space-y-3">
-      {/* Top strip — hero KPIs + intro line */}
+      {/* Top strip — hero KPIs */}
       <div className="surface p-4">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-accent-warning/10 text-accent-warning">
             <MessageCircle className="w-3.5 h-3.5" />
           </span>
           <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Komentar Admin</span>
-          <span className="text-[10px] text-text-muted">Komentar dari akun admin dengan tag -Rf / -Rm / -Re / -Ju — sejak 1 Agustus 2026</span>
           <span className="ml-auto text-[10px] text-text-muted px-2 py-0.5 rounded-full bg-bg-tertiary">{comments.length} komentar</span>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -223,7 +263,7 @@ export function KomentarAdmin() {
                 <div className="min-w-0">
                   <div className="text-sm font-bold text-text-primary truncate">{row.admin}</div>
                   <div className="text-[10px] text-text-muted uppercase tracking-wider">
-                    {hashtag ? hashtag.tag : FALLBACK_MARKER[row.admin]}
+                    {hashtag ? displayTag(hashtag.hashtag) : FALLBACK_MARKER[row.admin]}
                   </div>
                 </div>
                 <div className={`text-[10px] px-1.5 py-0.5 rounded border ${accent.chip}`}>
@@ -246,7 +286,7 @@ export function KomentarAdmin() {
         })}
       </div>
 
-      {/* Bar chart + monthly KPI table */}
+      {/* Per-admin bar chart + Monthly KPI table (with month picker) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Per-admin bar chart */}
         <div className="surface p-4">
@@ -280,11 +320,28 @@ export function KomentarAdmin() {
 
         {/* Monthly KPI table — mirrors Cross-Platform KPI table style */}
         <div className="surface p-4">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-accent-success/10 text-accent-success">
               <Hash className="w-3.5 h-3.5" />
             </span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">KPI Bulanan</span>
+            {months.length > 0 && (
+              <label className="ml-auto flex items-center gap-1.5">
+                <span className="text-[10px] text-text-muted uppercase tracking-wider">Bulan:</span>
+                <select
+                  id="komentar-month-picker"
+                  name="komentarMonth"
+                  value={activeMonth}
+                  onChange={(e) => setActiveMonth(e.target.value)}
+                  className="bg-bg-tertiary border border-border-subtle rounded px-2 py-1 text-[10px] text-text-primary focus:outline-none focus:border-accent-primary"
+                >
+                  <option value="all">Semua</option>
+                  {months.map((key) => (
+                    <option key={key} value={key}>{monthLabel(key)}</option>
+                  ))}
+                </select>
+              </label>
+            )}
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -298,9 +355,9 @@ export function KomentarAdmin() {
                 </tr>
               </thead>
               <tbody>
-                {monthlyKpi.length === 0 ? (
+                {monthlyKpiFiltered.length === 0 ? (
                   <tr><td colSpan={5} className="py-3 px-3 text-center text-text-muted">Belum ada data</td></tr>
-                ) : monthlyKpi.map((row) => {
+                ) : monthlyKpiFiltered.map((row) => {
                   const accent = accentForAdmin(row.admin);
                   return (
                     <tr key={`${row.monthKey}-${row.admin}`} className="border-b border-border-subtle/50 hover:bg-bg-tertiary/40 transition-colors">
@@ -321,6 +378,94 @@ export function KomentarAdmin() {
             </table>
           </div>
         </div>
+      </div>
+
+      {/* Pertumbuhan chart — per-admin multi-line over time (mirrors Admin.jsx) */}
+      <div className="surface p-4">
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
+          <span className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-accent-primary/10 text-accent-primary">
+            <TrendingUp className="w-3.5 h-3.5" />
+          </span>
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Pertumbuhan Harian</span>
+          <span className="ml-auto text-[10px] text-text-muted tabular-nums px-2 py-0.5 rounded-full bg-bg-tertiary">{dailySeries.length} hari aktif</span>
+        </div>
+
+        {/* Tab strip: Gabungan + each admin. Click to drill down. */}
+        <div className="flex items-center gap-1 mb-3 flex-wrap">
+          <button
+            type="button"
+            onClick={() => setActiveGrowthAdmin(null)}
+            className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded transition-colors ${
+              activeGrowthAdmin === null ? 'bg-accent-primary text-white' : 'bg-bg-tertiary text-text-muted hover:text-text-primary'
+            }`}
+          >
+            Gabungan
+          </button>
+          {ADMIN_ORDER.map((name, i) => {
+            const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
+            const isActive = activeGrowthAdmin === name;
+            return (
+              <button
+                key={name}
+                type="button"
+                onClick={() => setActiveGrowthAdmin(isActive ? null : name)}
+                className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded transition-colors inline-flex items-center gap-1.5 ${
+                  isActive ? 'text-white' : 'text-text-muted hover:text-text-primary'
+                }`}
+                style={isActive ? { backgroundColor: accent.hex } : {}}
+              >
+                <span
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: isActive ? '#fff' : accent.hex }}
+                />
+                {name}
+              </button>
+            );
+          })}
+        </div>
+
+        {dailySeries.length === 0 ? (
+          <div className="h-56 flex items-center justify-center text-sm text-text-muted">
+            Belum ada data harian
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={dailySeries} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" opacity={0.4} />
+              <XAxis
+                dataKey="day"
+                stroke="var(--text-muted)"
+                tick={{ fontSize: 10 }}
+                tickFormatter={(d) => d.slice(5)}
+              />
+              <YAxis stroke="var(--text-muted)" tick={{ fontSize: 10 }} allowDecimals={false} />
+              <Tooltip
+                contentStyle={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-default)', borderRadius: 8, fontSize: 12 }}
+                labelStyle={{ color: 'var(--text-primary)' }}
+                labelFormatter={(d) => `Tanggal ${d}`}
+              />
+              <Legend wrapperStyle={{ fontSize: 10, paddingTop: 4 }} />
+              {ADMIN_ORDER.map((name, i) => {
+                const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
+                const isFocus = activeGrowthAdmin === name;
+                const isFaded = activeGrowthAdmin !== null && !isFocus;
+                return (
+                  <Line
+                    key={name}
+                    type="monotone"
+                    dataKey={name}
+                    name={name}
+                    stroke={accent.hex}
+                    strokeWidth={isFocus ? 3 : 2}
+                    strokeOpacity={isFaded ? 0.15 : 1}
+                    dot={false}
+                    connectNulls
+                  />
+                );
+              })}
+            </LineChart>
+          </ResponsiveContainer>
+        )}
       </div>
 
       {/* Filters + per-post list */}
@@ -355,7 +500,7 @@ export function KomentarAdmin() {
                   active ? `${accent.bar} text-white border-transparent` : `${accent.chip} hover:border-border-default`
                 }`}
               >
-                {name} {FALLBACK_MARKER[name]}
+                {name}
               </button>
             );
           })}
@@ -398,7 +543,7 @@ export function KomentarAdmin() {
             Belum ada komentar dengan filter ini
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-2 max-h-[640px] overflow-y-auto pr-1">
             {postList.map(([url, list]) => {
               const expanded = expandedPosts.has(url);
               const shown = expanded ? list : list.slice(0, SAMPLES_PER_POST);
