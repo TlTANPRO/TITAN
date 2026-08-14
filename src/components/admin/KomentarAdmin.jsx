@@ -583,73 +583,73 @@ export function KomentarAdmin() {
         </div>
 
         {/* Filter table — 4 columns (Akun / Platform / Admin / Bulan).
-            Consistent with Komentar per Post table aesthetic. State + handlers
-            unchanged from prior chip-row version. */}
-        <div className="overflow-x-auto mb-3">
+            V34.11 redesign: tabular surface with sticky header, tonal column dividers,
+            active chip background matches admin accent, count badge for filter load. */}
+        <div className="overflow-x-auto mb-4 rounded-lg border border-border-subtle/60 bg-bg-secondary/20">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-[10px] text-text-muted uppercase border-b border-border-subtle tracking-wider">
-                <th className="py-1.5 px-2 text-left font-medium">Akun</th>
-                <th className="py-1.5 px-2 text-left font-medium">Platform</th>
-                <th className="py-1.5 px-2 text-left font-medium">Admin</th>
-                <th className="py-1.5 px-2 text-left font-medium">Bulan</th>
+                <th className="py-2 px-3 text-left font-semibold w-[180px]">Akun</th>
+                <th className="py-2 px-3 text-left font-semibold w-[200px]">Platform</th>
+                <th className="py-2 px-3 text-left font-semibold">Admin</th>
+                <th className="py-2 px-3 text-left font-semibold w-[200px]">Bulan</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-border-subtle/40 align-top">
+              <tr className="align-middle">
                 {/* Akun filter — majangmejeng only vs all */}
-                <td className="py-2 px-2">
-                  <div className="flex flex-wrap gap-1.5">
+                <td className="py-2.5 px-3 border-r border-border-subtle/40">
+                  <div className="flex flex-wrap gap-1">
                     <button type="button" onClick={() => setActiveAccount('all')}
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
                         activeAccount === 'all'
-                          ? 'bg-accent-primary text-white border-accent-primary'
+                          ? 'bg-accent-primary text-white border-accent-primary shadow-sm'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
                       }`}>Semua Akun</button>
                     <button type="button" onClick={() => setActiveAccount('majangmejeng')}
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
                         activeAccount === 'majangmejeng'
-                          ? 'bg-accent-instagram text-white border-accent-instagram'
+                          ? 'bg-accent-instagram text-white border-accent-instagram shadow-sm'
                           : 'bg-accent-instagram/10 text-accent-instagram border-accent-instagram/30 hover:border-accent-instagram'
                       }`}>Majangmejeng</button>
                     <button type="button" onClick={() => setActiveAccount('other')}
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
                         activeAccount === 'other'
-                          ? 'bg-bg-tertiary text-text-primary border-border-default'
+                          ? 'bg-bg-tertiary text-text-primary border-border-default shadow-sm'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
                       }`}>Akun Lain</button>
                   </div>
                 </td>
                 {/* Platform filter (TikTok / Instagram) */}
-                <td className="py-2 px-2">
-                  <div className="flex flex-wrap gap-1.5">
+                <td className="py-2.5 px-3 border-r border-border-subtle/40">
+                  <div className="flex flex-wrap gap-1">
                     <button type="button" onClick={() => setActivePlatform('all')}
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
                         activePlatform === 'all'
-                          ? 'bg-accent-primary text-white border-accent-primary'
+                          ? 'bg-accent-primary text-white border-accent-primary shadow-sm'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
                       }`}>Semua Platform</button>
                     <button type="button" onClick={() => setActivePlatform('instagram')}
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
                         activePlatform === 'instagram'
-                          ? 'bg-pink-500 text-white border-pink-500'
+                          ? 'bg-pink-500 text-white border-pink-500 shadow-sm'
                           : 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/30 hover:border-pink-500'
                       }`}><Instagram className="w-3 h-3" />Instagram</button>
                     <button type="button" onClick={() => setActivePlatform('tiktok')}
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
                         activePlatform === 'tiktok'
-                          ? 'bg-cyan-500 text-white border-cyan-500'
+                          ? 'bg-cyan-500 text-white border-cyan-500 shadow-sm'
                           : 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30 hover:border-cyan-500'
                       }`}><Music2 className="w-3 h-3" />TikTok</button>
                   </div>
                 </td>
                 {/* Admin filter */}
-                <td className="py-2 px-2">
-                  <div className="flex flex-wrap gap-1.5">
+                <td className="py-2.5 px-3 border-r border-border-subtle/40">
+                  <div className="flex flex-wrap gap-1">
                     <button type="button" onClick={() => setActiveAdmin('all')}
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
                         activeAdmin === 'all'
-                          ? 'bg-accent-primary text-white border-accent-primary'
+                          ? 'bg-accent-primary text-white border-accent-primary shadow-sm'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
                       }`}>Semua</button>
                     {ADMIN_ORDER.map((name) => {
@@ -657,27 +657,30 @@ export function KomentarAdmin() {
                       const active = activeAdmin === name;
                       return (
                         <button key={name} type="button" onClick={() => setActiveAdmin(name)}
-                          className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
-                            active ? `${accent.bar} text-white border-transparent` : `${accent.chip} hover:border-border-default`
+                          className={`px-2.5 py-1 rounded-md text-[11px] font-semibold border transition-colors ${
+                            active ? `${accent.bar} text-white border-transparent shadow-sm` : `${accent.chip} hover:border-border-default`
                           }`}>{name}</button>
                       );
                     })}
                   </div>
                 </td>
                 {/* Bulan filter */}
-                <td className="py-2 px-2">
-                  <div className="flex flex-wrap gap-1.5">
+                <td className="py-2.5 px-3">
+                  <div className="flex flex-wrap gap-1">
                     <button type="button" onClick={() => setActiveMonth('all')}
-                      className={`px-2.5 py-1 rounded text-[11px] font-medium border transition-colors ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
                         activeMonth === 'all'
-                          ? 'bg-bg-tertiary text-text-primary border-border-default'
+                          ? 'bg-bg-tertiary text-text-primary border-border-default shadow-sm'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
-                      }`}>Semua Bulan</button>
+                      }`}>
+                      <CalendarDays className="w-3 h-3" />
+                      Semua Bulan
+                    </button>
                     {months.map((key) => (
                       <button key={key} type="button" onClick={() => setActiveMonth(key)}
-                        className={`px-2.5 py-1 rounded text-[11px] font-medium border transition-colors ${
+                        className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
                           activeMonth === key
-                            ? 'bg-bg-tertiary text-text-primary border-border-default'
+                            ? 'bg-bg-tertiary text-text-primary border-border-default shadow-sm'
                             : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
                         }`}>{monthLabel(key)}</button>
                     ))}
@@ -688,26 +691,29 @@ export function KomentarAdmin() {
           </table>
         </div>
 
-        {/* Post list — table style (tanggal / platform / owner / caption preview / counts / link).
-            Mirrors Daftar Lengkap Post list aesthetic from screenshot: tabular rows, hover,
-            8 columns, expandable detail per row showing latest 10 admin comment samples. */}
+        {/* Post list — table style. V34.11 redesign: actual admin comment text visible
+            inline (latest comment + author chip + count). Hierarchy via tonal row + admin
+            accent left-bar. Double-bezel feel from border + inner shadow. */}
         {postList.length === 0 ? (
-          <div className="py-8 text-center text-sm text-text-muted">
-            Belum ada komentar dengan filter ini
+          <div className="py-12 text-center">
+            <div className="inline-flex items-center gap-2 text-sm text-text-muted">
+              <MessageCircle className="w-4 h-4 opacity-40" />
+              Belum ada komentar dengan filter ini
+            </div>
           </div>
         ) : (
-          <div className="overflow-x-auto max-h-[640px] overflow-y-auto">
+          <div className="overflow-x-auto max-h-[640px] overflow-y-auto rounded-lg border border-border-subtle/60 shadow-inner shadow-black/5">
             <table className="w-full text-sm">
-              <thead className="sticky top-0 z-10 bg-bg-secondary/95 backdrop-blur">
+              <thead className="sticky top-0 z-20 bg-bg-secondary/95 backdrop-blur shadow-sm">
                 <tr className="text-[10px] text-text-muted uppercase border-b border-border-subtle tracking-wider">
-                  <th className="py-2 px-3 text-left font-medium w-[68px]">Tanggal</th>
-                  <th className="py-2 px-3 text-left font-medium w-[88px]">Platform</th>
-                  <th className="py-2 px-3 text-left font-medium w-[140px]">Owner</th>
-                  <th className="py-2 px-3 text-left font-medium">Caption / Komentar</th>
-                  <th className="py-2 px-3 text-right font-medium w-[80px]">Sendiri</th>
-                  <th className="py-2 px-3 text-right font-medium w-[80px]">Orang</th>
-                  <th className="py-2 px-3 text-right font-medium w-[72px]">Total</th>
-                  <th className="py-2 px-3 text-right font-medium w-[88px]">Aksi</th>
+                  <th className="py-2.5 px-3 text-left font-semibold w-[68px]">Tanggal</th>
+                  <th className="py-2.5 px-3 text-left font-semibold w-[88px]">Platform</th>
+                  <th className="py-2.5 px-3 text-left font-semibold w-[120px]">Owner</th>
+                  <th className="py-2.5 px-3 text-left font-semibold">Komentar Admin</th>
+                  <th className="py-2.5 px-3 text-right font-semibold w-[68px]">Sendiri</th>
+                  <th className="py-2.5 px-3 text-right font-semibold w-[68px]">Orang</th>
+                  <th className="py-2.5 px-3 text-right font-semibold w-[72px]">Total</th>
+                  <th className="py-2.5 px-3 text-right font-semibold w-[80px]">Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -717,57 +723,73 @@ export function KomentarAdmin() {
                   const latest = list[0];
                   const ownCount = list.filter((c) => c.isOwnPost).length;
                   const extCount = list.length - ownCount;
+                  const primaryAdmin = latest?.admin;
+                  const primaryAccent = primaryAdmin ? accentForAdmin(primaryAdmin) : ADMIN_ACCENTS[0];
+                  // Latest admin comment text preview (full sentence, not chips)
+                  const latestText = latest ? previewCommentText(latest.commentText, 140) : '';
                   return (
                     <React.Fragment key={url}>
-                      <tr className="border-b border-border-subtle/50 hover:bg-bg-tertiary/40 transition-colors">
-                        <td className="py-2 px-3 text-text-muted text-[11px] tabular-nums whitespace-nowrap">
+                      <tr className="group border-b border-border-subtle/40 hover:bg-bg-tertiary/60 transition-colors relative">
+                        {/* Left accent bar — color matches primary admin on this post */}
+                        <td colSpan={1} className="p-0 w-1 relative">
+                          <span
+                            className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r-full"
+                            style={{ backgroundColor: primaryAccent.hex }}
+                            aria-hidden="true"
+                          />
+                        </td>
+                        <td className="py-2.5 px-3 text-text-secondary text-[11px] tabular-nums whitespace-nowrap font-medium">
                           {shortDate(latest.timestampMs)}
                         </td>
-                        <td className="py-2 px-3">
+                        <td className="py-2.5 px-3">
                           <PlatformBadge platform={latest.platform} />
                         </td>
-                        <td className="py-2 px-3 text-[11px] text-text-secondary truncate max-w-[140px]">
+                        <td className="py-2.5 px-3 text-[11px] text-text-primary font-medium truncate max-w-[120px]">
                           {latest.postOwner ? `@${latest.postOwner}` : '—'}
                         </td>
-                        <td className="py-2 px-3 text-[11px] text-text-primary">
-                          <div className="flex flex-wrap gap-1.5 items-center">
-                            {shown.slice(0, 3).map((c) => {
-                              const accent = accentForAdmin(c.admin);
-                              return (
-                                <span
-                                  key={c.id}
-                                  className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold border ${accent.chip}`}
-                                >
-                                  {c.admin}
+                        <td className="py-2.5 px-3 text-[11px]">
+                          {latest ? (
+                            <div className="flex flex-col gap-1 min-w-0">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide border ${primaryAccent.chip}`}>
+                                  {primaryAdmin}
                                 </span>
-                              );
-                            })}
-                            {list.length > 3 && (
-                              <span className="text-[10px] text-text-muted">+{list.length - 3} lainnya</span>
-                            )}
-                          </div>
+                                <span className="text-text-muted text-[10px] tabular-nums shrink-0">
+                                  {shortTime(latest.timestampMs)}
+                                </span>
+                              </div>
+                              <p className="text-text-primary leading-snug line-clamp-2 break-words">
+                                {latestText}
+                              </p>
+                            </div>
+                          ) : (
+                            <span className="text-text-muted">—</span>
+                          )}
                         </td>
-                        <td className="py-2 px-3 text-right text-[11px] text-text-primary tabular-nums">{ownCount}</td>
-                        <td className="py-2 px-3 text-right text-[11px] text-text-secondary tabular-nums">{extCount}</td>
-                        <td className="py-2 px-3 text-right text-[11px] font-bold text-accent-primary tabular-nums">{list.length}</td>
-                        <td className="py-2 px-3 text-right">
+                        <td className="py-2.5 px-3 text-right text-[12px] text-text-primary tabular-nums font-semibold">{ownCount}</td>
+                        <td className="py-2.5 px-3 text-right text-[11px] text-text-secondary tabular-nums">{extCount}</td>
+                        <td className="py-2.5 px-3 text-right">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent-primary/10 text-accent-primary text-[12px] font-bold tabular-nums">
+                            {list.length}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-3 text-right">
                           <div className="inline-flex items-center gap-1">
-                            {list.length > SAMPLES_PER_POST && (
-                              <button
-                                type="button"
-                                onClick={() => togglePostExpanded(url)}
-                                className="inline-flex items-center gap-1 text-[10px] text-text-muted hover:text-text-primary"
-                                title={expanded ? 'Sembunyikan' : `Lihat semua (${list.length})`}
-                              >
-                                {expanded ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
-                              </button>
-                            )}
+                            <button
+                              type="button"
+                              onClick={() => togglePostExpanded(url)}
+                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] text-text-muted hover:text-text-primary hover:bg-bg-tertiary transition-colors"
+                              title={expanded ? 'Sembunyikan detail' : `Lihat semua ${list.length} komentar`}
+                              aria-expanded={expanded}
+                            >
+                              {expanded ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
+                            </button>
                             {url && (
                               <a
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-[10px] text-accent-primary hover:underline"
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] text-accent-primary hover:bg-accent-primary/10 transition-colors"
                                 title="Buka post"
                               >
                                 <ExternalLink className="w-3 h-3" />
@@ -777,21 +799,35 @@ export function KomentarAdmin() {
                         </td>
                       </tr>
                       {expanded && (
-                        <tr className="border-b border-border-subtle/50 bg-bg-secondary/30">
-                          <td colSpan={8} className="py-2 px-3">
-                            <div className="space-y-1.5 max-h-[280px] overflow-y-auto">
+                        <tr className="border-b border-border-subtle/40 bg-bg-secondary/40">
+                          <td colSpan={8} className="py-3 px-3 pl-6">
+                            <div className="text-[10px] uppercase tracking-wider text-text-muted mb-2 flex items-center gap-2">
+                              <MessageCircle className="w-3 h-3" />
+                              Semua komentar ({list.length})
+                            </div>
+                            <div className="space-y-2 max-h-[320px] overflow-y-auto pr-2">
                               {shown.map((c) => {
                                 const accent = accentForAdmin(c.admin);
-                                const preview = previewCommentText(c.commentText, 200);
+                                const preview = previewCommentText(c.commentText, 240);
                                 return (
-                                  <div key={c.id} className="flex items-start gap-2 text-xs">
-                                    <span className={`shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${accent.chip}`}>
+                                  <div
+                                    key={c.id}
+                                    className="flex items-start gap-2.5 p-2 rounded-md bg-bg-primary/40 border border-border-subtle/40"
+                                  >
+                                    <span
+                                      className="shrink-0 w-1 self-stretch rounded-full"
+                                      style={{ backgroundColor: accent.hex }}
+                                      aria-hidden="true"
+                                    />
+                                    <span className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide border ${accent.chip}`}>
                                       {c.admin}
                                     </span>
-                                    <span className="text-text-muted text-[10px] tabular-nums shrink-0">
-                                      {shortDate(c.timestampMs)} {shortTime(c.timestampMs)}
-                                    </span>
-                                    <span className="text-text-primary break-words leading-relaxed">{preview}</span>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-text-primary text-xs break-words leading-relaxed">{preview}</p>
+                                      <div className="text-[10px] text-text-muted tabular-nums mt-1">
+                                        {shortDate(c.timestampMs)} {shortTime(c.timestampMs)} UTC
+                                      </div>
+                                    </div>
                                   </div>
                                 );
                               })}
