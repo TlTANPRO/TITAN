@@ -123,6 +123,7 @@ export function KomentarAdmin() {
   const [raw, setRaw] = useState(null);
   const [loadError, setLoadError] = useState(null);
   const [activeAdmin, setActiveAdmin] = useState('all');
+  const [activeAccount, setActiveAccount] = useState('all'); // 'all' | 'majangmejeng' | 'other'
   const [activeMonth, setActiveMonth] = useState('all');
   const [activeGrowthAdmin, setActiveGrowthAdmin] = useState(null); // null = Gabungan
   const [expandedPosts, setExpandedPosts] = useState(new Set());
@@ -163,10 +164,16 @@ export function KomentarAdmin() {
   const dailySeries = useMemo(() => buildCommentDaily(comments), [comments]);
 
   // Filter comments for the per-post list. Posts section respects activeAdmin +
-  // activeMonth filter; KPI tiles and monthly table stay unfiltered (overview).
+  // activeAccount + activeMonth filter; KPI tiles and monthly table stay unfiltered
+  // (overview) unless the user explicitly clicks a filter chip.
   const filteredComments = useMemo(() => {
     return comments.filter((c) => {
       if (activeAdmin !== 'all' && c.admin !== activeAdmin) return false;
+      if (activeAccount !== 'all') {
+        const isMM = (c.accountSlug ?? '').toLowerCase().includes('majangmejeng');
+        if (activeAccount === 'majangmejeng' && !isMM) return false;
+        if (activeAccount === 'other' && isMM) return false;
+      }
       if (activeMonth !== 'all') {
         const d = new Date(c.timestampMs);
         const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
@@ -174,7 +181,7 @@ export function KomentarAdmin() {
       }
       return true;
     });
-  }, [comments, activeAdmin, activeMonth]);
+  }, [comments, activeAdmin, activeAccount, activeMonth]);
 
   // Group by post URL for the per-post list. Each entry capped to 10 samples.
   const postsByUrl = useMemo(() => groupByPost(filteredComments), [filteredComments]);
@@ -571,6 +578,44 @@ export function KomentarAdmin() {
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Komentar per Post</span>
           <span className="text-[10px] text-text-muted">{postList.length} post • {filteredComments.length} komentar</span>
+        </div>
+
+        {/* Account filter — majangmejeng only vs all (admin marker per user 12 Aug: tracking
+            from majangmejeng accounts specifically) */}
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          <button
+            type="button"
+            onClick={() => setActiveAccount('all')}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+              activeAccount === 'all'
+                ? 'bg-accent-primary text-white border-accent-primary'
+                : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
+            }`}
+          >
+            Semua Akun
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveAccount('majangmejeng')}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+              activeAccount === 'majangmejeng'
+                ? 'bg-accent-instagram text-white border-accent-instagram'
+                : 'bg-accent-instagram/10 text-accent-instagram border-accent-instagram/30 hover:border-accent-instagram'
+            }`}
+          >
+            Majangmejeng
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveAccount('other')}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+              activeAccount === 'other'
+                ? 'bg-bg-tertiary text-text-primary border-border-default'
+                : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
+            }`}
+          >
+            Akun Lain
+          </button>
         </div>
 
         {/* Admin filter tabs */}

@@ -160,6 +160,39 @@ jobs:
         run: |
           echo "::notice::TT scrape outcome=${{ steps.scrape-tt.outcome }}"
 
+      # ============== ADMIN COMMENTS PHASE (fail soft) ==============
+      # V34.9: scrape comments left by our admins (Reni/Rifqi/Reta/Julian) on
+      # their own posts and on other people's posts. Targets majangmejeng_
+      # accounts (IG + TT). Free endpoints only:
+      #   - TT: TikWM /api/comment/list (no auth, rate limit ~1 req/sec)
+      #   - IG: Jina r.jina.ai proxy for IG post pages (rate limit ~1 req/3sec)
+      # Aggregate merges raw scraped + existing manual dataset via dedup by id.
+      # Fails soft per step so a single API hiccup doesn't block deploy.
+
+      - name: Scrape comments IG (Jina proxy)
+        if: success()
+        env:
+          JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
+        run: |
+          echo "Scrape IG comments via Jina (majangmejeng_ only)"
+          node scripts/scrape-comments-ig.mjs || echo "::warning::IG comments scrape failed — continuing with manual dataset only"
+        continue-on-error: true
+        id: scrape-comments-ig
+
+      - name: Scrape comments TT (TikWM free)
+        if: success()
+        run: |
+          echo "Scrape TT comments via TikWM (majangmejeng_ only)"
+          node scripts/scrape-comments-tt.mjs || echo "::warning::TT comments scrape failed — continuing with manual dataset only"
+        continue-on-error: true
+        id: scrape-comments-tt
+
+      - name: Aggregate admin comments
+        if: success()
+        run: |
+          echo "Merge scraped + manual comments → src/data/admin-comments.json"
+          node scripts/aggregate-admin-comments.mjs
+
       # ============== VALIDATION PHASE (fail loud) ==============
 
       - name: Validate merged data (pre-flight)
