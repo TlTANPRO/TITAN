@@ -124,6 +124,7 @@ export function KomentarAdmin() {
   const [loadError, setLoadError] = useState(null);
   const [activeAdmin, setActiveAdmin] = useState('all');
   const [activeAccount, setActiveAccount] = useState('all'); // 'all' | 'majangmejeng' | 'other'
+  const [activePlatform, setActivePlatform] = useState('all'); // 'all' | 'instagram' | 'tiktok'
   const [activeMonth, setActiveMonth] = useState('all');
   const [activeGrowthAdmin, setActiveGrowthAdmin] = useState(null); // null = Gabungan
   const [expandedPosts, setExpandedPosts] = useState(new Set());
@@ -164,8 +165,8 @@ export function KomentarAdmin() {
   const dailySeries = useMemo(() => buildCommentDaily(comments), [comments]);
 
   // Filter comments for the per-post list. Posts section respects activeAdmin +
-  // activeAccount + activeMonth filter; KPI tiles and monthly table stay unfiltered
-  // (overview) unless the user explicitly clicks a filter chip.
+  // activeAccount + activePlatform + activeMonth filter; KPI tiles and monthly
+  // table stay unfiltered (overview) unless the user explicitly clicks a chip.
   const filteredComments = useMemo(() => {
     return comments.filter((c) => {
       if (activeAdmin !== 'all' && c.admin !== activeAdmin) return false;
@@ -174,6 +175,7 @@ export function KomentarAdmin() {
         if (activeAccount === 'majangmejeng' && !isMM) return false;
         if (activeAccount === 'other' && isMM) return false;
       }
+      if (activePlatform !== 'all' && c.platform !== activePlatform) return false;
       if (activeMonth !== 'all') {
         const d = new Date(c.timestampMs);
         const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
@@ -181,7 +183,7 @@ export function KomentarAdmin() {
       }
       return true;
     });
-  }, [comments, activeAdmin, activeAccount, activeMonth]);
+  }, [comments, activeAdmin, activeAccount, activePlatform, activeMonth]);
 
   // Group by post URL for the per-post list. Each entry capped to 10 samples.
   const postsByUrl = useMemo(() => groupByPost(filteredComments), [filteredComments]);
@@ -615,6 +617,46 @@ export function KomentarAdmin() {
             }`}
           >
             Akun Lain
+          </button>
+        </div>
+
+        {/* Platform filter (TikTok / Instagram). Helps break down the
+            majangmejeng admin-comment activity per social platform. */}
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          <button
+            type="button"
+            onClick={() => setActivePlatform('all')}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+              activePlatform === 'all'
+                ? 'bg-accent-primary text-white border-accent-primary'
+                : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
+            }`}
+          >
+            Semua Platform
+          </button>
+          <button
+            type="button"
+            onClick={() => setActivePlatform('instagram')}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
+              activePlatform === 'instagram'
+                ? 'bg-pink-500 text-white border-pink-500'
+                : 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/30 hover:border-pink-500'
+            }`}
+          >
+            <Instagram className="w-3 h-3" />
+            Instagram
+          </button>
+          <button
+            type="button"
+            onClick={() => setActivePlatform('tiktok')}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
+              activePlatform === 'tiktok'
+                ? 'bg-cyan-500 text-white border-cyan-500'
+                : 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30 hover:border-cyan-500'
+            }`}
+          >
+            <Music2 className="w-3 h-3" />
+            TikTok
           </button>
         </div>
 

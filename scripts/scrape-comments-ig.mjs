@@ -126,8 +126,10 @@ async function main() {
       const cc = Number(p.commentCount ?? 0);
       return cc > 0 && p.shortcode;
     })
-    .sort((a, b) => Number(b.timestampMs ?? 0) - Number(a.timestampMs ?? 0))
-    .slice(0, 20); // cap: Jina is slow, don't burn time on stale posts
+    .sort((a, b) => Number(b.timestampMs ?? 0) - Number(a.timestampMs ?? 0));
+  // No cap — daily run covers all candidate posts. Jina rate-limit guard is
+  // handled per-request via 3s sleep below. If CI runtime is tight, lower
+  // here after measuring average scrape duration per post.
 
   console.log(`[scrape-comments-ig] ${candidates.length} candidates (${posts.length} total posts)`);
 
