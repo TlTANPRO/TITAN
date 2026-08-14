@@ -582,145 +582,111 @@ export function KomentarAdmin() {
           <span className="text-[10px] text-text-muted">{postList.length} post • {filteredComments.length} komentar</span>
         </div>
 
-        {/* Account filter — majangmejeng only vs all (admin marker per user 12 Aug: tracking
-            from majangmejeng accounts specifically) */}
-        <div className="flex flex-wrap gap-1.5 mb-2">
-          <button
-            type="button"
-            onClick={() => setActiveAccount('all')}
-            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
-              activeAccount === 'all'
-                ? 'bg-accent-primary text-white border-accent-primary'
-                : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
-            }`}
-          >
-            Semua Akun
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveAccount('majangmejeng')}
-            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
-              activeAccount === 'majangmejeng'
-                ? 'bg-accent-instagram text-white border-accent-instagram'
-                : 'bg-accent-instagram/10 text-accent-instagram border-accent-instagram/30 hover:border-accent-instagram'
-            }`}
-          >
-            Majangmejeng
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveAccount('other')}
-            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
-              activeAccount === 'other'
-                ? 'bg-bg-tertiary text-text-primary border-border-default'
-                : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
-            }`}
-          >
-            Akun Lain
-          </button>
+        {/* Filter table — 4 columns (Akun / Platform / Admin / Bulan).
+            Consistent with Komentar per Post table aesthetic. State + handlers
+            unchanged from prior chip-row version. */}
+        <div className="overflow-x-auto mb-3">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-[10px] text-text-muted uppercase border-b border-border-subtle tracking-wider">
+                <th className="py-1.5 px-2 text-left font-medium">Akun</th>
+                <th className="py-1.5 px-2 text-left font-medium">Platform</th>
+                <th className="py-1.5 px-2 text-left font-medium">Admin</th>
+                <th className="py-1.5 px-2 text-left font-medium">Bulan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border-subtle/40 align-top">
+                {/* Akun filter — majangmejeng only vs all */}
+                <td className="py-2 px-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    <button type="button" onClick={() => setActiveAccount('all')}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                        activeAccount === 'all'
+                          ? 'bg-accent-primary text-white border-accent-primary'
+                          : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
+                      }`}>Semua Akun</button>
+                    <button type="button" onClick={() => setActiveAccount('majangmejeng')}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                        activeAccount === 'majangmejeng'
+                          ? 'bg-accent-instagram text-white border-accent-instagram'
+                          : 'bg-accent-instagram/10 text-accent-instagram border-accent-instagram/30 hover:border-accent-instagram'
+                      }`}>Majangmejeng</button>
+                    <button type="button" onClick={() => setActiveAccount('other')}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                        activeAccount === 'other'
+                          ? 'bg-bg-tertiary text-text-primary border-border-default'
+                          : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
+                      }`}>Akun Lain</button>
+                  </div>
+                </td>
+                {/* Platform filter (TikTok / Instagram) */}
+                <td className="py-2 px-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    <button type="button" onClick={() => setActivePlatform('all')}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                        activePlatform === 'all'
+                          ? 'bg-accent-primary text-white border-accent-primary'
+                          : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
+                      }`}>Semua Platform</button>
+                    <button type="button" onClick={() => setActivePlatform('instagram')}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
+                        activePlatform === 'instagram'
+                          ? 'bg-pink-500 text-white border-pink-500'
+                          : 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/30 hover:border-pink-500'
+                      }`}><Instagram className="w-3 h-3" />Instagram</button>
+                    <button type="button" onClick={() => setActivePlatform('tiktok')}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
+                        activePlatform === 'tiktok'
+                          ? 'bg-cyan-500 text-white border-cyan-500'
+                          : 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30 hover:border-cyan-500'
+                      }`}><Music2 className="w-3 h-3" />TikTok</button>
+                  </div>
+                </td>
+                {/* Admin filter */}
+                <td className="py-2 px-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    <button type="button" onClick={() => setActiveAdmin('all')}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                        activeAdmin === 'all'
+                          ? 'bg-accent-primary text-white border-accent-primary'
+                          : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
+                      }`}>Semua</button>
+                    {ADMIN_ORDER.map((name) => {
+                      const accent = accentForAdmin(name);
+                      const active = activeAdmin === name;
+                      return (
+                        <button key={name} type="button" onClick={() => setActiveAdmin(name)}
+                          className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                            active ? `${accent.bar} text-white border-transparent` : `${accent.chip} hover:border-border-default`
+                          }`}>{name}</button>
+                      );
+                    })}
+                  </div>
+                </td>
+                {/* Bulan filter */}
+                <td className="py-2 px-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    <button type="button" onClick={() => setActiveMonth('all')}
+                      className={`px-2.5 py-1 rounded text-[11px] font-medium border transition-colors ${
+                        activeMonth === 'all'
+                          ? 'bg-bg-tertiary text-text-primary border-border-default'
+                          : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
+                      }`}>Semua Bulan</button>
+                    {months.map((key) => (
+                      <button key={key} type="button" onClick={() => setActiveMonth(key)}
+                        className={`px-2.5 py-1 rounded text-[11px] font-medium border transition-colors ${
+                          activeMonth === key
+                            ? 'bg-bg-tertiary text-text-primary border-border-default'
+                            : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
+                        }`}>{monthLabel(key)}</button>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-
-        {/* Platform filter (TikTok / Instagram). Helps break down the
-            majangmejeng admin-comment activity per social platform. */}
-        <div className="flex flex-wrap gap-1.5 mb-2">
-          <button
-            type="button"
-            onClick={() => setActivePlatform('all')}
-            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
-              activePlatform === 'all'
-                ? 'bg-accent-primary text-white border-accent-primary'
-                : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
-            }`}
-          >
-            Semua Platform
-          </button>
-          <button
-            type="button"
-            onClick={() => setActivePlatform('instagram')}
-            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
-              activePlatform === 'instagram'
-                ? 'bg-pink-500 text-white border-pink-500'
-                : 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/30 hover:border-pink-500'
-            }`}
-          >
-            <Instagram className="w-3 h-3" />
-            Instagram
-          </button>
-          <button
-            type="button"
-            onClick={() => setActivePlatform('tiktok')}
-            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
-              activePlatform === 'tiktok'
-                ? 'bg-cyan-500 text-white border-cyan-500'
-                : 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30 hover:border-cyan-500'
-            }`}
-          >
-            <Music2 className="w-3 h-3" />
-            TikTok
-          </button>
-        </div>
-
-        {/* Admin filter tabs */}
-        <div className="flex flex-wrap gap-1.5 mb-2">
-          <button
-            type="button"
-            onClick={() => setActiveAdmin('all')}
-            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
-              activeAdmin === 'all'
-                ? 'bg-accent-primary text-white border-accent-primary'
-                : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
-            }`}
-          >
-            Semua
-          </button>
-          {ADMIN_ORDER.map((name) => {
-            const accent = accentForAdmin(name);
-            const active = activeAdmin === name;
-            return (
-              <button
-                key={name}
-                type="button"
-                onClick={() => setActiveAdmin(name)}
-                className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
-                  active ? `${accent.bar} text-white border-transparent` : `${accent.chip} hover:border-border-default`
-                }`}
-              >
-                {name}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Month filter */}
-        {months.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            <button
-              type="button"
-              onClick={() => setActiveMonth('all')}
-              className={`px-2.5 py-1 rounded text-[11px] font-medium border transition-colors ${
-                activeMonth === 'all'
-                  ? 'bg-bg-tertiary text-text-primary border-border-default'
-                  : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
-              }`}
-            >
-              Semua Bulan
-            </button>
-            {months.map((key) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setActiveMonth(key)}
-                className={`px-2.5 py-1 rounded text-[11px] font-medium border transition-colors ${
-                  activeMonth === key
-                    ? 'bg-bg-tertiary text-text-primary border-border-default'
-                    : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
-                }`}
-              >
-                {monthLabel(key)}
-              </button>
-            ))}
-          </div>
-        )}
 
         {/* Post list — table style (tanggal / platform / owner / caption preview / counts / link).
             Mirrors Daftar Lengkap Post list aesthetic from screenshot: tabular rows, hover,

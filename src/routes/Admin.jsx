@@ -1312,33 +1312,75 @@ export default function Admin() {
         </div>
       </div>
 
-      {/* Posts table — limited to 10 preview, scroll for more */}
+      {/* Posts table — filter row + posts grid. Consistent with Komentar per Post
+          table aesthetic: tabular header, sticky column, hover rows, tabular nums.
+          V34.10: moved admin filter chips into a single-row filter table (Akun/Admin
+          columns) so the Admin tab filter system looks identical across sections. */}
       <div className="surface overflow-hidden">
-        <div className="flex items-center gap-2 p-3 border-b border-border-subtle flex-wrap">
-          <span className="text-[10px] text-text-muted uppercase tracking-wider">Filter Admin:</span>
-          <button
-            onClick={() => setAdminFilter('all')}
-            className={`chip transition-colors ${adminFilter === 'all' ? 'bg-accent-primary text-white' : 'bg-bg-tertiary text-text-secondary hover:text-text-primary'}`}
-          >
-            Semua
-          </button>
-          {summary.map((admin, i) => {
-            const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
-            const active = adminFilter === admin.name;
-            return (
-              <button
-                key={admin.name}
-                onClick={() => setAdminFilter(admin.name)}
-                className={`chip transition-colors inline-flex items-center gap-1 ${active ? 'bg-accent-primary text-white' : 'bg-bg-tertiary text-text-secondary hover:text-text-primary'}`}
-              >
-                <span className={`w-2 h-2 rounded-full ${active ? 'bg-white' : ''}`} style={active ? {} : { backgroundColor: accent.hex }} />
-                {admin.name}
-                <span className={`ml-1 px-1.5 text-[10px] font-semibold rounded-full ${active ? 'bg-white/20' : 'bg-bg-primary/40'}`}>
-                  {admin.postCount}
-                </span>
-              </button>
-            );
-          })}
+        {/* Filter table — single row of Admin chips inside a tabular layout so the
+            section header + filter row read as one cohesive table. */}
+        <div className="overflow-x-auto border-b border-border-subtle">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-[10px] text-text-muted uppercase border-b border-border-subtle tracking-wider">
+                <th className="py-1.5 px-4 text-left font-medium">Filter Admin</th>
+                <th className="py-1.5 px-4 text-right font-medium tabular-nums">
+                  {filteredRows.length}/{allRows.length} post
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="align-middle">
+                <td className="py-2 px-4">
+                  <div className="flex flex-wrap gap-1.5">
+                    <button
+                      onClick={() => setAdminFilter('all')}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                        adminFilter === 'all'
+                          ? 'bg-accent-primary text-white border-accent-primary'
+                          : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
+                      }`}
+                    >
+                      Semua
+                    </button>
+                    {summary.map((admin, i) => {
+                      const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
+                      const active = adminFilter === admin.name;
+                      return (
+                        <button
+                          key={admin.name}
+                          onClick={() => setAdminFilter(admin.name)}
+                          className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
+                            active
+                              ? `${accent.bar} text-white border-transparent`
+                              : `${accent.chip} hover:border-border-default`
+                          }`}
+                        >
+                          <span
+                            className={`w-2 h-2 rounded-full ${active ? 'bg-white' : ''}`}
+                            style={active ? {} : { backgroundColor: accent.hex }}
+                          />
+                          {admin.name}
+                          <span className={`ml-1 px-1.5 text-[10px] font-semibold rounded-full ${active ? 'bg-white/20' : 'bg-bg-primary/40'}`}>
+                            {admin.postCount}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </td>
+                <td className="py-2 px-4 text-right">
+                  <div className="flex items-center justify-end gap-2 text-[10px] text-text-muted">
+                    <span className="uppercase tracking-wider">Sortir:</span>
+                    <span className="text-text-primary font-semibold tabular-nums">
+                      {sortKey === 'createTime' ? 'Tanggal' : sortKey === 'likeCount' ? 'Suka' : sortKey === 'commentCount' ? 'Komen' : sortKey === 'viewCount' ? 'Views' : sortKey}
+                    </span>
+                    <SortIcon active dir={sortDir} />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div className="overflow-x-auto">
           <div className="max-h-[520px] overflow-y-auto">
