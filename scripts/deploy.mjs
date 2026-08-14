@@ -102,7 +102,7 @@ async function main() {
   console.log('\n[1.5/6] Pre-flight sanity check...');
   const preFlightErrors = [];
   const scrapedDir = path.join(ROOT, 'scripts', 'scraped');
-  const scrapedFiles = (await fs.readdir(scrapedDir)).filter((f) => f.endsWith('.json') && !f.includes('.backup-'));
+  const scrapedFiles = (await fs.readdir(scrapedDir)).filter((f) => f.endsWith('.json') && !f.includes('.backup-') && !f.startsWith('comments-'));
   if (scrapedFiles.length !== 9) {
     preFlightErrors.push(`Expected 9 scraped files, got ${scrapedFiles.length}`);
   }
