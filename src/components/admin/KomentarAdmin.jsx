@@ -3,7 +3,7 @@
 // from the post-caption `#agustusXX` rule. Populated from
 // src/data/admin-comments.json — manual until a free IG/TT comment scraper is
 // wired. SSOT for marker detection + KPI aggregates lives in lib/adminComments.js.
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { MessageCircle, ExternalLink, BarChart3, ChevronDown, ChevronRight, TrendingUp, CalendarDays, Instagram, Music2 } from 'lucide-react';
 import {
   BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -722,76 +722,122 @@ export function KomentarAdmin() {
           </div>
         )}
 
-        {/* Post list */}
+        {/* Post list — table style (tanggal / platform / owner / caption preview / counts / link).
+            Mirrors Daftar Lengkap Post list aesthetic from screenshot: tabular rows, hover,
+            8 columns, expandable detail per row showing latest 10 admin comment samples. */}
         {postList.length === 0 ? (
           <div className="py-8 text-center text-sm text-text-muted">
             Belum ada komentar dengan filter ini
           </div>
         ) : (
-          <div className="space-y-2 max-h-[640px] overflow-y-auto pr-1">
-            {postList.map(([url, list]) => {
-              const expanded = expandedPosts.has(url);
-              const shown = expanded ? list : list.slice(0, SAMPLES_PER_POST);
-              const latest = list[0];
-              const ownCount = list.filter((c) => c.isOwnPost).length;
-              const extCount = list.length - ownCount;
-              return (
-                <div key={url} className="rounded-lg border border-border-subtle bg-bg-secondary/40 p-3">
-                  <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <PlatformBadge platform={latest.platform} />
-                    <span className="text-[10px] text-text-muted">
-                      {latest.postOwner ? `@${latest.postOwner}` : '—'}
-                    </span>
-                    <span className="text-xs font-medium text-text-primary tabular-nums">
-                      {list.length} komentar
-                    </span>
-                    <span className="text-[10px] text-text-muted">
-                      ({ownCount} sendiri, {extCount} orang lain)
-                    </span>
-                    <span className="text-[10px] text-text-muted ml-auto tabular-nums">
-                      {shortDate(latest.timestampMs)} {shortTime(latest.timestampMs)} UTC
-                    </span>
-                  </div>
-                  <div className="space-y-1.5">
-                    {shown.map((c) => {
-                      const accent = accentForAdmin(c.admin);
-                      const preview = previewCommentText(c.commentText, 140);
-                      return (
-                        <div key={c.id} className="flex items-start gap-2 text-xs">
-                          <span className={`shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold ${accent.text}`}>
-                            {c.admin}
-                          </span>
-                          <span className="text-text-primary break-words leading-relaxed">{preview}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {list.length > SAMPLES_PER_POST && (
-                    <button
-                      type="button"
-                      onClick={() => togglePostExpanded(url)}
-                      className="mt-2 inline-flex items-center gap-1 text-[11px] text-accent-primary hover:underline"
-                    >
-                      {expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-                      {expanded ? 'Sembunyikan' : `Lihat semua (${list.length})`}
-                    </button>
-                  )}
-                  {url && (
-                    <div className="mt-2">
-                      <a
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] text-accent-primary hover:underline"
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                        Buka post
-                      </a>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+          <div className="overflow-x-auto max-h-[640px] overflow-y-auto">
+            <table className="w-full text-sm">
+              <thead className="sticky top-0 z-10 bg-bg-secondary/95 backdrop-blur">
+                <tr className="text-[10px] text-text-muted uppercase border-b border-border-subtle tracking-wider">
+                  <th className="py-2 px-3 text-left font-medium w-[68px]">Tanggal</th>
+                  <th className="py-2 px-3 text-left font-medium w-[88px]">Platform</th>
+                  <th className="py-2 px-3 text-left font-medium w-[140px]">Owner</th>
+                  <th className="py-2 px-3 text-left font-medium">Caption / Komentar</th>
+                  <th className="py-2 px-3 text-right font-medium w-[80px]">Sendiri</th>
+                  <th className="py-2 px-3 text-right font-medium w-[80px]">Orang</th>
+                  <th className="py-2 px-3 text-right font-medium w-[72px]">Total</th>
+                  <th className="py-2 px-3 text-right font-medium w-[88px]">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {postList.map(([url, list]) => {
+                  const expanded = expandedPosts.has(url);
+                  const shown = expanded ? list : list.slice(0, SAMPLES_PER_POST);
+                  const latest = list[0];
+                  const ownCount = list.filter((c) => c.isOwnPost).length;
+                  const extCount = list.length - ownCount;
+                  return (
+                    <React.Fragment key={url}>
+                      <tr className="border-b border-border-subtle/50 hover:bg-bg-tertiary/40 transition-colors">
+                        <td className="py-2 px-3 text-text-muted text-[11px] tabular-nums whitespace-nowrap">
+                          {shortDate(latest.timestampMs)}
+                        </td>
+                        <td className="py-2 px-3">
+                          <PlatformBadge platform={latest.platform} />
+                        </td>
+                        <td className="py-2 px-3 text-[11px] text-text-secondary truncate max-w-[140px]">
+                          {latest.postOwner ? `@${latest.postOwner}` : '—'}
+                        </td>
+                        <td className="py-2 px-3 text-[11px] text-text-primary">
+                          <div className="flex flex-wrap gap-1.5 items-center">
+                            {shown.slice(0, 3).map((c) => {
+                              const accent = accentForAdmin(c.admin);
+                              return (
+                                <span
+                                  key={c.id}
+                                  className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold border ${accent.chip}`}
+                                >
+                                  {c.admin}
+                                </span>
+                              );
+                            })}
+                            {list.length > 3 && (
+                              <span className="text-[10px] text-text-muted">+{list.length - 3} lainnya</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-2 px-3 text-right text-[11px] text-text-primary tabular-nums">{ownCount}</td>
+                        <td className="py-2 px-3 text-right text-[11px] text-text-secondary tabular-nums">{extCount}</td>
+                        <td className="py-2 px-3 text-right text-[11px] font-bold text-accent-primary tabular-nums">{list.length}</td>
+                        <td className="py-2 px-3 text-right">
+                          <div className="inline-flex items-center gap-1">
+                            {list.length > SAMPLES_PER_POST && (
+                              <button
+                                type="button"
+                                onClick={() => togglePostExpanded(url)}
+                                className="inline-flex items-center gap-1 text-[10px] text-text-muted hover:text-text-primary"
+                                title={expanded ? 'Sembunyikan' : `Lihat semua (${list.length})`}
+                              >
+                                {expanded ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
+                              </button>
+                            )}
+                            {url && (
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[10px] text-accent-primary hover:underline"
+                                title="Buka post"
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                      {expanded && (
+                        <tr className="border-b border-border-subtle/50 bg-bg-secondary/30">
+                          <td colSpan={8} className="py-2 px-3">
+                            <div className="space-y-1.5 max-h-[280px] overflow-y-auto">
+                              {shown.map((c) => {
+                                const accent = accentForAdmin(c.admin);
+                                const preview = previewCommentText(c.commentText, 200);
+                                return (
+                                  <div key={c.id} className="flex items-start gap-2 text-xs">
+                                    <span className={`shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${accent.chip}`}>
+                                      {c.admin}
+                                    </span>
+                                    <span className="text-text-muted text-[10px] tabular-nums shrink-0">
+                                      {shortDate(c.timestampMs)} {shortTime(c.timestampMs)}
+                                    </span>
+                                    <span className="text-text-primary break-words leading-relaxed">{preview}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
