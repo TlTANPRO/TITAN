@@ -1,0 +1,209 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 94836757229,
+      "run_id": 31821861828,
+      "workflow_name": "TITAN Daily Update",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/TlTANPRO/TITAN/actions/runs/31821861828",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTOONc88AAAAWFLYS7Q",
+      "head_sha": "1363d600819f20c814c9a2bb8d9df7f5c1e16c2c",
+      "url": "https://api.github.com/repos/TlTANPRO/TITAN/actions/jobs/94836757229",
+      "html_url": "https://github.com/TlTANPRO/TITAN/actions/runs/31821861828/job/94836757229",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-08-14T16:58:53Z",
+      "started_at": "2026-08-14T16:58:57Z",
+      "completed_at": "2026-08-14T17:07:19Z",
+      "name": "Scrape + Generate + Deploy",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-08-14T16:58:59Z",
+          "completed_at": "2026-08-14T16:59:00Z"
+        },
+        {
+          "name": "Checkout repo",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-08-14T16:59:00Z",
+          "completed_at": "2026-08-14T16:59:02Z"
+        },
+        {
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-08-14T16:59:02Z",
+          "completed_at": "2026-08-14T16:59:06Z"
+        },
+        {
+          "name": "Install pnpm 9 (match lockfile v9)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-08-14T16:59:06Z",
+          "completed_at": "2026-08-14T16:59:09Z"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-08-14T16:59:09Z",
+          "completed_at": "2026-08-14T16:59:12Z"
+        },
+        {
+          "name": "Bootstrap scraped/ from bundled data",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-08-14T16:59:12Z",
+          "completed_at": "2026-08-14T16:59:12Z"
+        },
+        {
+          "name": "Detect weekly catch-up day (Sunday UTC)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-08-14T16:59:12Z",
+          "completed_at": "2026-08-14T16:59:12Z"
+        },
+        {
+          "name": "Scrape Instagram",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-08-14T16:59:12Z",
+          "completed_at": "2026-08-14T17:02:10Z"
+        },
+        {
+          "name": "Log IG scrape result",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-08-14T17:02:10Z",
+          "completed_at": "2026-08-14T17:02:10Z"
+        },
+        {
+          "name": "Scrape TikTok",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-08-14T17:02:10Z",
+          "completed_at": "2026-08-14T17:03:40Z"
+        },
+        {
+          "name": "Log TT scrape result",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-08-14T17:03:40Z",
+          "completed_at": "2026-08-14T17:03:40Z"
+        },
+        {
+          "name": "Validate merged data (pre-flight)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-08-14T17:03:40Z",
+          "completed_at": "2026-08-14T17:03:40Z"
+        },
+        {
+          "name": "Generate accounts-full.json",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-08-14T17:03:40Z",
+          "completed_at": "2026-08-14T17:03:40Z"
+        },
+        {
+          "name": "Scrape fresh avatars",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-08-14T17:03:40Z",
+          "completed_at": "2026-08-14T17:03:42Z"
+        },
+        {
+          "name": "Generate AI insights (optional, fail soft)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-08-14T17:03:42Z",
+          "completed_at": "2026-08-14T17:06:54Z"
+        },
+        {
+          "name": "Build production bundle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-08-14T17:06:54Z",
+          "completed_at": "2026-08-14T17:07:02Z"
+        },
+        {
+          "name": "Configure git for deploy",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-08-14T17:07:02Z",
+          "completed_at": "2026-08-14T17:07:02Z"
+        },
+        {
+          "name": "Deploy to GitHub Pages",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-08-14T17:07:02Z",
+          "completed_at": "2026-08-14T17:07:16Z"
+        },
+        {
+          "name": "Summary",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-08-14T17:07:16Z",
+          "completed_at": "2026-08-14T17:07:16Z"
+        },
+        {
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 37,
+          "started_at": "2026-08-14T17:07:16Z",
+          "completed_at": "2026-08-14T17:07:16Z"
+        },
+        {
+          "name": "Post Checkout repo",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 38,
+          "started_at": "2026-08-14T17:07:16Z",
+          "completed_at": "2026-08-14T17:07:16Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 39,
+          "started_at": "2026-08-14T17:07:16Z",
+          "completed_at": "2026-08-14T17:07:16Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TlTANPRO/TITAN/check-runs/94836757229",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000000826,
+      "runner_name": "GitHub Actions 1000000826",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}
