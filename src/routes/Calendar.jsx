@@ -1,5 +1,7 @@
 // V21: /calendar — Content calendar (monthly heatmap of post frequency).
-// Color-coded by post count per day. Click day to see posts.
+// V34.12 CR-1: multi-hue — Instagram = pink, TikTok = cyan. Cell picks dominant
+// platform per day. Hover splits IG/TT counts.
+// Click day to see posts.
 import { useState, useMemo } from 'react';
 import { useAccounts } from '../hooks/useAccount.js';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -9,6 +11,25 @@ import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
 import { formatCompact } from '../lib/format.js';
 import { MONTH_NAMES_ID, DAY_NAMES_SHORT } from '../lib/titan-tokens.js';
 
+// V34.12: per-platform hue. IG = accent.instagram (#E1306C), TT = accent.tiktok (#00f2ea).
+// Both tokens already defined in tailwind.config.js — no new palette entries.
+const PLATFORM_HUE = {
+  instagram: {
+    name: 'Instagram',
+    shades: ['bg-accent-instagram/15', 'bg-accent-instagram/40', 'bg-accent-instagram/65', 'bg-accent-instagram/90 text-white']
+  },
+  tiktok: {
+    name: 'TikTok',
+    shades: ['bg-accent-tiktok/15', 'bg-accent-tiktok/40', 'bg-accent-tiktok/65', 'bg-accent-tiktok/90 text-text-primary']
+  }
+};
+
+function dominantPlatform(byPlatform) {
+  // Return the platform with higher count, ties go to instagram first.
+  if ((byPlatform.instagram ?? 0) >= (byPlatform.tiktok ?? 0)) return 'instagram';
+  return 'tiktok';
+}
+
 export default function Calendar() {
   const accounts = useAccounts();
   const [cursor, setCursor] = useState(() => {
@@ -17,7 +38,7 @@ export default function Calendar() {
   });
   const [selectedDay, setSelectedDay] = useState(null);
 
-  // Build per-day map { yyyy-mm-dd: { count, posts[] } }
+  // Build per-day map { yyyy-mm-dd: { count, byPlatform:{instagram,tiktok}, posts[] } }
   const postsByDay = useMemo(() => {
     const map = new Map();
     for (const a of accounts) {
@@ -26,10 +47,15 @@ export default function Calendar() {
         if (t <= 0) continue;
         const d = new Date(t > 1e12 ? t : t * 1000);
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        if (!map.has(key)) map.set(key, { count: 0, posts: [] });
+        if (!map.has(key)) {
+          map.set(key, { count: 0, byPlatform: { instagram: 0, tiktok: 0 }, posts: [] });
+        }
         const entry = map.get(key);
         entry.count++;
         entry.posts.push({ ...p, _account: a });
+        if (a.platform === 'instagram' || a.platform === 'tiktok') {
+          entry.byPlatform[a.platform] = (entry.byPlatform[a.platform] ?? 0) + 1;
+        }
       }
     }
     return map;
@@ -59,19 +85,27 @@ export default function Calendar() {
     return days;
   }, [cursor]);
 
-  const maxCount = useMemo(() => {
-    let max = 0;
-    for (const v of postsByDay.values()) max = Math.max(max, v.count);
-    return max;
+  // Max per-platform, used to scale intensity.
+  const maxByPlatform = useMemo(() => {
+    const m = { instagram: 0, tiktok: 0 };
+    for (const v of postsByDay.values()) {
+      m.instagram = Math.max(m.instagram, v.byPlatform.instagram ?? 0);
+      m.tiktok = Math.max(m.tiktok, v.byPlatform.tiktok ?? 0);
+    }
+    return m;
   }, [postsByDay]);
 
-  const cellColor = (count) => {
-    if (count === 0) return 'bg-bg-tertiary/30';
-    const intensity = Math.min(1, count / Math.max(1, maxCount));
-    if (intensity > 0.7) return 'bg-accent-primary/80 text-white';
-    if (intensity > 0.4) return 'bg-accent-primary/50';
-    if (intensity > 0.15) return 'bg-accent-primary/30';
-    return 'bg-accent-primary/15';
+  const cellColor = (entry) => {
+    if (!entry || entry.count === 0) return 'bg-bg-tertiary/30';
+    const platform = dominantPlatform(entry.byPlatform);
+    const hue = PLATFORM_HUE[platform];
+    const platformCount = entry.byPlatform[platform] ?? 0;
+    const platformMax = Math.max(1, maxByPlatform[platform]);
+    const intensity = Math.min(1, platformCount / platformMax);
+    if (intensity > 0.7) return hue.shades[3];
+    if (intensity > 0.4) return hue.shades[2];
+    if (intensity > 0.15) return hue.shades[1];
+    return hue.shades[0];
   };
 
   const formatKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -125,45 +159,68 @@ export default function Calendar() {
                 key={i}
                 onClick={() => count > 0 && setSelectedDay(date)}
                 disabled={count === 0}
-                aria-label={`${date.toLocaleDateString('id-ID')} · ${count} post`}
+                aria-label={`${date.toLocaleDateString('id-ID')} · ${count} post${entry ? ` (IG ${entry.byPlatform.instagram ?? 0}, TT ${entry.byPlatform.tiktok ?? 0})` : ''}`}
                 className={`
                   aspect-square rounded text-[10px] font-semibold tabular-nums
                   flex flex-col items-center justify-center
                   transition-colors
-                  ${cellColor(count)}
-                  ${current ? 'text-text-primary' : 'text-text-muted/40'}
+                  ${cellColor(entry)}
+                  ${current ? '' : 'text-text-muted/40'}
                   ${isToday ? 'ring-1 ring-accent-primary' : ''}
                   ${isSelected ? 'ring-2 ring-accent-primary' : ''}
-                  ${count > 0 ? 'hover:bg-accent-primary/30 cursor-pointer' : 'cursor-default'}
+                  ${count > 0 ? 'cursor-pointer' : 'cursor-default'}
                 `}
               >
                 <span>{date.getDate()}</span>
-                {count > 0 && <span className="text-[8px] opacity-80 mt-0.5">{count}</span>}
+                {count > 0 && <span className="text-[8px] opacity-90 mt-0.5">{count}</span>}
               </button>
             );
           })}
         </div>
 
-        {/* Legend */}
-        <div className="flex items-center gap-2 mt-3 text-[10px] text-text-muted">
-          <span>Sedikit</span>
-          <div className="flex gap-0.5">
-            <div className="w-3 h-3 rounded bg-accent-primary/15" />
-            <div className="w-3 h-3 rounded bg-accent-primary/30" />
-            <div className="w-3 h-3 rounded bg-accent-primary/50" />
-            <div className="w-3 h-3 rounded bg-accent-primary/80" />
+        {/* Legend — V34.12 multi-hue per platform */}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-3 text-[10px] text-text-muted">
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold text-accent-instagram">IG</span>
+            <div className="flex gap-0.5">
+              <div className="w-3 h-3 rounded bg-accent-instagram/15" />
+              <div className="w-3 h-3 rounded bg-accent-instagram/40" />
+              <div className="w-3 h-3 rounded bg-accent-instagram/65" />
+              <div className="w-3 h-3 rounded bg-accent-instagram/90" />
+            </div>
           </div>
-          <span>Banyak</span>
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold text-accent-tiktok">TT</span>
+            <div className="flex gap-0.5">
+              <div className="w-3 h-3 rounded bg-accent-tiktok/15" />
+              <div className="w-3 h-3 rounded bg-accent-tiktok/40" />
+              <div className="w-3 h-3 rounded bg-accent-tiktok/65" />
+              <div className="w-3 h-3 rounded bg-accent-tiktok/90" />
+            </div>
+          </div>
+          <span className="opacity-60">Sedikit ← → Banyak</span>
         </div>
       </div>
 
       {/* Selected day panel */}
       {selectedDay && (
         <div className="surface p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-text-primary">
-              {selectedDay.toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
-            </h3>
+          <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
+            <div className="flex items-center gap-3 flex-wrap">
+              <h3 className="text-sm font-semibold text-text-primary">
+                {selectedDay.toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
+              </h3>
+              {postsByDay.get(formatKey(selectedDay))?.byPlatform && (
+                <div className="flex items-center gap-1.5 text-[10px]">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-semibold bg-accent-instagram/15 text-accent-instagram border border-accent-instagram/30">
+                    IG {postsByDay.get(formatKey(selectedDay)).byPlatform.instagram ?? 0}
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-semibold bg-accent-tiktok/15 text-accent-tiktok border border-accent-tiktok/30">
+                    TT {postsByDay.get(formatKey(selectedDay)).byPlatform.tiktok ?? 0}
+                  </span>
+                </div>
+              )}
+            </div>
             <button onClick={() => setSelectedDay(null)} aria-label="Tutup" className="text-text-muted hover:text-text-primary">
               ✕
             </button>

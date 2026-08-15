@@ -193,6 +193,27 @@ jobs:
           echo "Merge scraped + manual comments → src/data/admin-comments.json"
           node scripts/aggregate-admin-comments.mjs
 
+      # ============== SCRAPE HEALTH GATE (V34.12) ==============
+      # Hard-fail if scrapers produced zero fresh posts today. Without this,
+      # `continue-on-error: true` on scrape-ig/scrape-tt swallows V32.4 exit 2
+      # (silent zero-new scrape) and the workflow still "succeeds" — deploy
+      # then ships stale accounts-full.json → calendar visibly stuck.
+      # This step is a NO-OP on Sunday full-scrape (still expected to find
+      # posts); on weekday incremental it catches the regression directly.
+
+      - name: Scrape health gate (V34.12)
+        run: |
+          echo "==================================="
+          echo "Scrape health gate (V34.12)"
+          echo "Verifying at least one account has fresh posts dated today"
+          echo "==================================="
+          node scripts/scrape-health-check.mjs
+          if [ $? -ne 0 ]; then
+            echo "::error::Scrape health gate FAILED — scrapers produced zero fresh posts. Aborting deploy to avoid stale dashboard."
+            exit 1
+          fi
+          echo "::notice::Scrape health gate passed"
+
       # ============== VALIDATION PHASE (fail loud) ==============
 
       - name: Validate merged data (pre-flight)

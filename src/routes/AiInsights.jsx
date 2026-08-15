@@ -140,7 +140,11 @@ export default function AiInsights() {
       >
         {activeTab === 'weekly' ? (
           weeklyText ? (
-            <div className="prose prose-invert max-w-none">
+            // V34.12 AI-3: prose prose-invert no-op (plugin not installed).
+            // Manual typography — text-base + leading-relaxed + text-text-primary.
+            // Weekly briefing = pre-formatted text dari insights generator,
+            // whitespace-pre-wrap agar newline dari generator tetap preserved.
+            <div className="titan-prose titan-prose-invert max-w-none">
               <pre className="whitespace-pre-wrap text-sm text-text-primary font-sans leading-relaxed">
                 {weeklyText}
               </pre>

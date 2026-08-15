@@ -120,6 +120,10 @@ export default function Home() {
     <div className="bg-bg-primary">
       <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-32 md:pb-8 space-y-6">
         <h1 className="sr-only">TITAN Dashboard — Performa Sosial Media</h1>
+        <div className="flex items-baseline gap-3 flex-wrap">
+          <span className="text-[10px] font-mono tracking-widest uppercase text-text-muted tabular-nums">00 / HOME</span>
+          <span className="text-[10px] font-semibold tracking-widest uppercase text-text-secondary">PULSE · DEEP-DIVE · PATTERNS</span>
+        </div>
 
         {/* ===== ROW 1: Hero KPI strip (full width) ===== */}
         <Hero accounts={accounts} allPosts={latestPosts} />
