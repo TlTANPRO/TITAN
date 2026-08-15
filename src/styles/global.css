@@ -115,6 +115,85 @@ html:not(.dark) .skeleton-shimmer {
   }
 }
 
+/* V34.12 AI-3: titan-prose — manual typography untuk long-form insight text.
+   @tailwindcss/typography (prose prose-invert) NOT installed, so we provide
+   our own prose styling matching the dark-first design tokens.
+   - titan-prose: container
+   - titan-prose-invert: opt-in lighter heading/link colors for dark surface
+   - Targets: p, ul, ol, strong, em, h3-h4, a (long-form text only). */
+.titan-prose {
+  color: theme('colors.text.primary');
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+.titan-prose p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+.titan-prose p:first-child {
+  margin-top: 0;
+}
+.titan-prose p:last-child {
+  margin-bottom: 0;
+}
+.titan-prose strong {
+  font-weight: 600;
+  color: theme('colors.text.primary');
+}
+.titan-prose em {
+  font-style: italic;
+}
+.titan-prose ul,
+.titan-prose ol {
+  margin: 0.5em 0;
+  padding-left: 1.25em;
+}
+.titan-prose ul { list-style: disc; }
+.titan-prose ol { list-style: decimal; }
+.titan-prose li {
+  margin: 0.25em 0;
+}
+.titan-prose h3,
+.titan-prose h4 {
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.4em;
+  line-height: 1.3;
+}
+.titan-prose h3 { font-size: 1rem; }
+.titan-prose h4 { font-size: 0.875rem; }
+.titan-prose a {
+  color: theme('colors.accent.primary');
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.titan-prose code {
+  background-color: theme('colors.bg.tertiary');
+  padding: 0.1em 0.3em;
+  border-radius: 0.25rem;
+  font-family: theme('fontFamily.mono');
+  font-size: 0.8125em;
+}
+.titan-prose blockquote {
+  border-left: 2px solid theme('colors.border.default');
+  padding-left: 0.875em;
+  color: theme('colors.text.secondary');
+  font-style: italic;
+  margin: 0.75em 0;
+}
+
+/* Light theme: prose keeps the same rhythm but inherits token colors. */
+html:not(.dark) .titan-prose {
+  color: #18181b;
+}
+html:not(.dark) .titan-prose code {
+  background-color: #f4f4f5;
+}
+html:not(.dark) .titan-prose blockquote {
+  border-left-color: #d4d4d8;
+  color: #52525b;
+}
+
 /* Light theme token overrides */
 html:not(.dark) {
   --tw-bg-opacity: 1;

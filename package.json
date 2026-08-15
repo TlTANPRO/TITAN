@@ -14,6 +14,8 @@
     "scrape:tt": "node scripts/scrape-tt.mjs",
     "scrape:ig:enrich": "node scripts/scrape-ig.mjs --force",
     "scrape:tt:force": "node scripts/scrape-tt.mjs --force",
+    "scrape:avatar": "node scripts/scrape-avatars.mjs",
+    "scrape:avatar:force": "node scripts/scrape-avatars.mjs --force",
     "scrape:full": "node scripts/scrape-ig.mjs && node scripts/scrape-tt.mjs",
     "validate": "node scripts/validate-merge.mjs",
     "generate": "node scripts/generate-data.mjs",

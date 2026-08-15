@@ -1,12 +1,15 @@
 // V21: /ai — Global Insight & Rekomendasi view (ViralRecipe, GrowthStrategy, StrategyBrief, WeeklyBriefing).
 // Tabbed view across all 9 accounts. Shows pre-cached text from ai-insights.json.
 // V25.7: removed Bot icon, removed "Pre-cached" chip + "AI" language, font-bold → font-semibold.
+// ST5: custom tab strip → shared <Tabs>, tambah staleness indicator (age days),
+// contextual badge aria-label di tab content count.
 import { useState, useEffect } from 'react';
-import { Lightbulb, Sparkles, TrendingUp, FileText, Calendar } from 'lucide-react';
+import { Lightbulb, Sparkles, TrendingUp, FileText, Calendar, AlertCircle } from 'lucide-react';
 import { useAccounts } from '../hooks/useAccount.js';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
+import { Tabs } from '../components/ui/Tabs.jsx';
 import { getInsight, getInsightsMeta, getWeeklyBriefing } from '../lib/insights.js';
 
 const TABS = [
@@ -15,6 +18,14 @@ const TABS = [
   { value: 'growth', label: 'Growth Strategy', icon: TrendingUp },
   { value: 'weekly', label: 'Weekly Briefing', icon: Calendar }
 ];
+
+// ST5: stale kalau > 7 hari. UI kasih chip warning biar user aware.
+const STALE_THRESHOLD_MS = 7 * 24 * 3600 * 1000;
+
+function ageDays(ms) {
+  if (!ms) return null;
+  return Math.floor((Date.now() - ms) / (24 * 3600 * 1000));
+}
 
 export default function AiInsights() {
   const accounts = useAccounts();
@@ -41,44 +52,56 @@ export default function AiInsights() {
   const activeText = tabKey && activeSlug ? getInsight(activeSlug, tabKey) : null;
   const weeklyText = activeTab === 'weekly' ? getWeeklyBriefing() : null;
 
+  const age = ageDays(meta.generatedAt);
+  const isStale = age != null && age > 7;
+
+  // Map ke shared Tabs API: { value, label, icon, badge, badgeLabel }
+  const tabItems = TABS.map((t) => {
+    if (t.value === 'weekly') {
+      return { ...t, badge: weeklyText ? 'Siap' : null, badgeLabel: weeklyText ? 'Briefing tersedia' : null };
+    }
+    return t;
+  });
+
   return (
     <div className="p-4 md:p-6 space-y-4 max-w-7xl mx-auto">
+      <h1 className="sr-only">Insight & Rekomendasi</h1>
       <div>
-        <h1 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
-          <Lightbulb className="w-6 h-6 text-accent-primary" />
+        <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
+          <Lightbulb className="w-6 h-6 text-accent-primary" aria-hidden="true" />
           Insight & Rekomendasi
-        </h1>
-        <p className="text-sm text-text-muted mt-0.5">
-          {meta.generatedAt
-            ? `Tersimpan lokal · ${new Date(meta.generatedAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })} · ${meta.accountCount} akun`
-            : 'Belum ada insight yang tersimpan'
-          }
+        </h2>
+        <p className="text-sm text-text-muted mt-0.5 flex items-center gap-2 flex-wrap">
+          {meta.generatedAt ? (
+            <>
+              <span>
+                Tersimpan lokal · {new Date(meta.generatedAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
+              </span>
+              {age != null && (
+                <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                  isStale
+                    ? 'bg-accent-warning/15 text-accent-warning border border-accent-warning/30'
+                    : 'bg-bg-tertiary text-text-muted'
+                }`}>
+                  {isStale && <AlertCircle className="w-3 h-3" aria-hidden="true" />}
+                  {age === 0 ? 'hari ini' : `${age} hari lalu`}
+                </span>
+              )}
+              <span>· {meta.accountCount} akun</span>
+            </>
+          ) : (
+            'Belum ada insight yang tersimpan'
+          )}
         </p>
+        {isStale && (
+          <p className="text-xs text-accent-warning mt-1">
+            Insight sudah {age} hari. Jalankan `pnpm insights:generate` untuk refresh.
+          </p>
+        )}
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 border-b border-border-subtle overflow-x-auto">
-        {TABS.map((t) => {
-          const Icon = t.icon;
-          return (
-            <button
-              key={t.value}
-              onClick={() => setActiveTab(t.value)}
-              className={`
-                flex items-center gap-2 px-4 py-2 text-sm font-medium whitespace-nowrap
-                border-b-2 transition-colors
-                ${activeTab === t.value
-                  ? 'border-accent-primary text-accent-primary'
-                  : 'border-transparent text-text-muted hover:text-text-primary'
-                }
-              `}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              {t.label}
-            </button>
-          );
-        })}
-      </div>
+      {/* Tabs (shared, ARIA-compliant) */}
+      <Tabs value={activeTab} onChange={setActiveTab} items={tabItems} />
 
       {/* Account selector (hidden for weekly briefing) */}
       {activeTab !== 'weekly' && (
@@ -89,8 +112,10 @@ export default function AiInsights() {
               <button
                 key={a.slug}
                 onClick={() => setActiveSlug(a.slug)}
+                aria-pressed={activeSlug === a.slug}
                 className={`
                   flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium border transition-colors
+                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary
                   ${activeSlug === a.slug
                     ? 'bg-accent-primary/10 border-accent-primary/40 text-accent-primary'
                     : 'bg-bg-tertiary border-border-subtle text-text-secondary hover:border-border-default'
@@ -107,10 +132,19 @@ export default function AiInsights() {
       )}
 
       {/* Content panel */}
-      <div className="surface p-5">
+      <div
+        role="tabpanel"
+        id={`tabpanel-${activeTab}`}
+        aria-labelledby={`tab-${activeTab}`}
+        className="surface p-5"
+      >
         {activeTab === 'weekly' ? (
           weeklyText ? (
-            <div className="prose prose-invert max-w-none">
+            // V34.12 AI-3: prose prose-invert no-op (plugin not installed).
+            // Manual typography — text-base + leading-relaxed + text-text-primary.
+            // Weekly briefing = pre-formatted text dari insights generator,
+            // whitespace-pre-wrap agar newline dari generator tetap preserved.
+            <div className="titan-prose titan-prose-invert max-w-none">
               <pre className="whitespace-pre-wrap text-sm text-text-primary font-sans leading-relaxed">
                 {weeklyText}
               </pre>
@@ -124,7 +158,7 @@ export default function AiInsights() {
         ) : activeText ? (
           <div>
             <div className="flex items-center gap-2 mb-3 text-xs text-accent-primary">
-              <Lightbulb className="w-3.5 h-3.5" />
+              <Lightbulb className="w-3.5 h-3.5" aria-hidden="true" />
               <span className="font-semibold uppercase tracking-wider">Rekomendasi</span>
             </div>
             <div className="text-sm text-text-primary leading-relaxed whitespace-pre-line">

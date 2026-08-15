@@ -1,16 +1,19 @@
-// prebuild: copy src/data/accounts-full.json → public/data/accounts-full.json
+// prebuild: copy src/data/*.json → public/data/*.json
 //
-// Why: Vite imports src/data/accounts-full.json into a 6.6MB JS chunk. But the
-// Cloudflare Worker V11 (and any future /data/ fetcher) expects a static JSON
-// file at the site root. Vite auto-copies anything in `public/` to `dist/`,
-// so we stage a copy in `public/data/` before `vite build` runs.
+// Why: Vite imports src/data/accounts-full.json into a large JS chunk. But
+// the Cloudflare Worker /data/ fetcher (and Komentar Admin UI) expects static
+// JSON files at the site root. Vite auto-copies anything in `public/` to
+// `dist/`, so we stage copies in `public/data/` before `vite build` runs.
 //
-// Cost: data is shipped twice (once in JS chunk, once as static JSON) → ~14MB
-// of data on Pages. Acceptable for the marketing-intelligence use case; we
-// keep both because:
+// Loop over every JSON file in src/data/ — auto-handles new datasets such as
+// admin-comments.json without script edits.
+//
+// Cost: large datasets are shipped twice (once in JS chunk, once as static
+// JSON). Acceptable for the marketing-intelligence use case; we keep both
+// because:
 //   - JS import = guaranteed offline (PWA service worker caches the chunk)
-//   - Static JSON = Worker can read for soft-refresh metadata without
-//     re-importing the whole bundle
+//   - Static JSON = Worker / public assets can read for soft-refresh metadata
+//     without re-importing the whole bundle
 //
 // Run automatically via `prebuild` in package.json. Safe to re-run.
 
@@ -19,24 +22,38 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const SRC = path.join(__dirname, '..', 'src', 'data', 'accounts-full.json');
+const SRC_DIR = path.join(__dirname, '..', 'src', 'data');
 const DEST_DIR = path.join(__dirname, '..', 'public', 'data');
-const DEST = path.join(DEST_DIR, 'accounts-full.json');
 
 async function main() {
+  await fs.mkdir(DEST_DIR, { recursive: true });
+
+  let entries;
   try {
-    await fs.access(SRC);
-  } catch {
-    console.warn(`[prebuild] ${SRC} not found, skipping copy. Run \`pnpm generate\` first.`);
+    entries = await fs.readdir(SRC_DIR);
+  } catch (err) {
+    console.warn(`[prebuild] ${SRC_DIR} not readable, skipping copy.`);
     return;
   }
 
-  await fs.mkdir(DEST_DIR, { recursive: true });
-  const stat = await fs.stat(SRC);
-  await fs.copyFile(SRC, DEST);
+  const jsonFiles = entries.filter((f) => f.endsWith('.json'));
+  if (jsonFiles.length === 0) {
+    console.warn(`[prebuild] no JSON files in ${SRC_DIR}, nothing to copy.`);
+    return;
+  }
 
-  const sizeMB = (stat.size / 1024 / 1024).toFixed(2);
-  console.log(`[prebuild] ${SRC} (${sizeMB} MB) → ${DEST}`);
+  for (const file of jsonFiles) {
+    const src = path.join(SRC_DIR, file);
+    const dest = path.join(DEST_DIR, file);
+    try {
+      const stat = await fs.stat(src);
+      await fs.copyFile(src, dest);
+      const sizeKB = (stat.size / 1024).toFixed(1);
+      console.log(`[prebuild] ${src} (${sizeKB} KB) → ${dest}`);
+    } catch (err) {
+      console.warn(`[prebuild] skip ${src}: ${err.message}`);
+    }
+  }
 }
 
 main().catch((err) => {

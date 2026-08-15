@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { formatNumber, formatPercent } from '../lib/format.js';
+import { healthColor } from '../lib/titan-tokens.js';
 import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
 
 const PLATFORM_FILTERS = [
@@ -32,16 +33,6 @@ const RESPONSIVE_CLASS = {
   md: 'hidden md:table-cell',
   lg: 'hidden lg:table-cell'
 };
-
-// V25.4: token-based health color (V23: no raw Tailwind palette)
-// Mirrors AccountOverview healthColor() — single source of truth pattern.
-function healthColor(score) {
-  if (score >= 80) return { text: 'text-accent-success' };
-  if (score >= 65) return { text: 'text-accent-primary' };
-  if (score >= 50) return { text: 'text-accent-warning' };
-  if (score >= 35) return { text: 'text-accent-warning' };
-  return { text: 'text-accent-danger' };
-}
 
 function SortIcon({ active, dir }) {
   if (!active) return <ArrowUpDown className="w-3 h-3 opacity-30" />;

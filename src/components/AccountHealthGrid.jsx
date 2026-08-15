@@ -8,18 +8,9 @@ import { Link } from 'react-router-dom';
 import { Heart, Eye, MessageCircle, Share2 } from 'lucide-react';
 import { formatNumber, formatPercent } from '../lib/format.js';
 import { performanceByMonth } from '../lib/analytics.js';
+import { GRADE_COLORS } from '../lib/titan-tokens.js';
 import { ProxiedAvatar } from './ProxiedAvatar.jsx';
 import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
-
-// V25.10: token-based grade colors (raw Tailwind palette is V23 hard NO).
-// Same hue family as AccountOverview healthColor() for visual consistency.
-const GRADE_COLORS = {
-  A: 'bg-accent-success/20 text-accent-success border-accent-success/30',
-  B: 'bg-accent-primary/20 text-accent-primary border-accent-primary/30',
-  C: 'bg-accent-warning/20 text-accent-warning border-accent-warning/30',
-  D: 'bg-accent-secondary/20 text-accent-secondary border-accent-secondary/30',
-  E: 'bg-accent-danger/20 text-accent-danger border-accent-danger/30'
-};
 
 function AccountAvatar({ account }) {
   return <ProxiedAvatar account={account} size={40} className="" />;

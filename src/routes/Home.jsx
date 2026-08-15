@@ -48,8 +48,10 @@ function withAvailability(account) {
 }
 
 // V25.3: token-based rank palette (V23: no raw Tailwind colors)
+// Rank 2 (silver) upgraded to primary-tinted bg agar readable (was plain
+// bg-hover — too washed out di surface light).
 const RANK_COLORS = ['bg-accent-warning/20 text-accent-warning border-accent-warning/30',
-                     'bg-bg-hover text-text-secondary border-border-default',
+                     'bg-accent-primary/15 text-accent-primary border-accent-primary/30',
                      'bg-accent-secondary/20 text-accent-secondary border-accent-secondary/30'];
 
 function TopPerformersCard({ title, icon, accounts, metricKey, suffix }) {
@@ -117,6 +119,11 @@ export default function Home() {
   return (
     <div className="bg-bg-primary">
       <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-32 md:pb-8 space-y-6">
+        <h1 className="sr-only">TITAN Dashboard — Performa Sosial Media</h1>
+        <div className="flex items-baseline gap-3 flex-wrap">
+          <span className="text-[10px] font-mono tracking-widest uppercase text-text-muted tabular-nums">00 / HOME</span>
+          <span className="text-[10px] font-semibold tracking-widest uppercase text-text-secondary">PULSE · DEEP-DIVE · PATTERNS</span>
+        </div>
 
         {/* ===== ROW 1: Hero KPI strip (full width) ===== */}
         <Hero accounts={accounts} allPosts={latestPosts} />
@@ -173,7 +180,9 @@ export default function Home() {
             V33.1: Top ER moved from ROW 4 col-4 to here as 5th tile so all 5
             tiles share the same width. Uses plain grid (2/3/5 cols) instead
             of BentoGrid 12-col system (5 × col-3 = 15 cols, would overflow). */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="space-y-3">
+          <SectionLabel number="05" title="Top Performer" accent="emerald" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           <TopPerformersCard
             title="Top Views"
             icon={<Eye className="w-3.5 h-3.5 text-chart-6" />}
@@ -205,6 +214,7 @@ export default function Home() {
             accounts={comparison}
             metricKey="engagementRate"
           />
+          </div>
         </div>
 
         {/* V33: ZONE 2 → ZONE 3 divider */}

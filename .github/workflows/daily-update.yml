@@ -55,12 +55,8 @@ jobs:
     env:
       # Fail loud on validation errors, fail soft on scrape errors
       FAIL_LATEST: true
-      # V28: All scrapers are now FREE methods (i.instagram.com /clips/user/,
+      # V34.13: All scrapers are FREE methods (i.instagram.com /clips/user/,
       # TikWM via Jina, Jina web profile for TT). No API key required.
-      # The JINA_API_KEY and ENSEMBLEDATA_TOKENS below are kept for
-      # backward-compat with the scraper wrappers (they read them but
-      # don't use them anymore).
-      JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
       ENSEMBLEDATA_TOKENS: ${{ secrets.TITAN_ENSEMBLEDATA_TOKEN }}
       # V27.16: kill switch. Now that V28 uses free methods, this is a
       # no-op (the wrapper just logs and continues). Kept for safety.
@@ -108,22 +104,24 @@ jobs:
       # V26: smart cadence — Sunday = full re-scrape (weekly catch-up).
       # Other days = incremental 1-day window. Manual override via
       # workflow_dispatch input `force_full_scrape=true`.
-      - name: Detect weekly catch-up day (Sunday UTC)
+      # V34.13: export IS_SUNDAY=true env var so downstream steps
+      # (health gate, worker-status writer) can branch on weekday vs Sunday.
+      - name: Detect weekly catch-up day (Sunday UTC) + export IS_SUNDAY
         id: cadence
         run: |
           day=$(date -u +%u)
           if [ "$day" = "7" ]; then
             echo "weekly_full=true" >> $GITHUB_OUTPUT
-            echo "::notice::Sunday detected → weekly full re-scrape"
+            echo "IS_SUNDAY=true" >> $GITHUB_ENV
+            echo "::notice::Sunday detected → weekly full re-scrape, health gate relaxed"
           else
             echo "weekly_full=false" >> $GITHUB_OUTPUT
+            echo "IS_SUNDAY=false" >> $GITHUB_ENV
             echo "::notice::Weekday ($day) → incremental 1-day scrape"
           fi
 
       - name: Scrape Instagram
         if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ig' || github.event.inputs.platform == '' }}
-        env:
-          JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
         run: |
           if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ] || [ "${{ steps.cadence.outputs.weekly_full }}" = "true" ]; then
             echo "Full IG scrape (V28 free: i.instagram.com /clips/user/ + /feed/user/)"
@@ -142,8 +140,6 @@ jobs:
 
       - name: Scrape TikTok
         if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '' }}
-        env:
-          JINA_API_KEY: ${{ secrets.TITAN_JINA_API_KEY }}
         run: |
           if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ] || [ "${{ steps.cadence.outputs.weekly_full }}" = "true" ]; then
             echo "Full TT scrape (V28 free: Jina web profile + TikWM search via Jina)"
@@ -159,6 +155,58 @@ jobs:
         if: always() && steps.scrape-tt.outcome != 'skipped'
         run: |
           echo "::notice::TT scrape outcome=${{ steps.scrape-tt.outcome }}"
+
+      # ============== ADMIN COMMENTS PHASE (fail soft) ==============
+      # V34.9: scrape comments left by our admins (Reni/Rifqi/Reta/Julian) on
+      # their own posts and on other people's posts. Targets majangmejeng_
+      # accounts (IG + TT). Free endpoints only:
+      #   - TT: TikWM /api/comment/list (no auth, rate limit ~1 req/sec)
+      #   - IG: Jina r.jina.ai proxy for IG post pages (rate limit ~1 req/3sec)
+      # Aggregate merges raw scraped + existing manual dataset via dedup by id.
+      # Fails soft per step so a single API hiccup doesn't block deploy.
+
+      - name: Scrape comments IG (Jina proxy)
+        if: success()
+        run: |
+          echo "Scrape IG comments via Jina (majangmejeng_ only)"
+          node scripts/scrape-comments-ig.mjs || echo "::warning::IG comments scrape failed — continuing with manual dataset only"
+        continue-on-error: true
+        id: scrape-comments-ig
+
+      - name: Scrape comments TT (TikWM free)
+        if: success()
+        run: |
+          echo "Scrape TT comments via TikWM (majangmejeng_ only)"
+          node scripts/scrape-comments-tt.mjs || echo "::warning::TT comments scrape failed — continuing with manual dataset only"
+        continue-on-error: true
+        id: scrape-comments-tt
+
+      - name: Aggregate admin comments
+        if: success()
+        run: |
+          echo "Merge scraped + manual comments → src/data/admin-comments.json"
+          node scripts/aggregate-admin-comments.mjs
+
+      # ============== SCRAPE HEALTH GATE (V34.12) ==============
+      # Hard-fail if scrapers produced zero fresh posts today. Without this,
+      # `continue-on-error: true` on scrape-ig/scrape-tt swallows V32.4 exit 2
+      # (silent zero-new scrape) and the workflow still "succeeds" — deploy
+      # then ships stale accounts-full.json → calendar visibly stuck.
+      # This step is a NO-OP on Sunday full-scrape (still expected to find
+      # posts); on weekday incremental it catches the regression directly.
+
+      - name: Scrape health gate (V34.12)
+        run: |
+          echo "==================================="
+          echo "Scrape health gate (V34.12)"
+          echo "Verifying at least one account has fresh posts dated today"
+          echo "==================================="
+          node scripts/scrape-health-check.mjs
+          if [ $? -ne 0 ]; then
+            echo "::error::Scrape health gate FAILED — scrapers produced zero fresh posts. Aborting deploy to avoid stale dashboard."
+            exit 1
+          fi
+          echo "::notice::Scrape health gate passed"
 
       # ============== VALIDATION PHASE (fail loud) ==============
 
@@ -245,4 +293,7 @@ jobs:
           echo "IG scrape: ${{ steps.scrape-ig.outcome }}"
           echo "TT scrape: ${{ steps.scrape-tt.outcome }}"
           echo "Build outcome: ${{ steps.build.outcome }}"
+          echo "Last success: $(cat scripts/.last-success 2>/dev/null || echo 'NEVER')"
+          echo "Last fresh count: $(node -e "const s = require('./scripts/worker-status.json'); console.log(s.lastFreshCount ?? 'n/a')" 2>/dev/null || echo 'n/a')"
+          echo "Last error: $(node -e "const s = require('./scripts/worker-status.json'); console.log(s.lastError ?? 'none')" 2>/dev/null || echo 'n/a')"
           echo "==================================="

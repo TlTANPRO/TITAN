@@ -102,7 +102,7 @@ async function main() {
   console.log('\n[1.5/6] Pre-flight sanity check...');
   const preFlightErrors = [];
   const scrapedDir = path.join(ROOT, 'scripts', 'scraped');
-  const scrapedFiles = (await fs.readdir(scrapedDir)).filter((f) => f.endsWith('.json') && !f.includes('.backup-'));
+  const scrapedFiles = (await fs.readdir(scrapedDir)).filter((f) => f.endsWith('.json') && !f.includes('.backup-') && !f.startsWith('comments-'));
   if (scrapedFiles.length !== 9) {
     preFlightErrors.push(`Expected 9 scraped files, got ${scrapedFiles.length}`);
   }
@@ -142,6 +142,13 @@ async function main() {
     process.exit(1);
   }
   console.log(`   ✅ 9 akun, ${totalPosts} posts, 0 cross-dup`);
+
+  // Step 1.6: write worker status (commit-marker for at-a-glance health check)
+  console.log('\n[1.6/6] Write worker status commit-marker...');
+  run('node scripts/write-worker-status.mjs', {
+    stdio: 'inherit',
+    env: { ...process.env, IS_SUNDAY: process.env.IS_SUNDAY || 'false' }
+  });
 
   // Step 2: vite build (prebuild hook auto-copies data to public/)
   // V30.1: explicitly forward VITE_LLM_PROXY_URL to the child pnpm/vite
@@ -225,6 +232,31 @@ async function main() {
   }
 
   run('git push origin main', { stdio: 'inherit' });
+
+  // Step 5.5: write .last-success marker after push succeeded.
+  // Two-step commit keeps "last success" semantically separate from
+  // "this run's data". Owner can `git log --oneline -- scripts/.last-success`
+  // to see green deploy history at a glance.
+  console.log('\n[5.5/6] Write .last-success marker...');
+  try {
+    execSync('git rev-parse HEAD', { cwd: ROOT, encoding: 'utf-8' });
+    const lastSuccessPath = path.join(__dirname, '.last-success');
+    const ts = new Date().toISOString();
+    await fs.writeFile(lastSuccessPath, ts);
+    run('node scripts/write-worker-status.mjs', {
+      stdio: 'inherit',
+      env: { ...process.env, IS_SUNDAY: process.env.IS_SUNDAY || 'false' }
+    });
+    run('git add scripts/.last-success scripts/worker-status.json', { stdio: 'inherit' });
+    const diff = execSync('git status --porcelain -- scripts/.last-success scripts/worker-status.json', { cwd: ROOT, encoding: 'utf-8' });
+    if (diff.trim()) {
+      run(`git commit -m "deploy: worker green at ${ts.replace(/[:.]/g, '-')}"`, { stdio: 'inherit' });
+      if (!SKIP_PUSH) run('git push origin main', { stdio: 'inherit' });
+    }
+  } catch (err) {
+    console.warn(`[deploy] .last-success marker failed (non-fatal): ${err.message}`);
+  }
+
   console.log('\n============================================');
   console.log('  ✅ DEPLOYED — check gh-pages in 1-2 min');
   console.log('============================================');

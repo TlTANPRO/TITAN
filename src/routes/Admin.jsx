@@ -19,6 +19,8 @@ import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PlatformIcon, platformLabel } from '../components/icons/PlatformIcon.jsx';
 import { getAdminSummary, ADMIN_HASHTAGS } from '../lib/adminHashtags.js';
 import { formatNumber, formatDate } from '../lib/format.js';
+import { ADMIN_ACCENTS, MONTH_NAMES_ID, monthLabel } from '../lib/titan-tokens.js';
+import { KomentarAdmin } from '../components/admin/KomentarAdmin.jsx';
 
 // Responsive column visibility — same pattern as EnhancedTable so mobile
 // users keep the essential columns visible.
@@ -34,15 +36,6 @@ function adminInitials(name) {
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
-
-// 4 distinct accent colors. Julian moved from secondary (purple) to
-// instagram (pink) so he's visually distinct from Reni/Rifqi/Reta.
-const ADMIN_ACCENTS = [
-  { ring: 'ring-accent-primary',   text: 'text-accent-primary',   chip: 'bg-accent-primary/10 text-accent-primary border-accent-primary/30',   hex: '#3b82f6', bar: 'bg-accent-primary' },
-  { ring: 'ring-accent-success',   text: 'text-accent-success',   chip: 'bg-accent-success/10 text-accent-success border-accent-success/30',   hex: '#10b981', bar: 'bg-accent-success' },
-  { ring: 'ring-accent-warning',   text: 'text-accent-warning',   chip: 'bg-accent-warning/10 text-accent-warning border-accent-warning/30',   hex: '#f59e0b', bar: 'bg-accent-warning' },
-  { ring: 'ring-accent-instagram', text: 'text-accent-instagram', chip: 'bg-accent-instagram/10 text-accent-instagram border-accent-instagram/30', hex: '#E1306C', bar: 'bg-accent-instagram' }
-];
 
 function SortIcon({ active, dir }) {
   if (!active) return <ArrowUpDown className="w-3 h-3 opacity-30" />;
@@ -398,16 +391,7 @@ function listAvailableMonths(summary) {
   return [...set].sort().reverse();
 }
 
-// Format 'YYYY-MM' → 'Agustus 2026' (Indonesian month names).
-const MONTH_NAMES_ID = [
-  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-];
-function monthLabel(key) {
-  if (!key || key === 'all') return 'Semua Bulan';
-  const [y, m] = key.split('-');
-  return `${MONTH_NAMES_ID[Number(m) - 1]} ${y}`;
-}
+// monthLabel dipindah ke lib/titan-tokens.js (SSOT).
 
 // Build a sparkline series for one admin — last `days` days of post counts.
 // Empty days left as null so recharts skips the dot instead of showing zero.
@@ -794,6 +778,8 @@ export default function Admin() {
             </div>
             {range === 'month' && (
               <select
+                id="admin-growth-month-picker"
+                name="adminGrowthMonth"
                 value={monthKey ?? ''}
                 onChange={(e) => setMonthKey(e.target.value || null)}
                 className="bg-bg-tertiary border border-border-subtle rounded px-2 py-1 text-[10px] text-text-primary focus:outline-none focus:border-accent-primary"
@@ -1057,6 +1043,8 @@ export default function Admin() {
           <span className="ml-auto flex items-center gap-2 flex-wrap">
             <span className="text-[10px] text-text-muted uppercase tracking-wider">Sortir:</span>
             <select
+              id="admin-ranking-sort"
+              name="adminRankingSort"
               value={rankMetric}
               onChange={(e) => setRankMetric(e.target.value)}
               className="bg-bg-tertiary border border-border-subtle rounded px-2 py-1 text-xs text-text-primary focus:outline-none focus:border-accent-primary"
@@ -1132,6 +1120,8 @@ export default function Admin() {
           <div className="ml-auto flex items-center gap-2 flex-wrap">
             {/* Monthly scope picker */}
             <select
+              id="admin-cross-platform-month"
+              name="adminCrossPlatformMonth"
               value={crossMonthKey}
               onChange={(e) => setCrossMonthKey(e.target.value)}
               className="text-[10px] font-semibold uppercase tracking-wider bg-bg-tertiary border border-border-subtle rounded px-2 py-1 text-text-primary cursor-pointer hover:bg-bg-secondary transition-colors"
@@ -1305,33 +1295,75 @@ export default function Admin() {
         </div>
       </div>
 
-      {/* Posts table — limited to 10 preview, scroll for more */}
+      {/* Posts table — filter row + posts grid. Consistent with Komentar per Post
+          table aesthetic: tabular header, sticky column, hover rows, tabular nums.
+          V34.10: moved admin filter chips into a single-row filter table (Akun/Admin
+          columns) so the Admin tab filter system looks identical across sections. */}
       <div className="surface overflow-hidden">
-        <div className="flex items-center gap-2 p-3 border-b border-border-subtle flex-wrap">
-          <span className="text-[10px] text-text-muted uppercase tracking-wider">Filter Admin:</span>
-          <button
-            onClick={() => setAdminFilter('all')}
-            className={`chip transition-colors ${adminFilter === 'all' ? 'bg-accent-primary text-white' : 'bg-bg-tertiary text-text-secondary hover:text-text-primary'}`}
-          >
-            Semua
-          </button>
-          {summary.map((admin, i) => {
-            const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
-            const active = adminFilter === admin.name;
-            return (
-              <button
-                key={admin.name}
-                onClick={() => setAdminFilter(admin.name)}
-                className={`chip transition-colors inline-flex items-center gap-1 ${active ? 'bg-accent-primary text-white' : 'bg-bg-tertiary text-text-secondary hover:text-text-primary'}`}
-              >
-                <span className={`w-2 h-2 rounded-full ${active ? 'bg-white' : ''}`} style={active ? {} : { backgroundColor: accent.hex }} />
-                {admin.name}
-                <span className={`ml-1 px-1.5 text-[10px] font-semibold rounded-full ${active ? 'bg-white/20' : 'bg-bg-primary/40'}`}>
-                  {admin.postCount}
-                </span>
-              </button>
-            );
-          })}
+        {/* Filter table — single row of Admin chips inside a tabular layout so the
+            section header + filter row read as one cohesive table. */}
+        <div className="overflow-x-auto border-b border-border-subtle">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-[10px] text-text-muted uppercase border-b border-border-subtle tracking-wider">
+                <th className="py-1.5 px-4 text-left font-medium">Filter Admin</th>
+                <th className="py-1.5 px-4 text-right font-medium tabular-nums">
+                  {filteredRows.length}/{allRows.length} post
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="align-middle">
+                <td className="py-2 px-4">
+                  <div className="flex flex-wrap gap-1.5">
+                    <button
+                      onClick={() => setAdminFilter('all')}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                        adminFilter === 'all'
+                          ? 'bg-accent-primary text-white border-accent-primary'
+                          : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
+                      }`}
+                    >
+                      Semua
+                    </button>
+                    {summary.map((admin, i) => {
+                      const accent = ADMIN_ACCENTS[i % ADMIN_ACCENTS.length];
+                      const active = adminFilter === admin.name;
+                      return (
+                        <button
+                          key={admin.name}
+                          onClick={() => setAdminFilter(admin.name)}
+                          className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
+                            active
+                              ? `${accent.bar} text-white border-transparent`
+                              : `${accent.chip} hover:border-border-default`
+                          }`}
+                        >
+                          <span
+                            className={`w-2 h-2 rounded-full ${active ? 'bg-white' : ''}`}
+                            style={active ? {} : { backgroundColor: accent.hex }}
+                          />
+                          {admin.name}
+                          <span className={`ml-1 px-1.5 text-[10px] font-semibold rounded-full ${active ? 'bg-white/20' : 'bg-bg-primary/40'}`}>
+                            {admin.postCount}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </td>
+                <td className="py-2 px-4 text-right">
+                  <div className="flex items-center justify-end gap-2 text-[10px] text-text-muted">
+                    <span className="uppercase tracking-wider">Sortir:</span>
+                    <span className="text-text-primary font-semibold tabular-nums">
+                      {sortKey === 'createTime' ? 'Tanggal' : sortKey === 'likeCount' ? 'Suka' : sortKey === 'commentCount' ? 'Komen' : sortKey === 'viewCount' ? 'Views' : sortKey}
+                    </span>
+                    <SortIcon active dir={sortDir} />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div className="overflow-x-auto">
           <div className="max-h-[520px] overflow-y-auto">
@@ -1458,6 +1490,11 @@ export default function Admin() {
           </div>
         </div>
       </div>
+
+      {/* Komentar Admin — own-account comments tagged with admin markers
+          (`-Rf`/`-Rm`/`-Re`/`-Ju`). Per-admin + monthly KPIs + per-post
+          comment samples. Dry-run preview, pending scraper wiring. */}
+      <KomentarAdmin />
     </div>
   );
 }
