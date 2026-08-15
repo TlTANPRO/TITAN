@@ -1,7 +1,7 @@
 // V21.1: Account Detail — tab shell wrapping 5 modular subcomponents.
 // Tabs: Overview (default), Content, Patterns, Insights, Benchmark.
 // URL: /account/:slug?tab=patterns (deep-linkable).
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import {
   LayoutDashboard, FileText, Calendar, Lightbulb, Globe2, ChevronRight, ArrowLeft
@@ -39,6 +39,14 @@ export default function AccountPage() {
   // Resolve active tab from URL, fallback to default
   const rawTab = searchParams.get('tab') ?? DEFAULT_TAB;
   const activeTab = useMemo(() => (TAB_KEYS.includes(rawTab) ? rawTab : DEFAULT_TAB), [rawTab]);
+
+  // ST5: scroll-to-top on tab change so user sees fresh panel header.
+  const tabSectionRef = useRef(null);
+  useEffect(() => {
+    if (tabSectionRef.current) {
+      tabSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [activeTab]);
 
   const handleTabChange = (next) => {
     if (next === DEFAULT_TAB) {
@@ -83,16 +91,18 @@ export default function AccountPage() {
     );
   }
 
+  const recCount = insights.marketInsightsExtended?.recommendations?.length ?? 0;
+  const postCount = account.posts?.length ?? 0;
   const tabItems = [
     { value: 'overview', label: 'Overview', icon: LayoutDashboard },
-    { value: 'content', label: 'Content', icon: FileText, badge: account.posts?.length ?? null },
+    { value: 'content', label: 'Content', icon: FileText, badge: postCount || null, badgeLabel: `${postCount} post` },
     { value: 'patterns', label: 'Patterns', icon: Calendar },
-    { value: 'insights', label: 'Insights', icon: Lightbulb, badge: insights.marketInsightsExtended?.recommendations?.length ?? null },
+    { value: 'insights', label: 'Insights', icon: Lightbulb, badge: recCount || null, badgeLabel: `${recCount} rekomendasi` },
     { value: 'benchmark', label: 'Benchmark', icon: Globe2 }
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" ref={tabSectionRef}>
       {/* Breadcrumb: TITAN / Akun / @username */}
       <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs">
         <Link to="/" className="text-text-muted hover:text-text-primary transition-colors">TITAN</Link>
@@ -101,6 +111,8 @@ export default function AccountPage() {
         <ChevronRight className="w-3 h-3 text-text-muted/50" />
         <span className="text-text-primary font-semibold truncate">@{account.username}</span>
       </nav>
+
+      <h1 className="sr-only">@{account.username} — Detail Akun</h1>
 
       <Tabs value={activeTab} onChange={handleTabChange} items={tabItems} />
 

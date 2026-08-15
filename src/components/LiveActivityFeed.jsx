@@ -8,17 +8,7 @@ import { formatNumber } from '../lib/format.js';
 import { useEffect, useState } from 'react';
 import { platformLabel } from './icons/PlatformIcon.jsx';
 import { ProxiedAvatar } from './ProxiedAvatar.jsx';
-
-const DAY_NAMES_ID = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-
-function relativeTime(unixSec, now) {
-  const diff = Math.max(0, now / 1000 - unixSec);
-  if (diff < 60) return 'baru saja';
-  if (diff < 3600) return `${Math.floor(diff / 60)}m`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}j`;
-  if (diff < 604800) return `${Math.floor(diff / 86400)}h`;
-  return `${Math.floor(diff / 604800)}mgu`;
-}
+import { DAY_NAMES_SHORT, relativeTimeShort } from '../lib/titan-tokens.js';
 
 export function LiveActivityFeed({ posts }) {
   const [now, setNow] = useState(() => Date.now());
@@ -60,9 +50,9 @@ export function LiveActivityFeed({ posts }) {
                 <span>·</span>
                 <span className="hidden sm:inline">{platformLabel(p._accountPlatform)}</span>
                 <span>·</span>
-                <span className="hidden md:inline">{DAY_NAMES_ID[d.getDay()]} {d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
-                <span className="md:hidden">{relativeTime(p.createTime, now)}</span>
-                <span className="hidden md:inline text-accent-primary font-medium">{relativeTime(p.createTime, now)}</span>
+                <span className="hidden md:inline">{DAY_NAMES_SHORT[d.getDay()]} {d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
+                <span className="md:hidden">{relativeTimeShort(p.createTime, now)}</span>
+                <span className="hidden md:inline text-accent-primary font-medium">{relativeTimeShort(p.createTime, now)}</span>
               </div>
               <div className="text-sm text-text-secondary line-clamp-1 mt-0.5">{p.caption || '(tanpa caption)'}</div>
               <div className="flex items-center gap-3 mt-1 text-[11px] text-text-muted tabular-nums">

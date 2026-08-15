@@ -7,9 +7,7 @@ import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
 import { formatCompact } from '../lib/format.js';
-
-const MONTH_NAMES_ID = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-const DAY_NAMES_ID = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+import { MONTH_NAMES_ID, DAY_NAMES_SHORT } from '../lib/titan-tokens.js';
 
 export default function Calendar() {
   const accounts = useAccounts();
@@ -107,7 +105,7 @@ export default function Calendar() {
 
         {/* Day labels */}
         <div className="grid grid-cols-7 gap-1 mb-1">
-          {DAY_NAMES_ID.map((d) => (
+          {DAY_NAMES_SHORT.map((d) => (
             <div key={d} className="text-[10px] font-semibold text-text-muted uppercase tracking-wider text-center py-1">
               {d}
             </div>

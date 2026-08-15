@@ -19,33 +19,15 @@ import {
   ADMIN_ORDER
 } from '../../lib/adminComments.js';
 import { formatNumber } from '../../lib/format.js';
-
-// 4 distinct accents — mirrors Admin.jsx palette so admin chips stay in sync.
-const ADMIN_ACCENTS = [
-  { text: 'text-accent-primary',   bar: 'bg-accent-primary',   hex: '#3b82f6', chip: 'bg-accent-primary/10 text-accent-primary border-accent-primary/30' },
-  { text: 'text-accent-success',   bar: 'bg-accent-success',   hex: '#10b981', chip: 'bg-accent-success/10 text-accent-success border-accent-success/30' },
-  { text: 'text-accent-warning',   bar: 'bg-accent-warning',   hex: '#f59e0b', chip: 'bg-accent-warning/10 text-accent-warning border-accent-warning/30' },
-  { text: 'text-accent-instagram', bar: 'bg-accent-instagram', hex: '#E1306C', chip: 'bg-accent-instagram/10 text-accent-instagram border-accent-instagram/30' }
-];
+import { ADMIN_ACCENTS, accentForAdmin as accentForAdminShared, monthLabel } from '../../lib/titan-tokens.js';
 
 // Latest comments shown collapsed per post. Scrollable list caps at this
 // number per post — user can scroll OR expand.
 const SAMPLES_PER_POST = 10;
 
+// Wrap shared accentForAdmin supaya ADMIN_ORDER tidak perlu di-pass tiap call.
 function accentForAdmin(name) {
-  const idx = ADMIN_ORDER.indexOf(name);
-  if (idx >= 0) return ADMIN_ACCENTS[idx % ADMIN_ACCENTS.length];
-  // Defensive fallback: unknown admin name — first palette entry. Avoids
-  // "Cannot read .hex of undefined" if a row's admin isn't in ADMIN_ORDER
-  // (e.g. legacy data, capitalization drift, future admin added).
-  return ADMIN_ACCENTS[0];
-}
-
-function monthLabel(key) {
-  // 'YYYY-MM' → 'Agustus 2026' (Indonesian, full month name). Simple cache.
-  const [y, m] = key.split('-').map(Number);
-  const names = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-  return `${names[m - 1] ?? '?'} ${y}`;
+  return accentForAdminShared(name, ADMIN_ORDER);
 }
 
 function shortDate(ms) {

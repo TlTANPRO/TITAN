@@ -14,30 +14,7 @@ import { PlatformIcon, platformLabel } from './icons/PlatformIcon.jsx';
 import { formatNumber, formatCompact } from '../lib/format.js';
 import { proxiedImage } from '../lib/imageProxy.js';
 import { fetchSocialContent } from '../lib/webAccess.js';
-
-// V27.2: token-based rank palette (V23: no raw Tailwind colors)
-const RANK_COLORS = [
-  'text-accent-warning',   // gold
-  'text-text-secondary',   // silver
-  'text-accent-secondary'  // bronze (purple)
-];
-
-function relativeTime(timestamp) {
-  if (!timestamp) return '';
-  const diff = Date.now() - timestamp;
-  const sec = Math.floor(diff / 1000);
-  if (sec < 60) return 'baru saja';
-  const min = Math.floor(sec / 60);
-  if (min < 60) return `${min}m lalu`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}j lalu`;
-  const day = Math.floor(hr / 24);
-  if (day < 7) return `${day}h lalu`;
-  const week = Math.floor(day / 7);
-  if (week < 5) return `${week}mgu lalu`;
-  const month = Math.floor(day / 30);
-  return `${month}bln lalu`;
-}
+import { RANK_COLORS, relativeTimeID } from '../lib/titan-tokens.js';
 
 export function ViralPostCard({ post, rank }) {
   // V27.8: defensive — post is normally an object, but the weekly recap can
@@ -144,7 +121,7 @@ export function ViralPostCard({ post, rank }) {
 
       <div className="flex items-center justify-between text-[11px] text-text-muted">
         <span title={platformLabel(safePost.platform)}>{platformLabel(safePost.platform)}</span>
-        <span>{relativeTime(safePost.timestamp)}</span>
+        <span>{relativeTimeID(safePost.timestamp)}</span>
       </div>
 
       <div className="grid grid-cols-3 gap-1 text-center text-xs">

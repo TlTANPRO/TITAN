@@ -9,25 +9,7 @@ import StatCard from '../StatCard.jsx';
 import { SectionHeader } from '../ui/SectionHeader.jsx';
 import { PlatformIcon } from '../icons/PlatformIcon.jsx';
 import { formatPercent, formatCompact } from '../../lib/format.js';
-
-// V24.3: V23 token-based tier colors (no raw Tailwind palette).
-// Map each tier to existing semantic accent tokens for consistency.
-const TIER_LABELS = {
-  viral: { label: 'Sangat Viral', color: 'text-accent-secondary', desc: '> 3× rata-rata' },
-  tinggi: { label: 'Performa Tinggi', color: 'text-accent-warning', desc: '1.5–3× rata-rata' },
-  bagus: { label: 'Performa Bagus', color: 'text-accent-success', desc: '0.75–1.5× rata-rata' },
-  rataRata: { label: 'Rata-rata', color: 'text-text-secondary', desc: '0.3–0.75× rata-rata' },
-  rendah: { label: 'Rendah', color: 'text-text-muted', desc: '< 0.3× rata-rata' }
-};
-
-// V24.3: health score colors via semantic tokens (no emerald/sky/yellow/orange/rose raw).
-function healthColor(score) {
-  if (score >= 80) return { bg: 'bg-accent-success/10', text: 'text-accent-success', border: 'border-accent-success/30' };
-  if (score >= 65) return { bg: 'bg-accent-primary/10', text: 'text-accent-primary', border: 'border-accent-primary/30' };
-  if (score >= 50) return { bg: 'bg-accent-warning/10', text: 'text-accent-warning', border: 'border-accent-warning/30' };
-  if (score >= 35) return { bg: 'bg-accent-warning/10', text: 'text-accent-warning', border: 'border-accent-warning/30' };
-  return { bg: 'bg-accent-danger/10', text: 'text-accent-danger', border: 'border-accent-danger/30' };
-}
+import { healthColor, TIER_LABELS } from '../../lib/titan-tokens.js';
 
 function HealthBar({ label, value }) {
   const safeValue = Number.isFinite(value) ? value : 0;

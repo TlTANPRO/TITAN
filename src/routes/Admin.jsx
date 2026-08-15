@@ -19,6 +19,7 @@ import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PlatformIcon, platformLabel } from '../components/icons/PlatformIcon.jsx';
 import { getAdminSummary, ADMIN_HASHTAGS } from '../lib/adminHashtags.js';
 import { formatNumber, formatDate } from '../lib/format.js';
+import { ADMIN_ACCENTS, MONTH_NAMES_ID, monthLabel } from '../lib/titan-tokens.js';
 import { KomentarAdmin } from '../components/admin/KomentarAdmin.jsx';
 
 // Responsive column visibility — same pattern as EnhancedTable so mobile
@@ -35,15 +36,6 @@ function adminInitials(name) {
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
-
-// 4 distinct accent colors. Julian moved from secondary (purple) to
-// instagram (pink) so he's visually distinct from Reni/Rifqi/Reta.
-const ADMIN_ACCENTS = [
-  { ring: 'ring-accent-primary',   text: 'text-accent-primary',   chip: 'bg-accent-primary/10 text-accent-primary border-accent-primary/30',   hex: '#3b82f6', bar: 'bg-accent-primary' },
-  { ring: 'ring-accent-success',   text: 'text-accent-success',   chip: 'bg-accent-success/10 text-accent-success border-accent-success/30',   hex: '#10b981', bar: 'bg-accent-success' },
-  { ring: 'ring-accent-warning',   text: 'text-accent-warning',   chip: 'bg-accent-warning/10 text-accent-warning border-accent-warning/30',   hex: '#f59e0b', bar: 'bg-accent-warning' },
-  { ring: 'ring-accent-instagram', text: 'text-accent-instagram', chip: 'bg-accent-instagram/10 text-accent-instagram border-accent-instagram/30', hex: '#E1306C', bar: 'bg-accent-instagram' }
-];
 
 function SortIcon({ active, dir }) {
   if (!active) return <ArrowUpDown className="w-3 h-3 opacity-30" />;
@@ -399,16 +391,7 @@ function listAvailableMonths(summary) {
   return [...set].sort().reverse();
 }
 
-// Format 'YYYY-MM' → 'Agustus 2026' (Indonesian month names).
-const MONTH_NAMES_ID = [
-  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-];
-function monthLabel(key) {
-  if (!key || key === 'all') return 'Semua Bulan';
-  const [y, m] = key.split('-');
-  return `${MONTH_NAMES_ID[Number(m) - 1]} ${y}`;
-}
+// monthLabel dipindah ke lib/titan-tokens.js (SSOT).
 
 // Build a sparkline series for one admin — last `days` days of post counts.
 // Empty days left as null so recharts skips the dot instead of showing zero.

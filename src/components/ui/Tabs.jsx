@@ -79,7 +79,7 @@ export function Tabs({ value, onChange, items, className = '' }) {
             {item.badge != null && (
               <span className={`text-xs px-1.5 py-0.5 rounded-full font-semibold tabular-nums ${
                 isActive ? 'bg-accent-primary/20 text-accent-primary' : 'bg-bg-tertiary text-text-secondary'
-              }`} aria-label={`${item.badge} items`}>
+              }`} aria-label={item.badgeLabel ?? `${item.badge} items`}>
                 {item.badge}
               </span>
             )}
