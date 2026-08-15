@@ -11,8 +11,12 @@
 // - This is the same trick used by Slackbot, LinkedInBot, Pinterestbot — any
 //   social-media unfurl UA returns a fresh, publicly fetchable og:image URL
 //
-// Cadence: run before each deploy. URLs valid 1-2 days. incremental.yml cron
+// Cadence: run before each deploy. URLs valid 1-2 days. daily-update.yml cron
 // runs this once per day at 23:00 WIB (16:00 UTC).
+//
+// CLI:
+//   node scrape-avatars.mjs          — default, skips files < 6 hours old
+//   node scrape-avatars.mjs --force  — re-download every account regardless of age
 //
 // Exit code 1 if any account fails — deploy halts before build.
 
@@ -20,6 +24,8 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ALL_ACCOUNTS } from './accounts.mjs';
+
+const FORCE = process.argv.includes('--force');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -148,14 +154,17 @@ async function processAccount(account) {
     } catch {}
   }
 
-  // Skip if already fresh (same day) — saves bandwidth on cron re-runs
-  try {
-    const stat = await fs.stat(outPath);
-    const ageMs = Date.now() - stat.mtimeMs;
-    if (ageMs < 6 * 60 * 60 * 1000) { // < 6 hours
-      return { slug: account.slug, ok: true, bytes: stat.size, skipped: true };
-    }
-  } catch {}
+  // Skip if already fresh (same day) — saves bandwidth on cron re-runs.
+  // `--force` overrides: always re-download (used by manual `scrape:avatar:force`).
+  if (!FORCE) {
+    try {
+      const stat = await fs.stat(outPath);
+      const ageMs = Date.now() - stat.mtimeMs;
+      if (ageMs < 6 * 60 * 60 * 1000) { // < 6 hours
+        return { slug: account.slug, ok: true, bytes: stat.size, skipped: true };
+      }
+    } catch {}
+  }
 
   const { bytes, contentType } = await downloadImage(imgUrl, outPath);
   return { slug: account.slug, ok: true, bytes, contentType };
