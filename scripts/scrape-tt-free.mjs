@@ -43,6 +43,39 @@ async function fetchTtVideoIdsViaDdg(username) {
   return [...ids];
 }
 
+// Bing-via-Jina fallback: returns extra video IDs when DDG short. Bing wraps
+// result URLs in `u=a1<base64url(target)>` redirect tokens; Jina-rendered Bing
+// markdown preserves these. Unreliable (CAPTCHA / rate-limit on underscore
+// handles triggers visual-search), but adds 1-4 IDs when it works. Tested
+// 2026-08-15 — works ~40% of queries, returns 0-4 IDs, never duplicates DDG.
+async function fetchTtVideoIdsViaBing(username) {
+  const q = `site:tiktok.com "${username}"`;
+  const proxyUrl = `${JINA_BASE}/https://www.bing.com/search?q=${encodeURIComponent(q)}&count=50&format=json`;
+  let text;
+  try {
+    const r = await fetchWithRetry(proxyUrl, {
+      headers: { 'Accept': 'application/json', 'X-Respond-With': 'json' },
+      signal: AbortSignal.timeout(20000)
+    }, { tag: `Jina-Bing@${username}`, maxAttempts: 1 });
+    text = await r.text();
+  } catch { return []; }
+  let j;
+  try { j = JSON.parse(text); } catch { return []; }
+  const md = j?.data?.content ?? '';
+  const ids = new Set();
+  // Bing encodes target URL as u=a1<base64url>; decode each, regex video ID.
+  const re = /u=a1([A-Za-z0-9_-]+)/g;
+  let m;
+  while ((m = re.exec(md)) !== null) {
+    try {
+      const decoded = Buffer.from(m[1], 'base64url').toString('utf8');
+      const idMatch = decoded.match(/tiktok\.com\/@[^\/]+\/video\/(\d{15,20})/);
+      if (idMatch) ids.add(idMatch[1]);
+    } catch {}
+  }
+  return [...ids];
+}
+
 // TikWM per-video enrichment (still works without CAPTCHA, weirdly).
 // Endpoint: https://www.tikwm.com/api/?url=https://www.tiktok.com/@user/video/<id>
 // Returns: { data: { id, title, create_time, digg_count, comment_count, share_count, play_count, ... } }
@@ -318,51 +351,67 @@ async function scrapeAccount(account) {
 
   // Search posts (best effort) — tiered fallback.
   // Tier A: DDG-via-Jina for video IDs + TikWM per-video for metrics.
-  //         DDG returns 1-5 IDs per query; enrich each via TikWM per-video.
+  //         DDG returns 1-12 IDs per query (verified majangmejeng=6, itsnisyananda=12).
+  // Tier A+: Bing-via-Jina as additive fallback (unreliable, 40% hit rate, 0-4 IDs).
   // Tier B: TikWM /feed/search via Jina (still mostly CAPTCHA-blocked, but cheap).
   // Tier C: bundled preservation (existing posts kept as-is).
   let videos = [];
   let source = 'bundled-preservation';
+  // Combine DDG + Bing IDs first, then dedup + enrich each via TikWM per-video.
+  const allIds = new Set();
   try {
-    const ids = await fetchTtVideoIdsViaDdg(username);
-    if (ids.length > 0) {
-      console.log(`  DDG-via-Jina: ${ids.length} video IDs`);
-      const enriched = [];
-      for (const id of ids) {
-        try {
-          const data = await enrichTtVideo(id, username);
-          if (data) {
-            const normalized = normalizeTtVideo({
-              video_id: data.id,
-              create_time: data.create_time,
-              title: data.title,
-              cover: data.cover,
-              origin_cover: data.origin_cover,
-              duration: data.duration,
-              play_count: data.play_count,
-              digg_count: data.digg_count,
-              comment_count: data.comment_count,
-              share_count: data.share_count,
-              collect_count: data.collect_count,
-              share_url: data.share_url ?? `https://www.tiktok.com/@${username}/video/${id}`,
-              music_info: data.music_info
-            });
-            if (normalized) enriched.push(normalized);
-          }
-        } catch (e) {
-          console.log(`  per-video enrich ${id} failed: ${e.message.slice(0, 60)}`);
-        }
-      }
-      if (enriched.length > 0) {
-        videos = enriched;
-        source = 'tikwm-per-video (via DDG-Jina)';
-        console.log(`  enriched ${enriched.length} videos via TikWM per-video`);
-      }
+    const ddgIds = await fetchTtVideoIdsViaDdg(username);
+    if (ddgIds.length > 0) {
+      console.log(`  DDG-via-Jina: ${ddgIds.length} video IDs`);
+      ddgIds.forEach((id) => allIds.add(id));
     } else {
-      console.log(`  DDG-Jina returned 0 IDs, falling through`);
+      console.log(`  DDG-Jina returned 0 IDs`);
     }
   } catch (e) {
     console.log(`  DDG-Jina failed: ${e.message.slice(0, 80)}`);
+  }
+  try {
+    const bingIds = await fetchTtVideoIdsViaBing(username);
+    if (bingIds.length > 0) {
+      const newIds = bingIds.filter((id) => !allIds.has(id));
+      console.log(`  Bing-via-Jina: ${bingIds.length} IDs (${newIds.length} new after DDG dedup)`);
+      bingIds.forEach((id) => allIds.add(id));
+    }
+  } catch (e) {
+    console.log(`  Bing-Jina skipped: ${e.message.slice(0, 60)}`);
+  }
+  if (allIds.size > 0) {
+    const enriched = [];
+    for (const id of allIds) {
+      try {
+        const data = await enrichTtVideo(id, username);
+        if (data) {
+          const normalized = normalizeTtVideo({
+            video_id: data.id,
+            create_time: data.create_time,
+            title: data.title,
+            cover: data.cover,
+            origin_cover: data.origin_cover,
+            duration: data.duration,
+            play_count: data.play_count,
+            digg_count: data.digg_count,
+            comment_count: data.comment_count,
+            share_count: data.share_count,
+            collect_count: data.collect_count,
+            share_url: data.share_url ?? `https://www.tiktok.com/@${username}/video/${id}`,
+            music_info: data.music_info
+          });
+          if (normalized) enriched.push(normalized);
+        }
+      } catch (e) {
+        console.log(`  per-video enrich ${id} failed: ${e.message.slice(0, 60)}`);
+      }
+    }
+    if (enriched.length > 0) {
+      videos = enriched;
+      source = allIds.size > 0 ? 'tikwm-per-video (via DDG-Jina + Bing-Jina)' : 'tikwm-per-video (via DDG-Jina)';
+      console.log(`  enriched ${enriched.length} videos via TikWM per-video`);
+    }
   }
 
   if (videos.length === 0) {
