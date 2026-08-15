@@ -87,7 +87,19 @@ async function main() {
   // FAIL LOUD kalau TIDAK ADA satupun akun produce post hari ini.
   // V32.4 detect per-scraper exit 2, tapi workflow swallow continue-on-error.
   // Step ini hard gate sebelum pre-flight validate → deploy abort cleanly.
+  //
+  // WEEKDAY-AWARE: Sunday full re-scrape legitimately produces zero fresh posts
+  // because it's a recount of bundled data, not new posts. On Sunday we WARN
+  // instead of fail, so weekly catch-up runs don't get stuck.
+  const isSunday = process.env.IS_SUNDAY === 'true' || new Date().getUTCDay() === 0;
+
   if (totalFreshPosts === 0) {
+    if (isSunday) {
+      console.log('');
+      console.log('::notice::Scrape health gate WARN (Sunday full re-scrape produced 0 fresh — likely all posts already in bundled data, no action)');
+      console.log('[scrape-health-check] SUNDAY: zero-fresh is expected for weekly re-scrape. Continuing.');
+      process.exit(0);
+    }
     console.error('');
     console.error('═══════════════════════════════════════════════════════════');
     console.error('  SCRAPE HEALTH CHECK FAILED');
@@ -101,7 +113,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log('[scrape-health-check] PASS — fresh data confirmed.');
+  console.log(`[scrape-health-check] PASS (${isSunday ? 'Sunday' : 'weekday'}) — fresh data confirmed.`);
   process.exit(0);
 }
 

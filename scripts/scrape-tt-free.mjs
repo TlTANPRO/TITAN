@@ -10,6 +10,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ACCOUNTS_TT } from './accounts.mjs';
+import { fetchWithRetry, HttpTerminalError } from './lib/http-retry.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = path.join(__dirname, 'scraped');
@@ -19,15 +20,14 @@ const TIKWM_BASE = 'https://www.tikwm.com/api';
 
 function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
-async function jinaGet(fullUrl) {
+async function jinaGet(fullUrl, tag = 'Jina') {
   // Jina reader: GET https://r.jina.ai/{url}
   const proxyUrl = `${JINA_BASE}/${fullUrl}`;
-  const res = await fetch(proxyUrl, {
+  const res = await fetchWithRetry(proxyUrl, {
     headers: { 'Accept': 'application/json', 'X-Respond-With': 'json' },
     signal: AbortSignal.timeout(30000)
-  });
+  }, { tag, maxAttempts: 3 });
   const text = await res.text();
-  if (!res.ok) throw new Error(`Jina HTTP ${res.status}: ${text.slice(0, 200)}`);
   let j;
   try { j = JSON.parse(text); } catch { throw new Error(`Jina returned non-JSON: ${text.slice(0, 200)}`); }
   // Jina wraps: { code, status, data: { content, ... } }
@@ -39,7 +39,7 @@ async function jinaGet(fullUrl) {
 
 async function getProfile(uniqueId) {
   const url = `${TIKWM_BASE}/user/info?unique_id=${encodeURIComponent(uniqueId)}`;
-  const j = await jinaGet(url);
+  const j = await jinaGet(url, `Jina-TT-profile@${uniqueId}`);
   if (j.code !== 0) throw new Error(`TikWM error: ${j.msg}`);
   const u = j.data.user;
   const s = j.data.stats;
@@ -71,12 +71,11 @@ async function getProfile(uniqueId) {
 async function getProfileJina(uniqueId) {
   const url = `https://www.tiktok.com/@${uniqueId}`;
   const proxyUrl = `${JINA_BASE}/${url}`;
-  const r = await fetch(proxyUrl, {
+  const r = await fetchWithRetry(proxyUrl, {
     headers: { 'Accept': 'application/json', 'X-Respond-With': 'json' },
     signal: AbortSignal.timeout(20000)
-  });
+  }, { tag: `Jina-TT-web@${uniqueId}`, maxAttempts: 3 });
   const text = await r.text();
-  if (!r.ok) throw new Error(`Jina HTTP ${r.status}: ${text.slice(0, 200)}`);
   let j;
   try { j = JSON.parse(text); } catch { throw new Error(`Jina non-JSON: ${text.slice(0, 200)}`); }
   const c = j?.data?.content;
@@ -127,7 +126,7 @@ async function searchVideos(keyword, maxPages = 3) {
   for (let p = 0; p < maxPages && hasMore; p++) {
     const url = `${TIKWM_BASE}/feed/search?keywords=${encodeURIComponent(keyword)}&count=30&cursor=${cursor}&web=1`;
     let j;
-    try { j = await jinaGet(url); } catch (e) {
+    try { j = await jinaGet(url, `Jina-TT-search@${keyword}`); } catch (e) {
       console.log(`  search page ${p+1} failed: ${e.message.slice(0, 60)}`);
       break;
     }

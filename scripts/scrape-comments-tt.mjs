@@ -11,6 +11,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { fetchWithRetry, HttpTerminalError, sleep } from './lib/http-retry.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SCRAPED_DIR = path.join(__dirname, 'scraped');
@@ -34,18 +35,13 @@ function detectAdmin(text) {
   return null;
 }
 
-async function sleep(ms) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
 async function fetchTikwmComments(videoId) {
   const url = `https://www.tikwm.com/api/comment/list?url=${encodeURIComponent(`https://www.tiktok.com/@x/video/${videoId}`)}&count=50`;
   try {
-    const res = await fetch(url, {
+    const res = await fetchWithRetry(url, {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; TITAN-Scraper/1.0)' },
       signal: AbortSignal.timeout(15000)
-    });
-    if (!res.ok) return { ok: false, error: `HTTP ${res.status}` };
+    }, { tag: `TikWM-Cmt@${videoId}`, maxAttempts: 3 });
     const data = await res.json();
     if (data?.code !== 0) return { ok: false, error: `tikwm code=${data?.code} msg=${data?.msg || 'n/a'}` };
     const list = data?.data?.comments ?? [];
