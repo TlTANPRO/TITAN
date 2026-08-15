@@ -148,7 +148,7 @@ async function main() {
   // Previously matched by .endsWith('.json') → cross-file dedup treated backup
   // + current as duplicate → all posts deleted from current scraped.
   // See DATA-SSOT.md "Sub-Plan A.1" for incident report.
-  const files = (await fs.readdir(SCRAPED_DIR)).filter((f) => f.endsWith('.json') && !f.includes('.backup-'));
+  const files = (await fs.readdir(SCRAPED_DIR)).filter((f) => f.endsWith('.json') && !f.includes('.backup-') && !f.startsWith('comments-'));
   console.log(`Found ${files.length} scraped files\n`);
 
   // Step 1: Load semua file, validate schema, dedupe per-file

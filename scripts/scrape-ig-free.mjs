@@ -182,17 +182,27 @@ async function getAllPosts(slug, userId) {
 }
 
 // Merge existing scraped data with new free-scrape data.
+// V34.14: key by shortcode (with id fallback) because i.instagram.com returns
+// two different id formats for the same post:
+//   - /clips/user/  → id = "3940192545837702711" (numeric)
+//   - /feed/user/   → id = "3940192545837702711_3292893687" (composite)
+// Same shortcode, different id → key-by-id created 158+ duplicate posts per
+// account. Verifying: e.g. DauYD6RTF43 appears with both ids in the same
+// scraped file merge. Key by shortcode instead — shortcode is the stable
+// IG post identifier (same as instagram.com/p/{shortcode}/).
 function mergePosts(existingPosts, newPosts) {
-  const byId = new Map();
+  const byKey = new Map();
+  const keyFor = (p) => p?.shortcode ? `sc:${p.shortcode}` : (p?.id ? `id:${String(p.id)}` : null);
   for (const p of existingPosts || []) {
-    if (p?.id) byId.set(String(p.id), { ...p });
+    const k = keyFor(p);
+    if (k) byKey.set(k, { ...p });
   }
   let addedCount = 0;
   let upgradedCount = 0;
   for (const np of newPosts) {
-    if (!np?.id) continue;
-    const key = String(np.id);
-    const existing = byId.get(key);
+    const key = keyFor(np);
+    if (!key) continue;
+    const existing = byKey.get(key);
     if (!existing) {
       // Derive hashtags/mentions for new posts
       const enriched = {
@@ -200,7 +210,7 @@ function mergePosts(existingPosts, newPosts) {
         hashtags: np.hashtags || extractHashtags(np.caption),
         mentions: np.mentions || extractMentions(np.caption)
       };
-      byId.set(key, enriched);
+      byKey.set(key, enriched);
       addedCount++;
     } else {
       let changed = false;
@@ -220,7 +230,7 @@ function mergePosts(existingPosts, newPosts) {
       if (changed) upgradedCount++;
     }
   }
-  const merged = Array.from(byId.values());
+  const merged = Array.from(byKey.values());
   merged.sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0));
   return { merged, addedCount, upgradedCount };
 }
