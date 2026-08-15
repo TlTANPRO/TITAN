@@ -5,8 +5,8 @@
 ## Live site (cek DULU sebelum claim apapun)
 
 - **URL**: https://tltanpro.github.io/TITAN/
-- **Bundle hash**: `vite-index.template-VWdhWVHp.js` (cek `curl -s https://tltanpro.github.io/TITAN/ | grep -oE "assets/vite-index.template-[A-Za-z0-9]+\.js"`)
-- **Data live**: `accounts-full.json` (root) = 9 akun, ~4134 posts, 2 cross-dup
+- **Bundle hash**: `vite-index.template-BrpFW5aO.js` + Admin chunk `Admin-BgnHIZw2.js` (cek `curl -s https://tltanpro.github.io/TITAN/ | grep -oE "vite-index.template-[A-Za-z0-9]+\.js" | head -1`)
+- **Data live**: `accounts-full.json` (root) = 9 akun, 3999 posts, 0 cross-dup
 - **Deploy**: `pnpm run deploy` (lokal) — build + copy dist→root + git commit + push
 - **Backup**: user harus run `pnpm run deploy` (V25 lesson)
 
@@ -20,9 +20,10 @@
 
 Memory pointers di `~/.claude/projects/C--Users-Syahfalah/memory/MEMORY.md`. **WAJIB baca**:
 
-1. `project-titan-v25-shipped.md` — 8 user feedback categories (Bot icon → Lightbulb, AI text removal, postingCadence IQR, dll)
-2. `project-titan-v28-chatpanel-workflow-fix.md` — VITE_LLM_PROXY_URL workflow fix
-3. `feedback-titan-audit-contract-v1.md` — **7 PRINSIP AUDIT** (WAJIB, baca di bawah)
+1. `feedback-titan-audit-contract-v1.md` — **7 PRINSIP AUDIT** (WAJIB, baca di bawah)
+2. `project-titan-v33.3-cross-platform-kpi.md` — **CURRENT V33.5** (caption-bucket dedup, formula fix, monthly picker, header cleanup)
+3. `project-titan-v32.4-silent-zero-new.md` — rebase + deploy CLOBBERS accounts-full.json lesson
+4. `titan-v23-design-skill.md` — design rules (5-axis matrix, surface ladder, no hover-scale)
 
 ## 7 Prinsip Audit (WAJIB apply)
 
@@ -87,4 +88,4 @@ git status --short
 - E2E test GitHub Actions (act tool)
 - Per-account post-floor check
 
-Lihat [[project-titan-v25-shipped]] + [[feedback-titan-audit-contract-v1]] + [[titan-v29-audit-cancelled]] untuk full context.
+Lihat [[project-titan-v25-shipped]] + [[feedback-titan-audit-contract-v1]] + [[project-titan-v29-history]] untuk full context.

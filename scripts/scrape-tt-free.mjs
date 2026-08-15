@@ -10,6 +10,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ACCOUNTS_TT } from './accounts.mjs';
+import { fetchWithRetry, HttpTerminalError } from './lib/http-retry.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = path.join(__dirname, 'scraped');
@@ -19,15 +20,84 @@ const TIKWM_BASE = 'https://www.tikwm.com/api';
 
 function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
-async function jinaGet(fullUrl) {
+// DDG-via-Jina: returns list of recent video IDs for a username via DuckDuckGo
+// videos tab. Jina's HTML render preserves tiktok.com/@user/video/<19digit> links
+// in the search results. Returns 1-5 IDs per query (DDG limits free captures).
+// Used to feed TikWM per-video enrich (which doesn't need auth, just a video URL).
+async function fetchTtVideoIdsViaDdg(username) {
+  const q = `site:tiktok.com "${username}"`;
+  const proxyUrl = `${JINA_BASE}/https://duckduckgo.com/?q=${encodeURIComponent(q)}&ia=videos&iax=videos`;
+  const r = await fetchWithRetry(proxyUrl, {
+    headers: { 'Accept': 'application/json', 'X-Respond-With': 'json' },
+    signal: AbortSignal.timeout(20000)
+  }, { tag: `Jina-DDG@${username}`, maxAttempts: 2 });
+  const text = await r.text();
+  let j;
+  try { j = JSON.parse(text); } catch { throw new Error(`Jina non-JSON (DDG): ${text.slice(0, 200)}`); }
+  const c = j?.data?.content ?? '';
+  // Extract user-scoped video IDs only: tiktok.com/@<username>/video/<digits>
+  const re = new RegExp(`tiktok\\.com/@${username.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')}/video/(\\d{15,20})`, 'g');
+  const ids = new Set();
+  let m;
+  while ((m = re.exec(c)) !== null) ids.add(m[1]);
+  return [...ids];
+}
+
+// Bing-via-Jina fallback: returns extra video IDs when DDG short. Bing wraps
+// result URLs in `u=a1<base64url(target)>` redirect tokens; Jina-rendered Bing
+// markdown preserves these. Unreliable (CAPTCHA / rate-limit on underscore
+// handles triggers visual-search), but adds 1-4 IDs when it works. Tested
+// 2026-08-15 — works ~40% of queries, returns 0-4 IDs, never duplicates DDG.
+async function fetchTtVideoIdsViaBing(username) {
+  const q = `site:tiktok.com "${username}"`;
+  const proxyUrl = `${JINA_BASE}/https://www.bing.com/search?q=${encodeURIComponent(q)}&count=50&format=json`;
+  let text;
+  try {
+    const r = await fetchWithRetry(proxyUrl, {
+      headers: { 'Accept': 'application/json', 'X-Respond-With': 'json' },
+      signal: AbortSignal.timeout(20000)
+    }, { tag: `Jina-Bing@${username}`, maxAttempts: 1 });
+    text = await r.text();
+  } catch { return []; }
+  let j;
+  try { j = JSON.parse(text); } catch { return []; }
+  const md = j?.data?.content ?? '';
+  const ids = new Set();
+  // Bing encodes target URL as u=a1<base64url>; decode each, regex video ID.
+  const re = /u=a1([A-Za-z0-9_-]+)/g;
+  let m;
+  while ((m = re.exec(md)) !== null) {
+    try {
+      const decoded = Buffer.from(m[1], 'base64url').toString('utf8');
+      const idMatch = decoded.match(/tiktok\.com\/@[^\/]+\/video\/(\d{15,20})/);
+      if (idMatch) ids.add(idMatch[1]);
+    } catch {}
+  }
+  return [...ids];
+}
+
+// TikWM per-video enrichment (still works without CAPTCHA, weirdly).
+// Endpoint: https://www.tikwm.com/api/?url=https://www.tiktok.com/@user/video/<id>
+// Returns: { data: { id, title, create_time, digg_count, comment_count, share_count, play_count, ... } }
+async function enrichTtVideo(videoId, username) {
+  const url = `${TIKWM_BASE}/?url=${encodeURIComponent(`https://www.tiktok.com/@${username}/video/${videoId}`)}`;
+  const r = await fetchWithRetry(url, {
+    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' },
+    signal: AbortSignal.timeout(20000)
+  }, { tag: `TikWM-perVideo@${videoId}`, maxAttempts: 3 });
+  const j = await r.json();
+  if (j.code !== 0 || !j.data) return null;
+  return j.data;
+}
+
+async function jinaGet(fullUrl, tag = 'Jina') {
   // Jina reader: GET https://r.jina.ai/{url}
   const proxyUrl = `${JINA_BASE}/${fullUrl}`;
-  const res = await fetch(proxyUrl, {
+  const res = await fetchWithRetry(proxyUrl, {
     headers: { 'Accept': 'application/json', 'X-Respond-With': 'json' },
     signal: AbortSignal.timeout(30000)
-  });
+  }, { tag, maxAttempts: 3 });
   const text = await res.text();
-  if (!res.ok) throw new Error(`Jina HTTP ${res.status}: ${text.slice(0, 200)}`);
   let j;
   try { j = JSON.parse(text); } catch { throw new Error(`Jina returned non-JSON: ${text.slice(0, 200)}`); }
   // Jina wraps: { code, status, data: { content, ... } }
@@ -39,7 +109,7 @@ async function jinaGet(fullUrl) {
 
 async function getProfile(uniqueId) {
   const url = `${TIKWM_BASE}/user/info?unique_id=${encodeURIComponent(uniqueId)}`;
-  const j = await jinaGet(url);
+  const j = await jinaGet(url, `Jina-TT-profile@${uniqueId}`);
   if (j.code !== 0) throw new Error(`TikWM error: ${j.msg}`);
   const u = j.data.user;
   const s = j.data.stats;
@@ -71,12 +141,11 @@ async function getProfile(uniqueId) {
 async function getProfileJina(uniqueId) {
   const url = `https://www.tiktok.com/@${uniqueId}`;
   const proxyUrl = `${JINA_BASE}/${url}`;
-  const r = await fetch(proxyUrl, {
+  const r = await fetchWithRetry(proxyUrl, {
     headers: { 'Accept': 'application/json', 'X-Respond-With': 'json' },
     signal: AbortSignal.timeout(20000)
-  });
+  }, { tag: `Jina-TT-web@${uniqueId}`, maxAttempts: 3 });
   const text = await r.text();
-  if (!r.ok) throw new Error(`Jina HTTP ${r.status}: ${text.slice(0, 200)}`);
   let j;
   try { j = JSON.parse(text); } catch { throw new Error(`Jina non-JSON: ${text.slice(0, 200)}`); }
   const c = j?.data?.content;
@@ -127,7 +196,7 @@ async function searchVideos(keyword, maxPages = 3) {
   for (let p = 0; p < maxPages && hasMore; p++) {
     const url = `${TIKWM_BASE}/feed/search?keywords=${encodeURIComponent(keyword)}&count=30&cursor=${cursor}&web=1`;
     let j;
-    try { j = await jinaGet(url); } catch (e) {
+    try { j = await jinaGet(url, `Jina-TT-search@${keyword}`); } catch (e) {
       console.log(`  search page ${p+1} failed: ${e.message.slice(0, 60)}`);
       break;
     }
@@ -280,19 +349,84 @@ async function scrapeAccount(account) {
     }
   }
 
-  // Search posts (best effort)
+  // Search posts (best effort) — tiered fallback.
+  // Tier A: DDG-via-Jina for video IDs + TikWM per-video for metrics.
+  //         DDG returns 1-12 IDs per query (verified majangmejeng=6, itsnisyananda=12).
+  // Tier A+: Bing-via-Jina as additive fallback (unreliable, 40% hit rate, 0-4 IDs).
+  // Tier B: TikWM /feed/search via Jina (still mostly CAPTCHA-blocked, but cheap).
+  // Tier C: bundled preservation (existing posts kept as-is).
   let videos = [];
+  let source = 'bundled-preservation';
+  // Combine DDG + Bing IDs first, then dedup + enrich each via TikWM per-video.
+  const allIds = new Set();
   try {
-    console.log(`  searching via TikWM /feed/search...`);
-    const raw = await searchVideos(username, 3);
-    // Filter: keep only videos by this user
-    videos = raw
-      .filter((v) => v.author?.unique_id === username)
-      .map(normalizeTtVideo)
-      .filter(Boolean);
-    console.log(`  got ${raw.length} search results, ${videos.length} by @${username}`);
+    const ddgIds = await fetchTtVideoIdsViaDdg(username);
+    if (ddgIds.length > 0) {
+      console.log(`  DDG-via-Jina: ${ddgIds.length} video IDs`);
+      ddgIds.forEach((id) => allIds.add(id));
+    } else {
+      console.log(`  DDG-Jina returned 0 IDs`);
+    }
   } catch (e) {
-    console.log(`  search skipped: ${e.message.slice(0, 80)}`);
+    console.log(`  DDG-Jina failed: ${e.message.slice(0, 80)}`);
+  }
+  try {
+    const bingIds = await fetchTtVideoIdsViaBing(username);
+    if (bingIds.length > 0) {
+      const newIds = bingIds.filter((id) => !allIds.has(id));
+      console.log(`  Bing-via-Jina: ${bingIds.length} IDs (${newIds.length} new after DDG dedup)`);
+      bingIds.forEach((id) => allIds.add(id));
+    }
+  } catch (e) {
+    console.log(`  Bing-Jina skipped: ${e.message.slice(0, 60)}`);
+  }
+  if (allIds.size > 0) {
+    const enriched = [];
+    for (const id of allIds) {
+      try {
+        const data = await enrichTtVideo(id, username);
+        if (data) {
+          const normalized = normalizeTtVideo({
+            video_id: data.id,
+            create_time: data.create_time,
+            title: data.title,
+            cover: data.cover,
+            origin_cover: data.origin_cover,
+            duration: data.duration,
+            play_count: data.play_count,
+            digg_count: data.digg_count,
+            comment_count: data.comment_count,
+            share_count: data.share_count,
+            collect_count: data.collect_count,
+            share_url: data.share_url ?? `https://www.tiktok.com/@${username}/video/${id}`,
+            music_info: data.music_info
+          });
+          if (normalized) enriched.push(normalized);
+        }
+      } catch (e) {
+        console.log(`  per-video enrich ${id} failed: ${e.message.slice(0, 60)}`);
+      }
+    }
+    if (enriched.length > 0) {
+      videos = enriched;
+      source = allIds.size > 0 ? 'tikwm-per-video (via DDG-Jina + Bing-Jina)' : 'tikwm-per-video (via DDG-Jina)';
+      console.log(`  enriched ${enriched.length} videos via TikWM per-video`);
+    }
+  }
+
+  if (videos.length === 0) {
+    try {
+      console.log(`  trying TikWM /feed/search via Jina...`);
+      const raw = await searchVideos(username, 3);
+      videos = raw
+        .filter((v) => v.author?.unique_id === username)
+        .map(normalizeTtVideo)
+        .filter(Boolean);
+      if (videos.length > 0) source = 'tikwm feed/search (via Jina)';
+      console.log(`  got ${raw.length} search results, ${videos.length} by @${username}`);
+    } catch (e) {
+      console.log(`  search skipped: ${e.message.slice(0, 80)}`);
+    }
   }
 
   await sleep(DELAY_MS);
@@ -329,7 +463,7 @@ async function scrapeAccount(account) {
       durationMs: Date.now() - startTime,
       isDummy: false,
       enriched: true,
-      enrichmentSource: 'tikwm.com (via Jina proxy)',
+      enrichmentSource: source,
       newPostsAdded: addedCount,
       metricsUpgraded: upgradedCount
     }
@@ -350,7 +484,14 @@ async function main() {
     if (onlySlug && account.slug !== onlySlug) continue;
     try {
       const r = await scrapeAccount(account);
-      results.push({ slug: account.slug, ok: true, total: r.posts.length, added: r.stats?.newPostsAdded ?? 0 });
+      results.push({
+        slug: account.slug,
+        ok: true,
+        total: r.posts.length,
+        added: r.stats?.newPostsAdded ?? 0,
+        upgraded: r.stats?.metricsUpgraded ?? 0,
+        source: r.stats?.enrichmentSource ?? 'unknown'
+      });
     } catch (err) {
       console.error(`[TT-FREE] @${account.username} — FAILED: ${err.message}`);
       results.push({ slug: account.slug, ok: false, error: err.message });
@@ -360,16 +501,15 @@ async function main() {
   console.log(`\n=== TT-FREE SCRAPE COMPLETE ===`);
   console.log('Results:', JSON.stringify(results, null, 2));
   const failed = results.filter((r) => !r.ok);
-  // V32.4: detect silent zero-new scrape (Jina or TikWM returned empty for
-  // every account — usually means search endpoint blocked / account private).
-  // Don't fail the whole run, but warn loudly and exit non-zero so
-  // daily-update.yml surfaces the problem instead of silently deploying
-  // yesterday's data again.
+  // V32.4: detect silent zero-new scrape. UPGRADED this to consider metric
+  // upgrades: if DDG-Jina found video IDs and TikWM per-video enriched them,
+  // that's a real refresh (likes/comments/views bumped). Only exit-2 when
+  // ALL accounts returned 0 new AND 0 upgraded — truly no signal at all.
   const okResults = results.filter((r) => r.ok);
-  const zeroNew = okResults.filter((r) => (r.added ?? 0) === 0).length;
-  if (okResults.length > 0 && zeroNew === okResults.length) {
-    console.log(`\n⚠️  V32.4: ${zeroNew}/${okResults.length} TT account(s) returned 0 new posts.`);
-    console.log(`   Likely cause: Jina / TikWM /feed/search blocked or rate-limited.`);
+  const totallySilent = okResults.filter((r) => (r.added ?? 0) === 0 && (r.upgraded ?? 0) === 0).length;
+  if (okResults.length > 0 && totallySilent === okResults.length) {
+    console.log(`\n⚠️  V32.4: ${totallySilent}/${okResults.length} TT account(s) returned 0 new posts AND 0 metric upgrades.`);
+    console.log(`   Likely cause: Jina / TikWM / DDG all blocked or rate-limited.`);
     console.log(`   Existing data preserved, but today's deploy has the SAME posts as yesterday.`);
     process.exit(2);
   }
