@@ -156,6 +156,23 @@ jobs:
         run: |
           echo "::notice::TT scrape outcome=${{ steps.scrape-tt.outcome }}"
 
+      # ============== V34: URLEBIRD TT SCRAPER (primary) ==============
+      # Old DDG/Bing discovery went stale up to 2 months (verified 2026-08-23).
+      # Urlebird via Jina returns the 20 latest videos per account with exact
+      # snowflake timestamps + full stats. Append-only merge, id-deduped.
+      - name: Scrape TikTok via Urlebird (V34)
+        if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '' }}
+        run: |
+          echo "Urlebird TT scrape (V34: profile listing + detail stats)"
+          node scripts/scrape-tt-urlebird.mjs || echo "::warning::Urlebird TT scrape failed — old data kept"
+        continue-on-error: true
+        id: scrape-tt-urlebird
+
+      - name: Log Urlebird TT scrape result
+        if: always() && steps.scrape-tt-urlebird.outcome != 'skipped'
+        run: |
+          echo "::notice::TT Urlebird scrape outcome=${{ steps.scrape-tt-urlebird.outcome }}"
+
       # ============== ADMIN COMMENTS PHASE (fail soft) ==============
       # V34.9: scrape comments left by our admins (Reni/Rifqi/Reta/Julian) on
       # their own posts and on other people's posts. Targets majangmejeng_
@@ -235,6 +252,14 @@ jobs:
       - name: Scrape fresh avatars
         if: success()
         run: node scripts/scrape-avatars.mjs
+        continue-on-error: true
+
+      # V34: REAL IG avatars via embed-page chain (og:image chain grabs the
+      # generic IG logo placeholder — verified bug). Validated: JPEG/PNG only,
+      # unique hash per account, owner-pic matched by known media-id.
+      - name: Scrape real IG avatars (V34)
+        if: success()
+        run: node scripts/scrape-avatars-ig.mjs || echo "::warning::IG avatar scrape failed — old avatars kept"
         continue-on-error: true
 
       - name: Generate AI insights (optional, fail soft)
