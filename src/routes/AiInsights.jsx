@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { Lightbulb, Sparkles, TrendingUp, FileText, Calendar, AlertCircle } from 'lucide-react';
 import { useAccounts } from '../hooks/useAccount.js';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
+import { PageHeader } from '../components/layout/PageHeader.jsx';
 import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
 import { Tabs } from '../components/ui/Tabs.jsx';
@@ -65,40 +66,18 @@ export default function AiInsights() {
 
   return (
     <div className="p-4 md:p-6 space-y-4 max-w-7xl mx-auto">
-      <h1 className="sr-only">Insight & Rekomendasi</h1>
-      <div>
-        <h2 className="text-2xl font-semibold text-text-primary flex items-center gap-2">
-          <Lightbulb className="w-6 h-6 text-accent-primary" aria-hidden="true" />
-          Insight & Rekomendasi
-        </h2>
-        <p className="text-sm text-text-muted mt-0.5 flex items-center gap-2 flex-wrap">
-          {meta.generatedAt ? (
-            <>
-              <span>
-                Tersimpan lokal · {new Date(meta.generatedAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
-              </span>
-              {age != null && (
-                <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                  isStale
-                    ? 'bg-accent-warning/15 text-accent-warning border border-accent-warning/30'
-                    : 'bg-bg-tertiary text-text-muted'
-                }`}>
-                  {isStale && <AlertCircle className="w-3 h-3" aria-hidden="true" />}
-                  {age === 0 ? 'hari ini' : `${age} hari lalu`}
-                </span>
-              )}
-              <span>· {meta.accountCount} akun</span>
-            </>
-          ) : (
-            'Belum ada insight yang tersimpan'
-          )}
+      <PageHeader
+        icon={Lightbulb}
+        title="Insight & Rekomendasi"
+        subtitle={meta.generatedAt
+          ? `Tersimpan lokal · ${new Date(meta.generatedAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })} · ${meta.accountCount} akun`
+          : 'Belum ada insight yang tersimpan'}
+      />
+      {isStale && (
+        <p className="text-xs text-accent-warning -mt-2">
+          Insight sudah {age} hari. Jalankan `pnpm insights:generate` untuk refresh.
         </p>
-        {isStale && (
-          <p className="text-xs text-accent-warning mt-1">
-            Insight sudah {age} hari. Jalankan `pnpm insights:generate` untuk refresh.
-          </p>
-        )}
-      </div>
+      )}
 
       {/* Tabs (shared, ARIA-compliant) */}
       <Tabs value={activeTab} onChange={setActiveTab} items={tabItems} />

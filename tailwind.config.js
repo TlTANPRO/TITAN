@@ -9,7 +9,8 @@ export default {
           primary: '#0a0a0a',
           secondary: '#141414',
           tertiary: '#1f1f1f',
-          elevated: '#262626'
+          elevated: '#262626',
+          hover: '#2a2a2a'
         },
         text: {
           primary: '#fafafa',
@@ -18,6 +19,8 @@ export default {
         },
         accent: {
           primary: '#3b82f6',
+          'primary-hover': '#2563eb',
+          brand: '#f59e0b',
           success: '#10b981',
           warning: '#f59e0b',
           danger: '#ef4444',

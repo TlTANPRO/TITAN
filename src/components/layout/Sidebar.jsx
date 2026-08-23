@@ -1,6 +1,6 @@
-// V21: Sidebar — persistent navigation. Inspired by vue-element-admin + Strapi.
-// Collapsible to icon-only at <1024px. Active route highlighted.
-// Badge support for items needing attention (e.g. "akun perlu enrichment").
+// V34: Sidebar — persistent navigation dengan grouped nav (design-system audit:
+// 8 item flat → 3 grup bermakna). Collapsible to icon-only at <1024px.
+// Groups: Analitik (data exploration) · Intelijen (AI) · Operasional (admin+settings).
 import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -8,15 +8,31 @@ import {
   UserCog, ChevronLeft, ChevronRight, X
 } from 'lucide-react';
 
-const NAV_ITEMS = [
-  { to: '/', label: 'Home', icon: Home, exact: true },
-  { to: '/account', label: 'Akun', icon: Users },
-  { to: '/compare', label: 'Bandingkan', icon: GitCompareArrows },
-  { to: '/calendar', label: 'Kalender', icon: CalIcon },
-  { to: '/library', label: 'Library', icon: Library },
-  { to: '/ai', label: 'Insight', icon: Sparkles },
-  { to: '/settings', label: 'Settings', icon: Settings },
-  { to: '/admin', label: 'Admin', icon: UserCog }
+// V34: grouped navigation — label grup uppercase kecil, hanya tampil saat expanded.
+const NAV_GROUPS = [
+  {
+    label: 'Analitik',
+    items: [
+      { to: '/', label: 'Home', icon: Home, exact: true },
+      { to: '/account', label: 'Akun', icon: Users },
+      { to: '/compare', label: 'Bandingkan', icon: GitCompareArrows },
+      { to: '/calendar', label: 'Kalender', icon: CalIcon },
+      { to: '/library', label: 'Library', icon: Library }
+    ]
+  },
+  {
+    label: 'Intelijen',
+    items: [
+      { to: '/ai', label: 'Insight', icon: Sparkles }
+    ]
+  },
+  {
+    label: 'Operasional',
+    items: [
+      { to: '/admin', label: 'Admin', icon: UserCog },
+      { to: '/settings', label: 'Settings', icon: Settings }
+    ]
+  }
 ];
 
 const STORAGE_KEY = 'titan.sidebar.collapsed.v1';
@@ -40,6 +56,46 @@ export function Sidebar({ limitedCount = 0 }) {
 
   const width = collapsed ? 'w-16' : 'w-56';
 
+  const renderItem = (item) => {
+    const Icon = item.icon;
+    const badge = item.to === '/account' && limitedCount > 0 ? limitedCount : null;
+    return (
+      <NavLink
+        key={item.to}
+        to={item.to}
+        end={item.exact}
+        title={collapsed ? item.label : undefined}
+        className={({ isActive }) => `
+          group relative flex items-center gap-3 ${collapsed ? 'justify-center' : ''}
+          px-3 py-2 rounded-md text-sm font-medium
+          transition-colors duration-fast
+          ${isActive
+            ? 'bg-accent-primary/10 text-accent-primary'
+            : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
+          }
+        `}
+      >
+        {({ isActive }) => (
+          <>
+            {isActive && (
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-accent-primary" />
+            )}
+            <Icon className="w-4 h-4 flex-shrink-0" />
+            {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
+            {!collapsed && badge != null && (
+              <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-accent-warning/20 text-accent-warning">
+                {badge}
+              </span>
+            )}
+            {collapsed && badge != null && (
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-accent-warning" />
+            )}
+          </>
+        )}
+      </NavLink>
+    );
+  };
+
   return (
     <>
       {/* Mobile backdrop */}
@@ -60,79 +116,51 @@ export function Sidebar({ limitedCount = 0 }) {
         `}
         aria-label="Main navigation"
       >
-        {/* Logo + collapse button */}
+        {/* Logo + collapse button — V34: logo mark pakai brand accent */}
         <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between'} px-3 py-4 border-b border-border-subtle`}>
           {!collapsed && (
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-md bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center text-white font-bold text-sm">T</div>
+              <div className="w-7 h-7 rounded-md bg-accent-brand flex items-center justify-center text-white font-bold text-sm">T</div>
               <span className="font-bold text-sm tracking-tight text-text-primary">TITAN</span>
             </div>
           )}
           {collapsed && (
-            <div className="w-7 h-7 rounded-md bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center text-white font-bold text-sm">T</div>
+            <div className="w-7 h-7 rounded-md bg-accent-brand flex items-center justify-center text-white font-bold text-sm">T</div>
           )}
           <button
             onClick={() => setCollapsed((v) => !v)}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            className={`hidden lg:flex items-center justify-center w-6 h-6 rounded text-text-muted hover:text-text-primary hover:bg-bg-tertiary ${collapsed ? '' : ''}`}
+            className={`hidden lg:flex items-center justify-center w-6 h-6 rounded text-text-muted hover:text-text-primary hover:bg-bg-tertiary`}
           >
             {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
           </button>
         </div>
 
-        {/* Nav items */}
-        <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon;
-            const badge = item.to === '/account' && limitedCount > 0 ? limitedCount : null;
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.exact}
-                title={collapsed ? item.label : undefined}
-                className={({ isActive }) => `
-                  group relative flex items-center gap-3 ${collapsed ? 'justify-center' : ''}
-                  px-3 py-2 rounded-md text-sm font-medium
-                  transition-colors duration-fast
-                  ${isActive
-                    ? 'bg-accent-primary/10 text-accent-primary'
-                    : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
-                  }
-                `}
-              >
-                {({ isActive }) => (
-                  <>
-                    {isActive && (
-                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-accent-primary" />
-                    )}
-                    <Icon className="w-4 h-4 flex-shrink-0" />
-                    {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
-                    {!collapsed && badge != null && (
-                      <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-accent-warning/20 text-accent-warning">
-                        {badge}
-                      </span>
-                    )}
-                    {collapsed && badge != null && (
-                      <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-accent-warning" />
-                    )}
-                  </>
-                )}
-              </NavLink>
-            );
-          })}
+        {/* V34: grouped nav */}
+        <nav className="flex-1 overflow-y-auto p-2 space-y-3" aria-label="Grup navigasi">
+          {NAV_GROUPS.map((group) => (
+            <div key={group.label}>
+              {!collapsed && (
+                <div className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-text-muted select-none">
+                  {group.label}
+                </div>
+              )}
+              {collapsed && <div className="mx-3 mb-1 border-t border-border-subtle" aria-hidden="true" />}
+              <div className="space-y-0.5">{group.items.map(renderItem)}</div>
+            </div>
+          ))}
         </nav>
 
         {/* Footer version */}
         {!collapsed && (
           <div className="px-3 py-2 border-t border-border-subtle text-[10px] text-text-muted">
-            <div>TITAN V21.0</div>
+            <div>TITAN V34</div>
             <div className="mt-0.5">Marketing Intelligence</div>
           </div>
         )}
       </aside>
 
-      {/* Mobile toggle button — rendered separately via parent or just hidden if drawer auto-renders */}
+      {/* Mobile toggle button */}
       <button
         onClick={() => setMobileOpen((v) => !v)}
         aria-label={mobileOpen ? 'Tutup navigasi' : 'Buka navigasi'}

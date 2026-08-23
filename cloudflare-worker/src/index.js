@@ -598,10 +598,10 @@ async function handleHardRefresh(request, env, ctx) {
 }
 
 // ============ Helpers ============
-function json(data, status = 200) {
+function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { 'Content-Type': 'application/json', ...CORS }
+    headers: { 'Content-Type': 'application/json', ...CORS, ...extraHeaders }
   });
 }
 
@@ -701,10 +701,56 @@ async function streamWithProvider(env, providerName, body) {
 }
 
 // ============ Main handler ============
+// ============ V34: CORS origin lock ============
+// Only the live site may call this worker. ALLOWED_ORIGIN is set in wrangler.toml.
+function corsHeaders(env, request) {
+  const origin = request?.headers?.get('Origin') ?? '';
+  const allowed = env?.ALLOWED_ORIGIN ?? '*';
+  const headers = { ...CORS };
+  if (allowed && allowed !== '*') {
+    headers['Access-Control-Allow-Origin'] = origin === allowed ? origin : allowed;
+    headers['Vary'] = 'Origin';
+  }
+  return headers;
+}
+
+function json401(env, request, msg) {
+  return json({ error: msg ?? 'Unauthorized: missing or invalid X-Titan-Key' }, 401, corsHeaders(env, request));
+}
+
+// ============ V34: shared-secret auth gate ============
+// Protects LLM chat / Jina tools / social fetch — anything that spends API quota.
+// Public read endpoints (avatar, refresh-status, account-meta) stay open.
+// Set secret via: npx wrangler secret put TITAN_CLIENT_KEY
+// Client sends header: X-Titan-Key: <same value>
+function checkAuth(request, env) {
+  const expected = env?.TITAN_CLIENT_KEY ?? '';
+  if (!expected) return true; // not configured = auth disabled (dev mode)
+  const got = request.headers.get('X-Titan-Key') ?? '';
+  return got.length > 0 && got === expected;
+}
+
+// ============ V34: per-IP rate limit (in-memory, per-isolate best effort) ============
+// Free-tier friendly: no KV/DO needed. 60 req/hour/IP for quota-spending endpoints.
+const RATE_LIMIT = { windowMs: 3600_000, max: 60 };
+const rateBuckets = new Map(); // ip -> {count, resetAt}
+function checkRateLimit(request) {
+  const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+  const now = Date.now();
+  let b = rateBuckets.get(ip);
+  if (!b || now > b.resetAt) {
+    b = { count: 0, resetAt: now + RATE_LIMIT.windowMs };
+    rateBuckets.set(ip, b);
+    if (rateBuckets.size > 10_000) rateBuckets.clear(); // memory guard
+  }
+  b.count++;
+  return b.count <= RATE_LIMIT.max;
+}
+
 export default {
   async fetch(request, env, ctx) {
     if (request.method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: CORS });
+      return new Response(null, { status: 204, headers: corsHeaders(env, request) });
     }
 
     const url = new URL(request.url);
@@ -733,8 +779,17 @@ export default {
       return handleAccountMeta(request, env);
     }
 
+    // ============ V34: auth + rate limit for quota-spending endpoints ============
+    // Everything below (LLM chat, Jina tools, social OG) burns API keys.
+    if (!checkAuth(request, env)) {
+      return json401(env, request);
+    }
+    if (!checkRateLimit(request)) {
+      return json({ error: 'Rate limit exceeded (60 req/hour)' }, 429, corsHeaders(env, request));
+    }
+
     if (request.method !== 'POST') {
-      return json({ error: 'POST only' }, 405);
+      return json({ error: 'POST only' }, 405, corsHeaders(env, request));
     }
 
     const provider = request.headers.get('X-Titan-Provider') || 'auto';

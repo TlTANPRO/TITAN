@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Heart, MessageCircle, Eye, ExternalLink, ArrowUpDown, ArrowUp, ArrowDown,
-  TrendingUp, Trophy, BarChart3, Layers, ChevronDown, ChevronRight, Link2
+  TrendingUp, Trophy, BarChart3, Layers, ChevronDown, ChevronRight, Link2, UserCog
 } from 'lucide-react';
 import {
   ResponsiveContainer, LineChart, Line, BarChart, Bar,
@@ -16,6 +16,7 @@ import {
 } from 'recharts';
 import { useAccounts } from '../hooks/useAccount.js';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
+import { PageHeader } from '../components/layout/PageHeader.jsx';
 import { PlatformIcon, platformLabel } from '../components/icons/PlatformIcon.jsx';
 import { getAdminSummary, ADMIN_HASHTAGS } from '../lib/adminHashtags.js';
 import { formatNumber, formatDate } from '../lib/format.js';
@@ -428,6 +429,11 @@ export default function Admin() {
   const accounts = useAccounts();
   const summary = useMemo(() => getAdminSummary(accounts), [accounts]);
 
+  // V34: page-level tabs — "Postingan" (existing content) | "Komentar"
+  // (KomentarAdmin). Splits the former 1500-line single page into two
+  // focused tabs per design-system information-density audit.
+  const [pageTab, setPageTab] = useState('posts');
+
   // V33.2: range + monthly picker + drill-down focus state declared BEFORE
   // any useMemo that references them. Earlier draft put growthMetric after
   // dailyTotals useMemo → TDZ ReferenceError at runtime (Cannot access 'b'
@@ -601,16 +607,38 @@ export default function Admin() {
 
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
-      {/* Page header */}
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-[10px] font-semibold tracking-widest uppercase text-text-muted">Section 09</span>
-          <span className="text-text-muted">·</span>
-          <span className="text-[10px] text-text-muted uppercase tracking-wider">Admin Tracker</span>
-        </div>
-        <h1 className="text-2xl font-bold text-text-primary">Admin</h1>
+      <PageHeader
+        icon={UserCog}
+        title="Admin"
+        subtitle="Tracker postingan per hashtag & aktivitas komentar admin"
+      />
+
+      {/* V34: page-level tab strip — Postingan | Komentar */}
+      <div className="flex items-center gap-1 p-1 rounded-lg bg-bg-secondary border border-border-subtle w-fit" role="tablist" aria-label="Bagian Admin">
+        {[
+          { id: 'posts', label: 'Postingan per Hashtag' },
+          { id: 'comments', label: 'Komentar Admin' }
+        ].map((t) => (
+          <button
+            key={t.id}
+            role="tab"
+            aria-selected={pageTab === t.id}
+            onClick={() => setPageTab(t.id)}
+            className={`px-4 py-1.5 rounded-md text-xs font-semibold transition-colors duration-fast focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
+              pageTab === t.id
+                ? 'bg-accent-primary text-white'
+                : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
+      {pageTab === 'comments' ? (
+        <KomentarAdmin />
+      ) : (
+      <>
       {/* Hero KPI strip — 4 platform-style tiles */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KpiTile icon={<TrendingUp className="w-3.5 h-3.5" />} label="Total Post" value={totalAdminPosts} accent="primary" />
@@ -1491,10 +1519,9 @@ export default function Admin() {
         </div>
       </div>
 
-      {/* Komentar Admin — own-account comments tagged with admin markers
-          (`-Rf`/`-Rm`/`-Re`/`-Ju`). Per-admin + monthly KPIs + per-post
-          comment samples. Dry-run preview, pending scraper wiring. */}
-      <KomentarAdmin />
+      {/* Komentar Admin — moved to its own "Komentar" page tab (V34) */}
+      </>
+      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Settings as SettingsIcon, Palette, Database, Users, Lightbulb, Info, ShieldAlert, KeyRound, Type } from 'lucide-react';
 import { useAccounts } from '../hooks/useAccount.js';
 import { FreshnessBadge } from '../components/ui/FreshnessBadge.jsx';
+import { PageHeader } from '../components/layout/PageHeader.jsx';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PlatformIcon, platformLabel } from '../components/icons/PlatformIcon.jsx';
 import { triggerHardRefresh } from '../lib/refreshClient.js';
@@ -49,7 +50,7 @@ export default function Settings() {
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold text-text-primary mb-4">Settings</h1>
+      <PageHeader icon={SettingsIcon} title="Settings" subtitle="Preferensi tampilan, data, dan akun" />
 
       <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4">
         {/* Sidebar tabs */}

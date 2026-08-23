@@ -6,6 +6,7 @@ import { Search, RefreshCw, AlertTriangle, Loader2, CheckCircle2, XCircle, Setti
 import { useAccounts } from '../../hooks/useAccount.js';
 import { AccountListPopover } from '../AccountListPopover.jsx';
 import ThemeToggle from '../ThemeToggle.jsx';
+import { DataFreshnessBadge } from './DataFreshnessBadge.jsx';
 import { triggerSoftRefresh } from '../../lib/refreshClient.js';
 import { dataAvailability } from '../../lib/analytics.js';
 import { usePeriod, PERIOD_OPTIONS } from '../../hooks/usePeriod.js';
@@ -109,6 +110,9 @@ export function Topbar({ limitedCount = 0 }) {
         </form>
 
         <div className="flex-1" />
+
+        {/* V34: global data freshness — visible on every page */}
+        <DataFreshnessBadge />
 
         {/* Period filter */}
         <div className="hidden sm:flex items-center gap-1.5">

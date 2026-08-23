@@ -6,6 +6,7 @@ import { useState, useMemo } from 'react';
 import { useAccounts } from '../hooks/useAccount.js';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { EmptyState } from '../components/ui/EmptyState.jsx';
+import { PageHeader } from '../components/layout/PageHeader.jsx';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
 import { formatCompact } from '../lib/format.js';
@@ -114,10 +115,11 @@ export default function Calendar() {
 
   return (
     <div className="p-4 md:p-6 space-y-4 max-w-7xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-bold text-text-primary">Kalender Konten</h1>
-        <p className="text-sm text-text-muted mt-0.5">Heatmap post bulanan lintas 9 akun</p>
-      </div>
+      <PageHeader
+        icon={CalIcon}
+        title="Kalender Konten"
+        subtitle="Heatmap post bulanan lintas 9 akun"
+      />
 
       <div className="surface p-4">
         {/* Header */}

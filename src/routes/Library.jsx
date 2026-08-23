@@ -5,9 +5,10 @@
 // "Saring Lebih Ketat", h1 + main landmark.
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, ExternalLink, Heart, MessageCircle, Eye, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Search, ExternalLink, Heart, MessageCircle, Eye, ArrowUpDown, ArrowUp, ArrowDown, Library as LibraryIcon } from 'lucide-react';
 import { useAccounts } from '../hooks/useAccount.js';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
+import { PageHeader } from '../components/layout/PageHeader.jsx';
 import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
 import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { formatCompact } from '../lib/format.js';
@@ -148,15 +149,15 @@ export default function Library() {
 
   return (
     <div className="p-4 md:p-6 space-y-4 max-w-7xl mx-auto">
-      <h1 className="sr-only">Library Post</h1>
-      <div>
-        <h2 className="text-2xl font-bold text-text-primary">Library Post</h2>
-        <p className="text-sm text-text-muted mt-0.5">
-          {isCapped
+      <PageHeader
+        icon={LibraryIcon}
+        title="Library Post"
+        subtitle={
+          isCapped
             ? `Menampilkan ${RESULT_CAP} teratas dari ${matchedCount} post cocok · refine filter untuk lihat semua`
-            : `${filtered.length} post dari total ${allPosts.length}`}
-        </p>
-      </div>
+            : `${filtered.length} post dari total ${allPosts.length}`
+        }
+      />
 
       {/* Filters */}
       <div className="surface p-3 space-y-2">

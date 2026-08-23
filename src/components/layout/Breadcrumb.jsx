@@ -1,7 +1,7 @@
 // V21: Breadcrumb — route-derived breadcrumb.
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
-import { useAccounts } from '../hooks/useAccount.js';
+import { useAccounts } from '../../hooks/useAccount.js';
 
 const ROUTE_LABELS = {
   '': 'Home',

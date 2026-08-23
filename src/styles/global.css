@@ -58,6 +58,34 @@
   .chip {
     @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium;
   }
+  /* V34: button primitives — were USED (Topbar/Settings/NotFound) but never
+     defined anywhere = unstyled buttons. Defined per design canon: single
+     accent, no gradients, focus ring visible. duration-fast is a CSS var
+     (tokens.css), not a Tailwind class — use arbitrary value. */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-md
+      text-sm font-semibold bg-accent-primary text-white
+      hover:bg-accent-primary-hover active:bg-accent-primary-hover
+      disabled:opacity-50 disabled:cursor-not-allowed
+      transition-colors [transition-duration:var(--duration-fast)]
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-md
+      text-sm font-semibold bg-bg-tertiary text-text-primary border border-border-subtle
+      hover:border-border-default hover:bg-bg-hover
+      disabled:opacity-50 disabled:cursor-not-allowed
+      transition-colors [transition-duration:var(--duration-fast)]
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md
+      text-sm font-medium text-text-secondary
+      hover:bg-bg-tertiary hover:text-text-primary
+      disabled:opacity-50 disabled:cursor-not-allowed
+      transition-colors [transition-duration:var(--duration-fast)]
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary;
+  }
 }
 
 /* Skeleton shimmer */

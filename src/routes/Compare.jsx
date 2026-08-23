@@ -4,9 +4,10 @@
 // "Terbaik" + ring border, bukan color-only), MAX_COMPARE tooltip, h1 + main landmark.
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Info } from 'lucide-react';
+import { Check, Info, GitCompareArrows } from 'lucide-react';
 import { useAccounts, useCrossAccountComparison } from '../hooks/useAccount.js';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
+import { PageHeader } from '../components/layout/PageHeader.jsx';
 import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
 import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { formatNumber, formatPercent } from '../lib/format.js';
@@ -51,11 +52,11 @@ export default function Compare() {
 
   return (
     <div className="p-4 md:p-6 space-y-4 max-w-7xl mx-auto">
-      <h1 className="sr-only">Bandingkan Akun</h1>
-      <div>
-        <h2 className="text-2xl font-bold text-text-primary">Bandingkan Akun</h2>
-        <p className="text-sm text-text-muted mt-0.5">Pilih 2-4 akun untuk dibandingkan side-by-side</p>
-      </div>
+      <PageHeader
+        icon={GitCompareArrows}
+        title="Bandingkan Akun"
+        subtitle="Pilih 2-4 akun untuk dibandingkan side-by-side"
+      />
 
       {/* Picker */}
       <div className="surface p-3">
