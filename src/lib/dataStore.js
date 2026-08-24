@@ -29,7 +29,8 @@ let _stats = {};
 // V36: fetch static JSON at runtime instead of bundling 7.7MB into the JS
 // chunk. public/data/accounts-full.json is copied by scripts/copy-data-to-public.mjs
 // (prebuild). Falls back to the bundled import if fetch fails (offline PWA).
-const DATA_URL = `${import.meta.env.BASE_URL}data/accounts-full.json`;
+// V36.1: deploy flattens dist/data → root, so the runtime URL is /TITAN/accounts-full.json
+const DATA_URL = `${import.meta.env.BASE_URL}accounts-full.json`;
 
 async function fetchStaticJson() {
   const res = await fetch(DATA_URL, { cache: 'no-cache' });
