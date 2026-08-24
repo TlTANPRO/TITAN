@@ -32,8 +32,7 @@ const COL_RESPONSIVE = {
   lg: 'hidden lg:table-cell'
 };
 
-// Stable initials per admin for the summary card avatar.
-import { adminInitials, SortIcon, KpiTile, Sparkline, postTimestampMs, buildDailyTotals, filterByRange, listMonths, countPostsLast7Days, normalizeCaption, detectCrossPosts, buildCrossPlatformKpi, listAvailableMonths, buildSparkline } from '../lib/admin-helpers.jsx';
+import { adminInitials, SortIcon, KpiTile, Sparkline, postTimestampMs, buildDailyTotals, filterByRange, listMonths, countPostsLast7Days, normalizeCaption, detectCrossPosts, buildCrossPlatformKpi, listAvailableMonths, buildSparkline, RANGES_ADMIN } from '../lib/admin-helpers.jsx';
 
 export default function Admin() {
   const accounts = useAccounts();
