@@ -91,7 +91,24 @@ async function main() {
   // WEEKDAY-AWARE: Sunday full re-scrape legitimately produces zero fresh posts
   // because it's a recount of bundled data, not new posts. On Sunday we WARN
   // instead of fail, so weekly catch-up runs don't get stuck.
+  // V35: per-platform gate. Global ">=1 fresh" terlalu longgar — IG bisa mati
+  // berbulan-bulan selama TT masih hidup dan gate tetap lolos. Sekarang:
+  // weekday → minimal 1 akun fresh PER PLATFORM (ig & tt). Sunday tetap warn.
   const isSunday = process.env.IS_SUNDAY === 'true' || new Date().getUTCDay() === 0;
+
+  const platformFresh = { ig: 0, tt: 0 };
+  for (const file of jsonFiles) {
+    const isTT = file.startsWith('tt-');
+    try {
+      const raw = await readFile(path.join(SCRAPED_DIR, file), 'utf8');
+      const data = JSON.parse(raw);
+      const posts = data?.posts ?? data?.account?.posts ?? [];
+      if (posts.some((p) => postDateUtc(p) === today)) {
+        platformFresh[isTT ? 'tt' : 'ig']++;
+      }
+    } catch { /* already warned above */ }
+  }
+  console.log(`[scrape-health-check] per-platform fresh accounts: IG=${platformFresh.ig}/4 TT=${platformFresh.tt}/5`);
 
   if (totalFreshPosts === 0) {
     if (isSunday) {
@@ -111,6 +128,21 @@ async function main() {
     console.error('  dengan force_full_scrape=true.');
     console.error('═══════════════════════════════════════════════════════════');
     process.exit(1);
+  }
+
+  // V35: per-platform hard gate on weekday. Jika satu platform 0 fresh
+  // (scraper mati total), gagalkan run agar masalah TERLIHAT, bukan
+  // tersembunyi di balik platform lain yang sehat.
+  if (!isSunday) {
+    const dead = [];
+    if (platformFresh.ig === 0) dead.push('IG (semua 4 akun 0 fresh hari ini)');
+    if (platformFresh.tt === 0) dead.push('TT (semua 5 akun 0 fresh hari ini)');
+    if (dead.length > 0) {
+      console.error('');
+      console.error('::error::Per-platform health gate FAILED — ' + dead.join(' | '));
+      console.error('::error::Scraper platform tersebut kemungkinan diblokir. Cek scrape-*.mjs.');
+      process.exit(1);
+    }
   }
 
   console.log(`[scrape-health-check] PASS (${isSunday ? 'Sunday' : 'weekday'}) — fresh data confirmed.`);
