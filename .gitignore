@@ -58,3 +58,12 @@ BACKUP-*/
 # These ARE committed to git because gh-pages serves from root, but
 # the canonical source is dist/. If you need to rebuild, run `pnpm run deploy`.
 # (kept tracked intentionally — see scripts/deploy.mjs)
+
+# V35: temp/duplicate data files — never commit
+tmp-acc.json
+accounts-live.json
+live-main.js
+live-afull.js
+logs.zip
+debug-og.mjs
+audit-avatar.mjs

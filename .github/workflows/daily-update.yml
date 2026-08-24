@@ -160,10 +160,22 @@ jobs:
       # Old DDG/Bing discovery went stale up to 2 months (verified 2026-08-23).
       # Urlebird via Jina returns the 20 latest videos per account with exact
       # snowflake timestamps + full stats. Append-only merge, id-deduped.
-      - name: Scrape TikTok via Urlebird (V34)
+      # V35: yt-dlp is PRIMARY (verified 2026-08-24: all 5 accounts, exact
+      # snowflake timestamps). Urlebird kept as fallback (started returning
+      # 403/0-videos on 2026-08-23 run).
+      - name: Scrape TikTok via yt-dlp (V35 primary)
         if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '' }}
         run: |
-          echo "Urlebird TT scrape (V34: profile listing + detail stats)"
+          echo "yt-dlp TT scrape (V35 primary)"
+          pip install -q yt-dlp || true
+          node scripts/scrape-tt-ytdlp.mjs
+          echo "::notice::TT yt-dlp scrape outcome=success"
+        id: scrape-tt-ytdlp
+
+      - name: Scrape TikTok via Urlebird (fallback)
+        if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '' }}
+        run: |
+          echo "Urlebird TT scrape (V34 fallback: profile listing + detail stats)"
           node scripts/scrape-tt-urlebird.mjs || echo "::warning::Urlebird TT scrape failed — old data kept"
         continue-on-error: true
         id: scrape-tt-urlebird

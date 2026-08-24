@@ -119,21 +119,24 @@ async function main() {
   // Cross-account dup check (cheap O(n) pre-flight)
   const seenKeys = new Map();
   let crossDup = 0;
+  // V35: known-legit cross-post pairs (same human, two TT accounts —
+  // ardian.tanah & ardiantanahmenjawab cross-post replies/duets; verified
+  // identical captions 2026-08-24). Dups within these pairs don't count.
+  const LEGIT_PAIRS = new Set(['tt-ardian.tanah<->tt-ardiantanahmenjawab']);
   for (const a of accFull) {
     for (const p of a.posts || []) {
       const key = p.shortcode || p.id;
       if (!key) continue;
-      if (seenKeys.has(key) && seenKeys.get(key) !== a.account.slug) crossDup++;
-      else seenKeys.set(key, a.account.slug);
+      if (seenKeys.has(key) && seenKeys.get(key) !== a.account.slug) {
+        const pair = [seenKeys.get(key), a.account.slug].sort().join('<->');
+        if (!LEGIT_PAIRS.has(pair)) crossDup++;
+      } else {
+        seenKeys.set(key, a.account.slug);
+      }
     }
   }
   if (crossDup > 0) {
-    // Tolerance 5 untuk data historis (cross-account share/embed). See generate-data.mjs.
-    if (crossDup > 5) {
-      preFlightErrors.push(`${crossDup} cross-account duplicate(s) detected (exceeds tolerance of 5)`);
-    } else {
-      console.warn(`   ⚠️  ${crossDup} cross-account duplicate(s) (within tolerance, see DATA-SSOT.md §4)`);
-    }
+    preFlightErrors.push(`${crossDup} cross-account duplicate(s) detected (unexpected pair, exceeds tolerance of 0)`);
   }
   if (preFlightErrors.length > 0) {
     console.error('\n❌ [deploy] Pre-flight FAILED:');
