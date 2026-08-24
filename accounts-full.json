@@ -1,6 +1,5 @@
 [
   {
-    "platform": "instagram",
     "account": {
       "slug": "ig-majangmejeng_",
       "username": "majangmejeng_",
@@ -16190,24 +16189,9 @@
         "mentions": [],
         "postedAt": "2026-06-11T12:30:10.000Z"
       }
-    ],
-    "scrapedAt": "2026-08-24T16:45:16.713Z",
-    "lastFreeEnrichAt": "2026-08-24T16:45:16.713Z",
-    "stats": {
-      "totalPosts": 733,
-      "durationMs": 46528,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "i.instagram-clips",
-      "newPostsAdded": 2,
-      "metricsUpgraded": 45,
-      "enrichedLikeCount": 626,
-      "enrichedViewCount": 228,
-      "enrichedCommentCount": 322
-    }
+    ]
   },
   {
-    "platform": "instagram",
     "account": {
       "slug": "ig-syahfalahproperti",
       "username": "syahfalahproperti",
@@ -30390,24 +30374,9 @@
         "mentions": [],
         "postedAt": "2026-02-25T01:13:32.000Z"
       }
-    ],
-    "scrapedAt": "2026-08-24T16:45:59.529Z",
-    "lastFreeEnrichAt": "2026-08-24T16:45:59.529Z",
-    "stats": {
-      "totalPosts": 519,
-      "durationMs": 40806,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "i.instagram-clips",
-      "newPostsAdded": 32,
-      "metricsUpgraded": 7,
-      "enrichedLikeCount": 393,
-      "enrichedViewCount": 373,
-      "enrichedCommentCount": 207
-    }
+    ]
   },
   {
-    "platform": "instagram",
     "account": {
       "slug": "ig-nisyanandaa",
       "username": "nisyanandaa",
@@ -36399,24 +36368,9 @@
         ],
         "postedAt": "2023-02-03T11:23:45.000Z"
       }
-    ],
-    "scrapedAt": "2026-08-24T16:46:35.476Z",
-    "lastFreeEnrichAt": "2026-08-24T16:46:35.476Z",
-    "stats": {
-      "totalPosts": 279,
-      "durationMs": 33940,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "i.instagram-clips",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 58,
-      "enrichedLikeCount": 224,
-      "enrichedViewCount": 121,
-      "enrichedCommentCount": 222
-    }
+    ]
   },
   {
-    "platform": "instagram",
     "account": {
       "slug": "ig-ardiantanah",
       "username": "ardiantanah",
@@ -51820,24 +51774,9 @@
         "mentions": [],
         "postedAt": "2025-11-13T12:29:17.000Z"
       }
-    ],
-    "scrapedAt": "2026-08-24T16:47:25.734Z",
-    "lastFreeEnrichAt": "2026-08-24T16:47:25.734Z",
-    "stats": {
-      "totalPosts": 622,
-      "durationMs": 48255,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "i.instagram-clips",
-      "newPostsAdded": 9,
-      "metricsUpgraded": 53,
-      "enrichedLikeCount": 589,
-      "enrichedViewCount": 584,
-      "enrichedCommentCount": 381
-    }
+    ]
   },
   {
-    "platform": "tiktok",
     "account": {
       "slug": "tt-majangmejeng_",
       "username": "majangmejeng_",
@@ -68562,21 +68501,9 @@
         "saveCount": 5310,
         "music": "fadjarfdjr - original sound - f4dj4rfdjr"
       }
-    ],
-    "scrapedAt": "2026-08-24T16:47:54.939Z",
-    "lastFreeEnrichAt": "2026-08-24T16:47:54.939Z",
-    "stats": {
-      "totalPosts": 571,
-      "durationMs": 27101,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 1
-    }
+    ]
   },
   {
-    "platform": "tiktok",
     "account": {
       "slug": "tt-syahfalahproperti",
       "username": "syahfalahproperti",
@@ -83691,21 +83618,9 @@
         "saveCount": 26,
         "music": "SYAHFALAH GRIYA AQUILA - original sound"
       }
-    ],
-    "scrapedAt": "2026-08-24T16:48:22.097Z",
-    "lastFreeEnrichAt": "2026-08-24T16:48:22.097Z",
-    "stats": {
-      "totalPosts": 455,
-      "durationMs": 24143,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "bundled-preservation",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 0
-    }
+    ]
   },
   {
-    "platform": "tiktok",
     "account": {
       "slug": "tt-ardian.tanah",
       "username": "ardian.tanah",
@@ -96236,21 +96151,9 @@
         "saveCount": 0,
         "music": "achmad ardiansyah - original sound"
       }
-    ],
-    "scrapedAt": "2026-08-24T16:48:54.788Z",
-    "lastFreeEnrichAt": "2026-08-24T16:48:54.788Z",
-    "stats": {
-      "totalPosts": 418,
-      "durationMs": 29682,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 1
-    }
+    ]
   },
   {
-    "platform": "tiktok",
     "account": {
       "slug": "tt-ardiantanahmenjawab",
       "username": "ardiantanahmenjawab",
@@ -110994,21 +110897,9 @@
         "postUrl": "https://www.tiktok.com/@ardiantanahmenjawab/video/7405805652016221445?_r=1&u_code=0&region=US&mid=7115411254964914178&preview_pb=0&sharer_language=en&_d=f01jb7cjhfe6gl&share_item_id=7405805652016221445&source=h5_t",
         "postedAt": "2024-08-22T03:48:26.000Z"
       }
-    ],
-    "scrapedAt": "2026-08-24T16:49:22.290Z",
-    "lastFreeEnrichAt": "2026-08-24T16:49:22.290Z",
-    "stats": {
-      "totalPosts": 494,
-      "durationMs": 24493,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "bundled-preservation",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 0
-    }
+    ]
   },
   {
-    "platform": "tiktok",
     "account": {
       "slug": "tt-itsnisyananda",
       "username": "itsnisyananda",
@@ -116254,17 +116145,6 @@
         "saveCount": 1590,
         "music": "sindiputri habsari - original sound - sindi_putri18"
       }
-    ],
-    "scrapedAt": "2026-08-24T16:49:57.624Z",
-    "lastFreeEnrichAt": "2026-08-24T16:49:57.624Z",
-    "stats": {
-      "totalPosts": 196,
-      "durationMs": 32324,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 2
-    }
+    ]
   }
 ]
