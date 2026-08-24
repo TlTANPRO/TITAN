@@ -22,7 +22,7 @@
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Titan-Provider, X-Titan-Action',
+  'Access-Control-Allow-Headers': 'Content-Type, X-Titan-Provider, X-Titan-Action, X-Titan-Key',
   'Access-Control-Max-Age': '86400'
 };
 
