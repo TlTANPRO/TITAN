@@ -10,9 +10,9 @@ import { platformLabel } from './icons/PlatformIcon.jsx';
 const DAY_LABELS_ID = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
 const TYPE_COLORS = {
-  REEL: 'bg-pink-500/20 text-pink-500 border-pink-500/30',
-  VIDEO: 'bg-purple-500/20 text-purple-500 border-purple-500/30',
-  IMAGE: 'bg-blue-500/20 text-blue-500 border-blue-500/30',
+  REEL: 'bg-accent-instagram/20 text-accent-instagram border-accent-instagram/30',
+  VIDEO: 'bg-accent-secondary/20 text-accent-secondary border-accent-secondary/30',
+  IMAGE: 'bg-accent-info/20 text-accent-info border-accent-info/30',
   CAROUSEL_ALBUM: 'bg-amber-500/20 text-amber-500 border-amber-500/30'
 };
 

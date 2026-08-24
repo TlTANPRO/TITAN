@@ -7,6 +7,7 @@ import { useAccounts } from '../hooks/useAccount.js';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { PageHeader } from '../components/layout/PageHeader.jsx';
+import { PulseBar } from '../components/ui/PulseBar.jsx';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
 import { formatCompact } from '../lib/format.js';
@@ -121,6 +122,8 @@ export default function Calendar() {
         subtitle="Heatmap post bulanan lintas 9 akun"
       />
 
+      <PulseBar />
+
       <div className="surface p-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
@@ -132,11 +135,20 @@ export default function Calendar() {
           <h2 className="text-lg font-bold text-text-primary">
             {MONTH_NAMES_ID[cursor.getMonth()]} {cursor.getFullYear()}
           </h2>
-          <button onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}
-            aria-label="Bulan berikutnya"
-            className="btn-secondary !p-2">
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => { setCursor(new Date()); setSelectedDay(null); }}
+              className="btn-ghost !px-2.5 !py-1 text-[11px]"
+              aria-label="Kembali ke bulan ini"
+            >
+              Hari ini
+            </button>
+            <button onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}
+              aria-label="Bulan berikutnya"
+              className="btn-secondary !p-2">
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Day labels */}

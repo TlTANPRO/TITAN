@@ -1,7 +1,7 @@
 // Hero — V22.1: aggregate KPI strip only. Top Viral Post moved to its own
 // dedicated "Top 5 Viral (7 Hari)" row 2 in Home to avoid duplication.
 // V33: token-based icon swatches, delta-vs-7d footer per tile. No raw
-// Tailwind colors (was text-pink-500 / text-cyan-500).
+// Tailwind colors (was text-accent-instagram / text-accent-tiktok).
 import { useMemo } from 'react';
 import { Users, Eye, Heart, Sparkles } from 'lucide-react';
 import { formatNumber } from '../lib/format.js';
@@ -89,7 +89,7 @@ export function Hero({ accounts, allPosts }) {
 }
 
 // Icon swatch background tinted to the accent. V33 token migration:
-// replaces raw text-pink-500 / text-cyan-500 with semantic accent tokens.
+// replaces raw text-accent-instagram / text-accent-tiktok with semantic accent tokens.
 const ACCENT_SWATCH = {
   primary:   { text: 'text-accent-primary',   swatch: 'bg-accent-primary/10' },
   secondary: { text: 'text-accent-secondary', swatch: 'bg-accent-secondary/10' },

@@ -3,7 +3,7 @@ import { formatNumber, formatDate, formatCompact } from '../lib/format.js';
 
 // Kategori viral berdasarkan z-score sigma
 function viralCategory(z) {
-  if (z >= 5) return { label: 'Sangat Viral', color: 'text-purple-400 bg-purple-500/10', icon: Flame };
+  if (z >= 5) return { label: 'Sangat Viral', color: 'text-accent-secondary bg-accent-secondary/10', icon: Flame };
   if (z >= 3) return { label: 'Konten Viral', color: 'text-accent-warning bg-accent-warning/10', icon: Award };
   return { label: 'Performa Unggul', color: 'text-accent-success bg-accent-success/10', icon: Sparkles };
 }

@@ -8,6 +8,7 @@ import { Lightbulb, Sparkles, TrendingUp, FileText, Calendar, AlertCircle } from
 import { useAccounts } from '../hooks/useAccount.js';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PageHeader } from '../components/layout/PageHeader.jsx';
+import { PulseBar } from '../components/ui/PulseBar.jsx';
 import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
 import { Tabs } from '../components/ui/Tabs.jsx';
@@ -73,6 +74,8 @@ export default function AiInsights() {
           ? `Tersimpan lokal · ${new Date(meta.generatedAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })} · ${meta.accountCount} akun`
           : 'Belum ada insight yang tersimpan'}
       />
+
+      <PulseBar />
       {isStale && (
         <p className="text-xs text-accent-warning -mt-2">
           Insight sudah {age} hari. Jalankan `pnpm insights:generate` untuk refresh.

@@ -26,9 +26,30 @@ const _subscribers = new Set(); // React state updaters
 let _stats = {};
 
 // ===== Load + normalize =====
+// V36: fetch static JSON at runtime instead of bundling 7.7MB into the JS
+// chunk. public/data/accounts-full.json is copied by scripts/copy-data-to-public.mjs
+// (prebuild). Falls back to the bundled import if fetch fails (offline PWA).
+const DATA_URL = `${import.meta.env.BASE_URL}data/accounts-full.json`;
+
+async function fetchStaticJson() {
+  const res = await fetch(DATA_URL, { cache: 'no-cache' });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
 async function loadFromJson() {
-  const mod = await import('../data/accounts-full.json');
-  const raw = mod.default ?? mod;
+  // V36: static fetch only — the 7.7MB bundled import is GONE from the JS
+  // chunk (public/data/accounts-full.json is copied by prebuild script).
+  // Two attempts: no-cache (fresh after deploy), then default cache.
+  let raw;
+  try {
+    raw = await fetchStaticJson();
+  } catch {
+    raw = await fetch(DATA_URL).then((r) => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    });
+  }
   // Normalize SEMUA akun lewat schema adapter yang sama
   const normalized = (raw ?? []).map((a) => normalizeAccount(a, a.platform)).filter(Boolean);
   // Defensive in-file dedup (post id uniqueness) — audit sudah handle tapi double-check

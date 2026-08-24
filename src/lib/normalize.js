@@ -117,9 +117,14 @@ export function extractMentions(text) {
 export function normalizeAccount(raw, platform) {
   if (!raw) return null;
   const a = raw.account ?? raw;
+  // V36: data files have NO explicit platform field — derive from slug prefix.
+  const resolvedPlatform = platform
+    ?? (String(a.slug ?? '').startsWith('tt-') ? 'tiktok'
+      : String(a.slug ?? '').startsWith('ig-') ? 'instagram'
+      : 'unknown');
   return {
-    platform,
-    slug: a.slug ?? `${platform}-${a.username ?? a.uniqueId ?? a.unique_id ?? 'unknown'}`,
+    platform: resolvedPlatform,
+    slug: a.slug ?? `${resolvedPlatform}-${a.username ?? a.uniqueId ?? a.unique_id ?? 'unknown'}`,
     username: a.username ?? a.uniqueId ?? a.unique_id ?? '',
     displayName: a.displayName ?? a.fullName ?? a.nickname ?? a.full_name ?? a.username ?? '',
     fullName: a.fullName ?? a.nickname ?? a.full_name ?? a.displayName ?? '',

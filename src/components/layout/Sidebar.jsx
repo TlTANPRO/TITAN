@@ -70,7 +70,7 @@ export function Sidebar({ limitedCount = 0 }) {
           px-3 py-2 rounded-md text-sm font-medium
           transition-colors duration-fast
           ${isActive
-            ? 'bg-accent-primary/10 text-accent-primary'
+            ? 'bg-accent-brand/10 text-accent-brand'
             : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'
           }
         `}
@@ -78,7 +78,7 @@ export function Sidebar({ limitedCount = 0 }) {
         {({ isActive }) => (
           <>
             {isActive && (
-              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-accent-primary" />
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-accent-brand" />
             )}
             <Icon className="w-4 h-4 flex-shrink-0" />
             {!collapsed && <span className="flex-1 truncate">{item.label}</span>}

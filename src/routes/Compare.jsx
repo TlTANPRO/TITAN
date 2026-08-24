@@ -8,6 +8,7 @@ import { Check, Info, GitCompareArrows } from 'lucide-react';
 import { useAccounts, useCrossAccountComparison } from '../hooks/useAccount.js';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PageHeader } from '../components/layout/PageHeader.jsx';
+import { PulseBar } from '../components/ui/PulseBar.jsx';
 import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
 import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { formatNumber, formatPercent } from '../lib/format.js';
@@ -57,6 +58,8 @@ export default function Compare() {
         title="Bandingkan Akun"
         subtitle="Pilih 2-4 akun untuk dibandingkan side-by-side"
       />
+
+      <PulseBar />
 
       {/* Picker */}
       <div className="surface p-3">

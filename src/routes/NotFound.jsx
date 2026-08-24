@@ -6,7 +6,8 @@ export default function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-bg-primary">
       <div className="max-w-md text-center">
-        <div className="text-8xl font-bold text-accent-primary/20 leading-none">404</div>
+        <div className="text-8xl font-bold text-accent-brand/20 leading-none select-none">404</div>
+        <div className="w-16 h-1 bg-accent-brand rounded-full mx-auto mt-4" aria-hidden="true" />
         <h1 className="text-2xl font-bold text-text-primary mt-4">Halaman tidak ditemukan</h1>
         <p className="text-sm text-text-muted mt-2">
           URL yang kamu akses tidak ada. Mungkin sudah dihapus atau pernah ada tapi sekarang hilang.

@@ -9,6 +9,7 @@ import { PlatformIcon, platformLabel } from '../components/icons/PlatformIcon.js
 import { FreshnessBadge } from '../components/ui/FreshnessBadge.jsx';
 import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { formatNumber, formatPercent } from '../lib/format.js';
+import { PulseBar } from '../components/ui/PulseBar.jsx';
 
 const PLATFORM_FILTERS = [
   { value: 'all', label: 'Semua Platform' },
@@ -84,6 +85,7 @@ export default function AccountList() {
 
   return (
     <div className="p-4 md:p-6 space-y-4 max-w-7xl mx-auto">
+      <PulseBar />
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-text-primary">Daftar Akun</h1>

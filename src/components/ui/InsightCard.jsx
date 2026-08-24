@@ -7,10 +7,11 @@ export function InsightCard({ status = 'empty', title, description, children, ac
   const accentText = {
     'accent-primary': 'text-accent-primary',
     'accent-secondary': 'text-accent-secondary',
-    'pink-500': 'text-pink-500',
-    'purple-500': 'text-purple-500',
-    'cyan-500': 'text-cyan-500',
-    'emerald-500': 'text-emerald-500'
+    'pink-500': 'text-accent-instagram',
+    'purple-500': 'text-accent-secondary',
+    'cyan-500': 'text-accent-tiktok',
+    success: 'text-accent-success',
+    'emerald-500': 'text-accent-success'
   }[accent] || 'text-accent-primary';
 
   if (status === 'loading') {

@@ -8,7 +8,9 @@ import { useSearchParams } from 'react-router-dom';
 import { Search, ExternalLink, Heart, MessageCircle, Eye, ArrowUpDown, ArrowUp, ArrowDown, Library as LibraryIcon } from 'lucide-react';
 import { useAccounts } from '../hooks/useAccount.js';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
+import { LayoutGrid, List } from 'lucide-react';
 import { PageHeader } from '../components/layout/PageHeader.jsx';
+import { PulseBar } from '../components/ui/PulseBar.jsx';
 import { PlatformIcon } from '../components/icons/PlatformIcon.jsx';
 import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { formatCompact } from '../lib/format.js';
@@ -21,6 +23,7 @@ export default function Library() {
   const initialSort = searchParams.get('sortBy') ?? 'createTime';
   const initialDir = searchParams.get('dir') ?? 'desc';
   const accounts = useAccounts();
+  const [viewMode, setViewMode] = useState('table'); // 'table' | 'grid'
   const [search, setSearch] = useState(initialQ);
   const [platform, setPlatform] = useState('all');
   const [accountSlugs, setAccountSlugs] = useState([]);
@@ -159,6 +162,8 @@ export default function Library() {
         }
       />
 
+      <PulseBar />
+
       {/* Filters */}
       <div className="surface p-3 space-y-2">
         <div className="flex flex-col md:flex-row gap-2">
@@ -208,6 +213,29 @@ export default function Library() {
             );
           })}
         </div>
+
+        {/* V36: view mode toggle */}
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] uppercase tracking-wider text-text-muted font-medium">Tampilan</span>
+          <div className="flex items-center gap-1 p-0.5 rounded-md bg-bg-tertiary border border-border-subtle" role="group" aria-label="Mode tampilan">
+            <button
+              onClick={() => setViewMode('table')}
+              aria-pressed={viewMode === 'table'}
+              aria-label="Tampilan tabel"
+              className={`p-1.5 rounded ${viewMode === 'table' ? 'bg-accent-primary text-white' : 'text-text-secondary hover:text-text-primary'}`}
+            >
+              <List className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              aria-pressed={viewMode === 'grid'}
+              aria-label="Tampilan grid"
+              className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-accent-primary text-white' : 'text-text-secondary hover:text-text-primary'}`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Cap warning + refine CTA */}
@@ -229,6 +257,42 @@ export default function Library() {
       {filtered.length === 0 ? (
         <div className="surface p-4">
           <EmptyState title="Tidak ada post" description="Coba ubah filter atau kata kunci." />
+        </div>
+      ) : viewMode === 'grid' ? (
+        /* V36: Grid view — visual thumbnail cards */
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {filtered.map((p) => (
+            <a
+              key={p.id}
+              href={p.postUrl || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="surface overflow-hidden hover:border-accent-primary/40 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+            >
+              <div className="aspect-video bg-bg-tertiary overflow-hidden">
+                {p.thumbnailUrl ? (
+                  <img
+                    src={p.thumbnailUrl}
+                    alt={p.caption?.slice(0, 60) ?? 'Post'}
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-base"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-text-muted">
+                    <PlatformIcon platform={p._accountPlatform} className="w-8 h-8" />
+                  </div>
+                )}
+              </div>
+              <div className="p-2.5 space-y-1.5">
+                <div className="flex items-center gap-1.5">
+                  <ProxiedAvatar account={{ slug: p._accountSlug }} size={14} />
+                  <span className="text-[10px] text-text-muted truncate">@{p._accountUsername}</span>
+                  <span className="ml-auto text-[10px] text-text-muted tabular-nums">{formatCompact(p.viewCount)} views</span>
+                </div>
+                <p className="text-[11px] text-text-secondary line-clamp-2 leading-snug">{p.caption || '(tanpa caption)'}</p>
+              </div>
+            </a>
+          ))}
         </div>
       ) : (
         <div className="surface overflow-hidden">

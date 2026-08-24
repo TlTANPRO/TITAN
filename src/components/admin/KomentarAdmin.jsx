@@ -46,7 +46,7 @@ function PlatformBadge({ platform }) {
   const label = isIG ? 'Instagram' : 'TikTok';
   return (
     <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wider ${
-      isIG ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/30' : 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30'
+      isIG ? 'bg-accent-instagram/10 text-accent-instagram  border border-accent-instagram/30' : 'bg-accent-tiktok/10 text-accent-tiktok  border border-accent-tiktok/30'
     }`}>
       <Icon className="w-3 h-3" />
       {label}
@@ -614,14 +614,14 @@ export function KomentarAdmin() {
                     <button type="button" onClick={() => setActivePlatform('instagram')}
                       className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
                         activePlatform === 'instagram'
-                          ? 'bg-pink-500 text-white border-pink-500 shadow-sm'
-                          : 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/30 hover:border-pink-500'
+                          ? 'bg-accent-instagram text-white border-accent-instagram shadow-sm'
+                          : 'bg-accent-instagram/10 text-accent-instagram  border-accent-instagram/30 hover:border-accent-instagram'
                       }`}><Instagram className="w-3 h-3" />Instagram</button>
                     <button type="button" onClick={() => setActivePlatform('tiktok')}
                       className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
                         activePlatform === 'tiktok'
-                          ? 'bg-cyan-500 text-white border-cyan-500 shadow-sm'
-                          : 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30 hover:border-cyan-500'
+                          ? 'bg-accent-tiktok text-white border-accent-tiktok shadow-sm'
+                          : 'bg-accent-tiktok/10 text-accent-tiktok  border-accent-tiktok/30 hover:border-accent-tiktok'
                       }`}><Music2 className="w-3 h-3" />TikTok</button>
                   </div>
                 </td>

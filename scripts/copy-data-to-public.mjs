@@ -36,6 +36,18 @@ async function main() {
     return;
   }
 
+  // V36: accounts-full.json SSOT lives at REPO ROOT (not src/data — it was
+  // removed from the bundle). Copy it explicitly from root.
+  const ROOT_SSOT = path.join(__dirname, '..', 'accounts-full.json');
+  try {
+    const stat = await fs.stat(ROOT_SSOT);
+    const dest = path.join(DEST_DIR, 'accounts-full.json');
+    await fs.copyFile(ROOT_SSOT, dest);
+    console.log(`[prebuild] ${ROOT_SSOT} (${(stat.size / 1024).toFixed(1)} KB) → ${dest}`);
+  } catch (err) {
+    console.warn(`[prebuild] root SSOT copy failed: ${err.message}`);
+  }
+
   const jsonFiles = entries.filter((f) => f.endsWith('.json'));
   if (jsonFiles.length === 0) {
     console.warn(`[prebuild] no JSON files in ${SRC_DIR}, nothing to copy.`);
