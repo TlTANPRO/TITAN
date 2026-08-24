@@ -1,6 +1,5 @@
 [
   {
-    "platform": "instagram",
     "account": {
       "slug": "ig-majangmejeng_",
       "username": "majangmejeng_",
@@ -16122,24 +16121,9 @@
         "mentions": [],
         "postedAt": "2026-06-11T12:30:10.000Z"
       }
-    ],
-    "scrapedAt": "2026-08-21T16:40:57.664Z",
-    "lastFreeEnrichAt": "2026-08-21T16:40:57.664Z",
-    "stats": {
-      "totalPosts": 730,
-      "durationMs": 46590,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "i.instagram-clips",
-      "newPostsAdded": 3,
-      "metricsUpgraded": 66,
-      "enrichedLikeCount": 623,
-      "enrichedViewCount": 225,
-      "enrichedCommentCount": 320
-    }
+    ]
   },
   {
-    "platform": "instagram",
     "account": {
       "slug": "ig-syahfalahproperti",
       "username": "syahfalahproperti",
@@ -30253,24 +30237,9 @@
         "mentions": [],
         "postedAt": "2026-02-25T01:13:32.000Z"
       }
-    ],
-    "scrapedAt": "2026-08-21T16:41:42.157Z",
-    "lastFreeEnrichAt": "2026-08-21T16:41:42.157Z",
-    "stats": {
-      "totalPosts": 516,
-      "durationMs": 42481,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "i.instagram-clips",
-      "newPostsAdded": 34,
-      "metricsUpgraded": 59,
-      "enrichedLikeCount": 390,
-      "enrichedViewCount": 370,
-      "enrichedCommentCount": 207
-    }
+    ]
   },
   {
-    "platform": "instagram",
     "account": {
       "slug": "ig-nisyanandaa",
       "username": "nisyanandaa",
@@ -36262,24 +36231,9 @@
         ],
         "postedAt": "2023-02-03T11:23:45.000Z"
       }
-    ],
-    "scrapedAt": "2026-08-21T16:42:16.902Z",
-    "lastFreeEnrichAt": "2026-08-21T16:42:16.902Z",
-    "stats": {
-      "totalPosts": 279,
-      "durationMs": 32738,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "i.instagram-clips",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 78,
-      "enrichedLikeCount": 224,
-      "enrichedViewCount": 121,
-      "enrichedCommentCount": 222
-    }
+    ]
   },
   {
-    "platform": "instagram",
     "account": {
       "slug": "ig-ardiantanah",
       "username": "ardiantanah",
@@ -51587,24 +51541,9 @@
         "mentions": [],
         "postedAt": "2025-11-13T12:29:17.000Z"
       }
-    ],
-    "scrapedAt": "2026-08-21T16:43:08.501Z",
-    "lastFreeEnrichAt": "2026-08-21T16:43:08.501Z",
-    "stats": {
-      "totalPosts": 618,
-      "durationMs": 49596,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "i.instagram-clips",
-      "newPostsAdded": 9,
-      "metricsUpgraded": 89,
-      "enrichedLikeCount": 585,
-      "enrichedViewCount": 580,
-      "enrichedCommentCount": 378
-    }
+    ]
   },
   {
-    "platform": "tiktok",
     "account": {
       "slug": "tt-majangmejeng_",
       "username": "majangmejeng_",
@@ -68329,21 +68268,9 @@
         "postUrl": "https://www.tiktok.com/@majangmejeng_/video/7450037240383720711?_r=1&u_code=0&region=US&mid=6954125300368148482&preview_pb=0&sharer_language=en&_d=f0231h90f19k4m&share_item_id=7450037240383720711&source=h5_t",
         "postedAt": "2024-12-19T08:29:33.000Z"
       }
-    ],
-    "scrapedAt": "2026-08-21T16:43:34.959Z",
-    "lastFreeEnrichAt": "2026-08-21T16:43:34.959Z",
-    "stats": {
-      "totalPosts": 539,
-      "durationMs": 24340,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "bundled-preservation",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 0
-    }
+    ]
   },
   {
-    "platform": "tiktok",
     "account": {
       "slug": "tt-syahfalahproperti",
       "username": "syahfalahproperti",
@@ -83458,21 +83385,9 @@
         "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7197207221699202331?_r=1&u_code=0&region=US&mid=7137873319721699330&preview_pb=0&sharer_language=en&_d=f0230345jbmb5b&share_item_id=7197207221699202331&source=h5_t",
         "postedAt": "2023-02-07T00:40:02.000Z"
       }
-    ],
-    "scrapedAt": "2026-08-21T16:44:01.847Z",
-    "lastFreeEnrichAt": "2026-08-21T16:44:01.847Z",
-    "stats": {
-      "totalPosts": 422,
-      "durationMs": 23874,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "bundled-preservation",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 0
-    }
+    ]
   },
   {
-    "platform": "tiktok",
     "account": {
       "slug": "tt-ardian.tanah",
       "username": "ardian.tanah",
@@ -96003,21 +95918,9 @@
         "musicTitle": "original sound - ardiantanahmenjawab",
         "musicAuthor": "achmad ardiansyah"
       }
-    ],
-    "scrapedAt": "2026-08-21T16:44:30.641Z",
-    "lastFreeEnrichAt": "2026-08-21T16:44:30.641Z",
-    "stats": {
-      "totalPosts": 370,
-      "durationMs": 25783,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "bundled-preservation",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 0
-    }
+    ]
   },
   {
-    "platform": "tiktok",
     "account": {
       "slug": "tt-ardiantanahmenjawab",
       "username": "ardiantanahmenjawab",
@@ -111146,21 +111049,9 @@
         "postUrl": "https://www.tiktok.com/@ardiantanahmenjawab/video/7405805652016221445?_r=1&u_code=0&region=US&mid=7115411254964914178&preview_pb=0&sharer_language=en&_d=f01jb7cjhfe6gl&share_item_id=7405805652016221445&source=h5_t",
         "postedAt": "2024-08-22T03:48:26.000Z"
       }
-    ],
-    "scrapedAt": "2026-08-21T16:44:55.870Z",
-    "lastFreeEnrichAt": "2026-08-21T16:44:55.870Z",
-    "stats": {
-      "totalPosts": 478,
-      "durationMs": 22222,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "bundled-preservation",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 0
-    }
+    ]
   },
   {
-    "platform": "tiktok",
     "account": {
       "slug": "tt-itsnisyananda",
       "username": "itsnisyananda",
@@ -116406,17 +116297,6 @@
         "postUrl": "https://www.tiktok.com/@itsnisyananda/video/7411806799868775685?_r=1&u_code=0&region=GB&mid=7411806802004069125&preview_pb=0&sharer_language=en&_d=f01g4e7bmcjlbd&share_item_id=7411806799868775685&source=h5_t",
         "postedAt": "2024-09-07T07:55:57.000Z"
       }
-    ],
-    "scrapedAt": "2026-08-21T16:45:23.697Z",
-    "lastFreeEnrichAt": "2026-08-21T16:45:23.697Z",
-    "stats": {
-      "totalPosts": 163,
-      "durationMs": 24819,
-      "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "bundled-preservation",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 0
-    }
+    ]
   }
 ]
