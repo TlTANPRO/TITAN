@@ -25,11 +25,29 @@ const DATA_FILE = path.join(ROOT, 'accounts-full.json');
 // (tested 2026-08-24). Fetch the full flat list (fast, no per-video requests)
 // and truncate client-side.
 export async function ytdlpFlatList(username, limit = 30) {
-  const { stdout } = await execFileP('yt-dlp', [
+  // V35: prefer `yt-dlp` binary, fallback `python3 -m yt_dlp` (pip --user
+  // binary may be missing from PATH on some runners).
+  // IMPORTANT: yt-dlp can exit non-zero (e.g. 120 = partial extraction errors
+  // on some videos) while stdout still contains the full flat list — so we
+  // collect stdout and only fail if it's empty.
+  const args = [
     '--flat-playlist',
     '--print', '%(id)s|%(timestamp)s|%(title).500s',
+    '--ignore-errors',
     `https://www.tiktok.com/@${username}`,
-  ], { timeout: 180000, maxBuffer: 64 * 1024 * 1024 });
+  ];
+  let stdout = '';
+  try {
+    const r1 = await execFileP('yt-dlp', args, { timeout: 180000, maxBuffer: 64 * 1024 * 1024 });
+    stdout = r1.stdout;
+  } catch (binErr) {
+    // exit non-zero but stdout may still be populated
+    stdout = (binErr.stdout ?? '');
+    if (!stdout.trim()) {
+      const r2 = await execFileP('python3', ['-m', 'yt_dlp', ...args], { timeout: 180000, maxBuffer: 64 * 1024 * 1024 });
+      stdout = r2.stdout;
+    }
+  }
   const out = [];
   for (const line of stdout.split('\n')) {
     if (out.length >= limit) break;
@@ -76,7 +94,9 @@ export async function scrapeUser(username, existingShortcodes = new Set(), opts 
 async function main() {
   const force = process.argv.includes('--force');
   const data = JSON.parse(await fs.readFile(DATA_FILE, 'utf8'));
-  const ttAccounts = data.filter((a) => a.platform === 'tiktok');
+  // V35: no explicit platform field — slug prefix is the platform marker
+  // (ig-* / tt-*), consistent with generate-data.mjs & health check.
+  const ttAccounts = data.filter((a) => String(a.account?.slug ?? '').startsWith('tt-'));
   let totalNew = 0;
   let failures = 0;
 
@@ -94,8 +114,10 @@ async function main() {
       const latest = acct.posts[0];
       console.log(`  [${username}] +${newPosts.length} new | latest: ${latest?.postedAt ?? '?'}`);
     } catch (e) {
-      failures++;
-      console.error(`  [${username}] FAILED: ${String(e.message).slice(0, 120)}`);
+    failures++;
+    // Full stderr — V35 lesson: truncated message hid the root cause on runner
+    console.error(`  [${username}] FAILED: ${String(e.message).slice(0, 400)}`);
+    if (e.stderr) console.error(`  [${username}] stderr: ${String(e.stderr).slice(0, 400)}`);
     }
   }
 
