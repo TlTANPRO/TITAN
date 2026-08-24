@@ -5,8 +5,8 @@
 ## Live site (cek DULU sebelum claim apapun)
 
 - **URL**: https://tltanpro.github.io/TITAN/
-- **Bundle hash**: `vite-index.template-BrpFW5aO.js` + Admin chunk `Admin-BgnHIZw2.js` (cek `curl -s https://tltanpro.github.io/TITAN/ | grep -oE "vite-index.template-[A-Za-z0-9]+\.js" | head -1`)
-- **Data live**: `accounts-full.json` (root) = 9 akun, 3999 posts, 0 cross-dup
+- **Bundle hash**: cek dinamis `curl -s https://tltanpro.github.io/TITAN/ | grep -oE "vite-index.template-[A-Za-z0-9]+\.js" | head -1` (V35 live: DIRrz4se)
+- **Data live**: `accounts-full.json` (root) = 9 akun, jumlah posts cek dinamis (jangan hardcode — V35: 4252). TT scraper primary = yt-dlp (V35), Urlebird fallback
 - **Deploy**: `pnpm run deploy` (lokal) — build + copy dist→root + git commit + push
 - **Backup**: user harus run `pnpm run deploy` (V25 lesson)
 
