@@ -53,7 +53,9 @@ async function callLLM(messages) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Titan-Provider': 'auto'
+      'X-Titan-Provider': 'auto',
+      // V36.2: worker requires auth since V34 Faza 1
+      ...(process.env.TITAN_CLIENT_KEY ? { 'X-Titan-Key': process.env.TITAN_CLIENT_KEY } : {})
     },
     body: JSON.stringify({
       model: MODEL,

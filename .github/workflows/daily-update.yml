@@ -170,6 +170,7 @@ jobs:
           pip install -q yt-dlp || true
           node scripts/scrape-tt-ytdlp.mjs
           echo "::notice::TT yt-dlp scrape outcome=success"
+          node scripts/enrich-tt-tikwm-v36.mjs --limit=40 || echo "::warning::TT enrich failed — counts stay empty"
         id: scrape-tt-ytdlp
 
       - name: Scrape TikTok via Urlebird (fallback)
@@ -277,6 +278,8 @@ jobs:
       - name: Generate AI insights (optional, fail soft)
         env:
           VITE_LLM_PROXY_URL: ${{ secrets.LLM_PROXY_URL }}
+          VITE_TITAN_KEY: ${{ secrets.TITAN_CLIENT_KEY }}
+          TITAN_CLIENT_KEY: ${{ secrets.TITAN_CLIENT_KEY }}
         run: |
           if [ "${{ github.event.inputs.regenerate_ai }}" = "true" ]; then
             echo "Force regenerate AI insights"

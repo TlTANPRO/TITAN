@@ -26,7 +26,7 @@ export function AppShell() {
       <Sidebar limitedCount={limitedCount} />
       <div className="flex-1 min-w-0 flex flex-col">
         <Topbar limitedCount={limitedCount} />
-        <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
+        <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none pb-20 sm:pb-6">
           <Outlet />
         </main>
       </div>

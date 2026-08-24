@@ -104,7 +104,15 @@ export default function AccountPage() {
   return (
     <div className="space-y-4" ref={tabSectionRef}>
       {/* Breadcrumb: TITAN / Akun / @username */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs flex-wrap">
+        <Link
+          to="/account"
+          className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-bg-tertiary border border-border-subtle text-text-secondary hover:text-text-primary hover:border-border-default transition-colors mr-1"
+          aria-label="Kembali ke daftar akun"
+        >
+          <ArrowLeft className="w-3 h-3" />
+          Kembali
+        </Link>
         <Link to="/" className="text-text-muted hover:text-text-primary transition-colors">TITAN</Link>
         <ChevronRight className="w-3 h-3 text-text-muted/50" />
         <Link to="/account" className="text-text-muted hover:text-text-primary transition-colors">Akun</Link>

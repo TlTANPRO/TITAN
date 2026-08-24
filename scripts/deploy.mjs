@@ -166,7 +166,8 @@ async function main() {
   console.log('\n[2/6] Vite build...');
   const buildEnv = {
     ...process.env,
-    VITE_LLM_PROXY_URL: process.env.VITE_LLM_PROXY_URL || 'https://titan-llm-proxy.nickasad10007.workers.dev'
+    VITE_LLM_PROXY_URL: process.env.VITE_LLM_PROXY_URL || 'https://titan-llm-proxy.nickasad10007.workers.dev',
+    VITE_TITAN_KEY: process.env.VITE_TITAN_KEY || ''
   };
   run('pnpm run build', { stdio: 'inherit', env: buildEnv });
 

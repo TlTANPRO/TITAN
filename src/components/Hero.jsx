@@ -72,7 +72,8 @@ export function Hero({ accounts, allPosts }) {
 
   return (
     <section className="surface p-6 bg-gradient-to-br from-bg-secondary to-bg-tertiary">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* V36: mobile 1-col (KPI numbers were colliding at 2-col), tablet 2, desktop 4 */}
+      <div className="grid grid-cols-1 min-[420px]:grid-cols-2 md:grid-cols-4 gap-4">
         <KpiItem icon={<Users className="w-4 h-4" />} label="Total Pengikut" value={formatNumber(kpi.totalFollowers)} accent="primary" href="/account?sort=followerCount" />
         <KpiItem icon={<Sparkles className="w-4 h-4" />} label="Total Postingan" value={formatNumber(kpi.totalPosts)} accent="secondary" delta={delta.posts} href="/library" />
         <KpiItem icon={<Heart className="w-4 h-4" />} label="Total Suka" value={formatNumber(kpi.totalLikes)} accent="danger" delta={delta.likes} href="/library?sortBy=likeCount" />

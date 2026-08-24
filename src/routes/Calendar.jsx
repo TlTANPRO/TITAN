@@ -4,7 +4,7 @@
 // Click day to see posts.
 import { useState, useMemo } from 'react';
 import { useAccounts } from '../hooks/useAccount.js';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalIcon } from 'lucide-react';
 import { EmptyState } from '../components/ui/EmptyState.jsx';
 import { PageHeader } from '../components/layout/PageHeader.jsx';
 import { PulseBar } from '../components/ui/PulseBar.jsx';

@@ -68,7 +68,7 @@ export function Sparkline({ data, color, width = 80, height = 24 }) {
 
 // Range selector for daily growth chart. Mirrors CrossAccountTimeline.RANGES
 // pattern. `month` is sentinel — caller derives month list from data.
-const RANGES_ADMIN = {
+export const RANGES_ADMIN = {
   '7d': 7 * 86400,
   '30d': 30 * 86400,
   '90d': 90 * 86400,

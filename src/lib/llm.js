@@ -166,7 +166,9 @@ async function callProxy(_provider, messages, opts) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Titan-Provider': 'auto' // Worker picks best available across all configured providers
+      'X-Titan-Provider': 'auto', // Worker picks best available across all configured providers
+      // V36.2: worker requires auth since V34 Faza 1 (key injected at build time)
+      ...(import.meta.env.VITE_TITAN_KEY ? { 'X-Titan-Key': import.meta.env.VITE_TITAN_KEY } : {})
     },
     body: JSON.stringify(body)
   });
