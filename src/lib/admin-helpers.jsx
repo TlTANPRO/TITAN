@@ -75,7 +75,7 @@ export const RANGES_ADMIN = {
   all: null,
   month: 'month'
 };
-const RANGE_LABELS = { '7d': '7H', '30d': '30H', '90d': '90H', all: 'Semua', month: 'Bulan' };
+export const RANGE_LABELS = { '7d': '7H', '30d': '30H', '90d': '90H', all: 'Semua', month: 'Bulan' };
 
 // Per-day aggregates across all admin posts (combined timeline).
 // Returns sorted array of { day: 'YYYY-MM-DD', total: N, perAdmin: { name: N } }.
@@ -386,7 +386,7 @@ export function buildSparkline(posts, days = 7) {
 
 // Build ranking rows for the Admin Ranking table.
 // Sorted by `metric` desc, ties broken by postCount desc.
-const RANK_METRICS = {
+export const RANK_METRICS = {
   postCount:     { label: 'Post',        better: 'more' },
   totalLikes:    { label: 'Suka',        better: 'more' },
   totalComments: { label: 'Komentar',    better: 'more' },
