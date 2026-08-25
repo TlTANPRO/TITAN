@@ -18,8 +18,8 @@ import { MONTH_NAMES_ID, DAY_NAMES_SHORT } from '../lib/titan-tokens.js';
 const PLATFORM_HUE = {
   instagram: {
     name: 'Instagram',
-    // V37.1: teks eksplisit per-shade agar kontras ≥4.5 di semua intensitas
-    shades: ['bg-accent-instagram/15 text-text-primary', 'bg-accent-instagram/40 text-text-primary', 'bg-accent-instagram/65 text-white', 'bg-accent-instagram brightness-[0.72] text-white']
+    // V37.1: axe tidak menghitung CSS filter — pakai warna solid eksplisit (pink600, kontras 4.60)
+    shades: ['bg-accent-instagram/15 text-text-primary', 'bg-accent-instagram/40 text-text-primary', 'bg-[#db2777] text-white', 'bg-[#db2777] text-white']
   },
   tiktok: {
     name: 'TikTok',
@@ -179,7 +179,7 @@ export default function Calendar() {
                   flex flex-col items-center justify-center
                   transition-colors
                   ${cellColor(entry)}
-                  ${current ? '' : 'brightness-50'}
+                  ${current ? '' : 'brightness-90'}
                   ${current ? '' : '!text-white'}
                   ${isToday ? 'ring-1 ring-accent-primary' : ''}
                   ${isSelected ? 'ring-2 ring-accent-primary' : ''}
