@@ -296,9 +296,11 @@ export default function Library() {
         </div>
       ) : (
         <div className="surface overflow-hidden">
+          {/* V37: scrollable body + sticky header (max-h keeps page compact) */}
           <div className="overflow-x-auto">
+            <div className="max-h-[560px] overflow-y-auto">
             <table className="w-full text-sm">
-              <thead>
+              <thead className="sticky top-0 bg-bg-secondary z-10">
                 <tr className="border-b border-border-subtle bg-bg-tertiary/40">
                   <SortHeader col="createTime" label="Tanggal" />
                   <th scope="col" className="px-3 py-2.5 font-medium text-text-muted uppercase text-[10px] tracking-wider text-left">Akun</th>
@@ -376,6 +378,7 @@ export default function Library() {
                 })}
               </tbody>
             </table>
+            </div>
           </div>
           <div className="px-3 py-2 text-[10px] text-text-muted border-t border-border-subtle/50 bg-bg-tertiary/20 flex justify-between">
             <span>Menampilkan {filtered.length} dari {matchedCount} cocok</span>

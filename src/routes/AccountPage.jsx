@@ -1,7 +1,7 @@
 // V21.1: Account Detail — tab shell wrapping 5 modular subcomponents.
 // Tabs: Overview (default), Content, Patterns, Insights, Benchmark.
 // URL: /account/:slug?tab=patterns (deep-linkable).
-import { useMemo, useEffect, useRef } from 'react';
+import { useMemo, useEffect, useRef, lazy, Suspense } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import {
   LayoutDashboard, FileText, Calendar, Lightbulb, Globe2, ChevronRight, ArrowLeft
@@ -14,8 +14,11 @@ import { SectionLabel } from '../components/ui/SectionLabel.jsx';
 import { AccountOverview } from '../components/account/AccountOverview.jsx';
 import { AccountContent } from '../components/account/AccountContent.jsx';
 import { AccountPatterns } from '../components/account/AccountPatterns.jsx';
-import { AccountInsights } from '../components/account/AccountInsights.jsx';
-import { AccountBenchmark } from '../components/account/AccountBenchmark.jsx';
+
+// V37 perf: Insights/Benchmark tabs (pull recharts, ~420KB vendor) lazy-loaded
+// so first paint of /account/:slug doesn't pay for charts the user may never open.
+const AccountInsights = lazy(() => import('../components/account/AccountInsights.jsx').then(m => ({ default: m.AccountInsights })));
+const AccountBenchmark = lazy(() => import('../components/account/AccountBenchmark.jsx').then(m => ({ default: m.AccountBenchmark })));
 
 const TAB_KEYS = ['overview', 'content', 'patterns', 'insights', 'benchmark'];
 const DEFAULT_TAB = 'overview';
@@ -130,8 +133,8 @@ export default function AccountPage() {
         {activeTab === 'overview' && <AccountOverview account={account} insights={insights} />}
         {activeTab === 'content' && <AccountContent account={account} insights={insights} />}
         {activeTab === 'patterns' && <AccountPatterns insights={insights} />}
-        {activeTab === 'insights' && <AccountInsights account={account} insights={insights} />}
-        {activeTab === 'benchmark' && <AccountBenchmark account={account} insights={insights} />}
+        {activeTab === 'insights' && <Suspense fallback={<SkeletonChart />}><AccountInsights account={account} insights={insights} /></Suspense>}
+        {activeTab === 'benchmark' && <Suspense fallback={<SkeletonChart />}><AccountBenchmark account={account} insights={insights} /></Suspense>}
       </div>
     </div>
   );

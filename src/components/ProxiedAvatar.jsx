@@ -57,7 +57,9 @@ export function ProxiedAvatar({ account, size = 48, className = '' }) {
     );
   }
 
-  // No localAvatar OR localAvatar failed → brand-icon tile (always works)
+  // No localAvatar OR localAvatar failed → brand-icon tile (always works).
+  // V37 a11y: role="img" + aria-label (div can't carry aria-label without a
+  // role — that was the Lighthouse aria-prohibited-attr violation).
   return (
     <div
       className={`flex-shrink-0 rounded-full flex items-center justify-center ${
@@ -66,6 +68,7 @@ export function ProxiedAvatar({ account, size = 48, className = '' }) {
           : 'bg-black'
       } ${className}`}
       style={{ width: size, height: size }}
+      role="img"
       aria-label={`@${account?.username ?? 'account'}`}
     >
       <PlatformIcon className="text-white" style={{ width: size * 0.5, height: size * 0.5 }} />

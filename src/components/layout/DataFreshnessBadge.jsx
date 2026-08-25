@@ -54,6 +54,8 @@ export function DataFreshnessBadge() {
     <span
       className={`hidden md:inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-semibold tabular-nums ${toneClass}`}
       title="Usia postingan terbaru di seluruh akun"
+      aria-live="polite"
+      aria-label={`Status data: ${f.label}`}
     >
       <span className={`w-1.5 h-1.5 rounded-full ${dot}`} aria-hidden="true" />
       {f.label}

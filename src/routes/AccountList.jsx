@@ -2,8 +2,9 @@
 // Filter by platform, sort, search. Each row clickable to detail page.
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ArrowUpDown } from 'lucide-react';
+import { Search, ArrowUpDown, ArrowUp, ArrowDown, Users } from 'lucide-react';
 import { useAccounts, useCrossAccountComparison } from '../hooks/useAccount.js';
+import { PageHeader } from '../components/layout/PageHeader.jsx';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PlatformIcon, platformLabel } from '../components/icons/PlatformIcon.jsx';
 import { FreshnessBadge } from '../components/ui/FreshnessBadge.jsx';
@@ -72,12 +73,20 @@ export default function AccountList() {
     const cls = responsive === 'md' ? 'hidden md:table-cell' : responsive === 'lg' ? 'hidden lg:table-cell' : '';
     return (
       <th
+        scope="col"
         onClick={() => toggleSort(k)}
+        aria-sort={sortKey === k ? (sortDir === 'asc' ? 'ascending' : 'descending') : undefined}
         className={`px-3 py-2 text-${align} font-medium text-text-muted uppercase text-[10px] tracking-wider cursor-pointer hover:text-text-primary select-none ${cls}`}
       >
         <span className="inline-flex items-center gap-1">
           {label}
-          <ArrowUpDown className={`w-3 h-3 ${sortKey === k ? 'text-accent-primary' : 'opacity-30'}`} />
+          {sortKey === k && sortDir === 'desc' ? (
+            <ArrowDown className="w-3 h-3 text-accent-primary" />
+          ) : sortKey === k ? (
+            <ArrowUp className="w-3 h-3 text-accent-primary" />
+          ) : (
+            <ArrowUpDown className="w-3 h-3 opacity-30" />
+          )}
         </span>
       </th>
     );
@@ -86,11 +95,8 @@ export default function AccountList() {
   return (
     <div className="p-4 md:p-6 space-y-4 max-w-7xl mx-auto">
       <PulseBar />
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-text-primary">Daftar Akun</h1>
-        <p className="text-sm text-text-muted mt-0.5">{rawAccounts.length} akun · 4 Instagram + 5 TikTok</p>
-      </div>
+      {/* Header — V37: pakai PageHeader agar h1/subtitle konsisten antar page */}
+      <PageHeader icon={Users} title="Daftar Akun" subtitle={`${rawAccounts.length} akun · 4 Instagram + 5 TikTok`} showBreadcrumb={false} />
 
       {/* Filters */}
       <div className="surface p-3 flex flex-col sm:flex-row gap-2">

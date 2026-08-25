@@ -124,7 +124,6 @@ function KpiItem({ icon, label, value, accent = 'primary', href, delta }) {
       <a
         href={href}
         className="block hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary rounded"
-        aria-label={`Lihat detail ${label}`}
       >
         {content}
       </a>

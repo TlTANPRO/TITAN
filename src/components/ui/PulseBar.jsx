@@ -59,7 +59,7 @@ export function PulseBar({ title = 'Pulse' }) {
       <span className="text-[10px] font-mono tracking-widest uppercase text-text-muted flex-shrink-0">
         {title}
       </span>
-      <div className="flex items-center gap-2 flex-wrap" aria-hidden="true">
+      <div className="flex items-center gap-2 flex-wrap">
         {pulses.map((p) => {
           const style = FRESH_STYLE[p.freshness] ?? FRESH_STYLE.stale;
           const size = 8 + Math.round(p.intensity * 6); // 8–14px by activity
@@ -68,6 +68,7 @@ export function PulseBar({ title = 'Pulse' }) {
               key={p.slug}
               to={`/account/${p.slug}`}
               title={`@${p.username} — ${p.recent7d} post/7d`}
+              aria-label={`@${p.username} — ${p.recent7d} post per 7 hari`}
               className={`rounded-full ${style.base} ring-2 ${style.ring} hover:scale-125 transition-transform [transition-duration:var(--duration-fast)]`}
               style={{ width: size, height: size }}
             />

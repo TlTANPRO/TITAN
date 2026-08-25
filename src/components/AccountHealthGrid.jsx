@@ -69,7 +69,7 @@ function HealthCard({ acc, posts }) {
           title={`Health ${score}/100`}
         >
           <span>{grade}</span>
-          <span className="font-normal text-[10px] opacity-75">{score}</span>
+          <span className="font-normal text-[10px]">{score}</span>
         </div>
       </div>
 

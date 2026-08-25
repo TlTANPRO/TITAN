@@ -723,15 +723,15 @@ export default function Admin() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-xs text-text-muted uppercase border-b border-border-subtle">
-                <th className="py-3 px-4 text-left font-medium">#</th>
-                <th className="py-3 px-4 text-left font-medium">Admin</th>
-                <th className="py-3 px-4 text-right font-medium">Post</th>
-                <th className="py-3 px-4 text-right font-medium">Suka</th>
-                <th className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.md}`}>Komentar</th>
-                <th className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.md}`}>Views</th>
-                <th className="py-3 px-4 text-right font-medium">Avg Suka</th>
-                <th className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.lg}`}>Avg Komentar</th>
-                <th className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.lg}`}>Avg Views</th>
+                <th scope="col" className="py-3 px-4 text-left font-medium">#</th>
+                <th scope="col" className="py-3 px-4 text-left font-medium">Admin</th>
+                <th scope="col" className="py-3 px-4 text-right font-medium">Post</th>
+                <th scope="col" className="py-3 px-4 text-right font-medium">Suka</th>
+                <th scope="col" className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.md}`}>Komentar</th>
+                <th scope="col" className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.md}`}>Views</th>
+                <th scope="col" className="py-3 px-4 text-right font-medium">Avg Suka</th>
+                <th scope="col" className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.lg}`}>Avg Komentar</th>
+                <th scope="col" className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.lg}`}>Avg Views</th>
               </tr>
             </thead>
             <tbody>
@@ -808,20 +808,20 @@ export default function Admin() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-xs text-text-muted uppercase border-b border-border-subtle">
-                <th className="py-3 px-4 text-left font-medium">#</th>
-                <th className="py-3 px-4 text-left font-medium">Admin</th>
-                <th className="py-3 px-4 text-right font-medium">IG</th>
-                <th className="py-3 px-4 text-right font-medium">TT</th>
-                <th className="py-3 px-4 text-right font-medium">Cross</th>
+                <th scope="col" className="py-3 px-4 text-left font-medium">#</th>
+                <th scope="col" className="py-3 px-4 text-left font-medium">Admin</th>
+                <th scope="col" className="py-3 px-4 text-right font-medium">IG</th>
+                <th scope="col" className="py-3 px-4 text-right font-medium">TT</th>
+                <th scope="col" className="py-3 px-4 text-right font-medium">Cross</th>
                 <th className="py-3 px-4 text-right font-medium cursor-pointer select-none" onClick={() => setCrossSortKey('unique')} title="Jumlah post unik setelah cross-post IG↔TT dihitung sekali">
                   <span className="inline-flex items-center gap-1.5">
                     Total Post
                     <SortIcon active={crossSortKey === 'unique'} dir="desc" />
                   </span>
                 </th>
-                <th className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.md}`}>ER %</th>
-                <th className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.md}`}>Avg Suka</th>
-                <th className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.lg}`}>Avg Views</th>
+                <th scope="col" className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.md}`}>ER %</th>
+                <th scope="col" className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.md}`}>Avg Suka</th>
+                <th scope="col" className={`py-3 px-4 text-right font-medium ${COL_RESPONSIVE.lg}`}>Avg Views</th>
               </tr>
             </thead>
             <tbody>
@@ -1034,35 +1034,35 @@ export default function Admin() {
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-bg-secondary z-10">
                 <tr className="text-xs text-text-muted uppercase border-b border-border-subtle">
-                  <th className="py-3 px-4 text-left font-medium">Admin</th>
-                  <th className="py-3 px-4 text-left font-medium">Akun</th>
-                  <th className={`py-3 px-4 text-left font-medium ${COL_RESPONSIVE.md}`}>Platform</th>
+                  <th scope="col" className="py-3 px-4 text-left font-medium">Admin</th>
+                  <th scope="col" className="py-3 px-4 text-left font-medium">Akun</th>
+                  <th scope="col" className={`py-3 px-4 text-left font-medium ${COL_RESPONSIVE.md}`}>Platform</th>
                   <th className="py-3 px-4 text-left font-medium cursor-pointer select-none" onClick={() => handleSort('createTime')}>
                     <span className="inline-flex items-center gap-1.5">
                       Tanggal
                       <SortIcon active={sortKey === 'createTime'} dir={sortDir} />
                     </span>
                   </th>
-                  <th className={`py-3 px-4 text-left font-medium ${COL_RESPONSIVE.lg}`}>Caption</th>
+                  <th scope="col" className={`py-3 px-4 text-left font-medium ${COL_RESPONSIVE.lg}`}>Caption</th>
                   <th className="py-3 px-4 text-right font-medium cursor-pointer select-none" onClick={() => handleSort('likeCount')}>
                     <span className="inline-flex items-center gap-1.5">
                       Suka
                       <SortIcon active={sortKey === 'likeCount'} dir={sortDir} />
                     </span>
                   </th>
-                  <th className={`py-3 px-4 text-right font-medium cursor-pointer select-none ${COL_RESPONSIVE.md}`} onClick={() => handleSort('commentCount')}>
+                  <th scope="col" className={`py-3 px-4 text-right font-medium cursor-pointer select-none ${COL_RESPONSIVE.md}`} onClick={() => handleSort('commentCount')}>
                     <span className="inline-flex items-center gap-1.5">
                       Komen
                       <SortIcon active={sortKey === 'commentCount'} dir={sortDir} />
                     </span>
                   </th>
-                  <th className={`py-3 px-4 text-right font-medium cursor-pointer select-none ${COL_RESPONSIVE.md}`} onClick={() => handleSort('viewCount')}>
+                  <th scope="col" className={`py-3 px-4 text-right font-medium cursor-pointer select-none ${COL_RESPONSIVE.md}`} onClick={() => handleSort('viewCount')}>
                     <span className="inline-flex items-center gap-1.5">
                       Views
                       <SortIcon active={sortKey === 'viewCount'} dir={sortDir} />
                     </span>
                   </th>
-                  <th className="py-3 px-4 text-right font-medium">Buka</th>
+                  <th scope="col" className="py-3 px-4 text-right font-medium">Buka</th>
                 </tr>
               </thead>
               <tbody>

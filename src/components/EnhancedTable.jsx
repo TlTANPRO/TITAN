@@ -95,8 +95,10 @@ export function EnhancedTable({ comparison }) {
               {COLUMNS.map((c) => (
                 <th
                   key={c.key}
+                  scope="col"
                   className={`py-3 px-4 font-medium cursor-pointer select-none ${c.align === 'right' ? 'text-right' : 'text-left'} ${RESPONSIVE_CLASS[c.responsive]}`}
                   onClick={() => c.sortable && handleSort(c.key)}
+                  aria-sort={sortKey === c.key ? (sortDir === 'asc' ? 'ascending' : 'descending') : undefined}
                 >
                   <span className={`inline-flex items-center gap-1.5 ${c.align === 'right' ? 'flex-row-reverse' : ''}`}>
                     {c.label}
