@@ -64,13 +64,14 @@ export function PulseBar({ title = 'Pulse' }) {
           const style = FRESH_STYLE[p.freshness] ?? FRESH_STYLE.stale;
           const size = 8 + Math.round(p.intensity * 6); // 8–14px by activity
           return (
+            // V37 a11y target-size: visual dot kecil, tapi padding memberi hit area >=24px
             <Link
               key={p.slug}
               to={`/account/${p.slug}`}
               title={`@${p.username} — ${p.recent7d} post/7d`}
               aria-label={`@${p.username} — ${p.recent7d} post per 7 hari`}
-              className={`rounded-full ${style.base} ring-2 ${style.ring} hover:scale-125 transition-transform [transition-duration:var(--duration-fast)]`}
-              style={{ width: size, height: size }}
+              className={`rounded-full ${style.base} ring-2 ring-inset ${style.ring} hover:scale-110 transition-transform [transition-duration:var(--duration-fast)] flex-shrink-0`}
+              style={{ width: size + 16, height: size + 16, backgroundClip: 'content-box', padding: 8 }}
             />
           );
         })}

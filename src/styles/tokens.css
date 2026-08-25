@@ -37,12 +37,12 @@
   --border-strong: oklch(0.50 0.005 280);
   --border-strong-rgb: 108 108 115;
 
-  --accent-primary: oklch(0.65 0.20 250);
-  --accent-primary-rgb: 74 130 244;
-  --accent-primary-hover: oklch(0.58 0.22 250);
-  --accent-primary-hover-rgb: 56 110 235;
-  --accent-secondary: oklch(0.58 0.22 280);
-  --accent-secondary-rgb: 140 96 236;
+  --accent-primary: oklch(0.72 0.16 250);
+  --accent-primary-rgb: 110 160 252;
+  --accent-primary-hover: oklch(0.65 0.20 250);
+  --accent-primary-hover-rgb: 74 130 244;
+  --accent-secondary: oklch(0.66 0.18 280);
+  --accent-secondary-rgb: 158 116 244;
 
   /* V34: brand accent — amber-orange dari logo Majang Mejeng.
      V36: promoted — dipakai di logo, active nav, PulseBar, CTA utama. */
@@ -53,8 +53,8 @@
   --status-success-rgb: 52 180 124;
   --status-warning: oklch(0.75 0.16 75);
   --status-warning-rgb: 224 160 66;
-  --status-danger: oklch(0.62 0.22 25);
-  --status-danger-rgb: 232 82 66;
+  --status-danger: oklch(0.72 0.16 25);
+  --status-danger-rgb: 248 124 110;
   --status-info: oklch(0.65 0.16 220);
   --status-info-rgb: 66 156 224;
 

@@ -92,6 +92,7 @@ export function CombinedHeatmap({ accounts }) {
                   }}
                   onMouseEnter={() => setHover({ day, hour, value, count })}
                   onMouseLeave={() => setHover(null)}
+                  role="img"
                   title={`${dayLabel} ${hour.toString().padStart(2, '0')}:00 — ${count} post, avg ${Math.round(value)} engagement`}
                   aria-label={`${dayLabel} ${hour}:00, ${count} post`}
                 />

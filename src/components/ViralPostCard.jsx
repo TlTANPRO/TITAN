@@ -150,7 +150,9 @@ export function ViralPostCard({ post, rank }) {
   // V26: kalau ada postUrl → buka video/post asli di tab baru (user request).
   // Fallback ke internal /account/:slug kalau tidak ada (defensive).
   const sharedClass = "surface p-3 flex flex-col gap-2 hover:border-accent-primary/50 transition-colors group";
-  const sharedAriaLabel = `Buka post viral @${safePost.username}: ${safePost.caption?.slice(0, 60) ?? 'tanpa caption'}`;
+  // V37 a11y: accessible name harus mengandung teks visible di dalam link
+  // (Lighthouse label-content-name-mismatch). Teks visible = "@username".
+  const sharedAriaLabel = `Buka post viral @${safePost.username}`;
 
   if (targetUrl) {
     return (
