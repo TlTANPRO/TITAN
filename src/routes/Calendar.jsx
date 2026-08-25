@@ -181,6 +181,7 @@ export default function Calendar() {
                   transition-colors
                   ${cellColor(entry)}
                   ${current ? '' : 'opacity-60'}
+                  ${current ? '' : '!text-white'}
                   ${isToday ? 'ring-1 ring-accent-primary' : ''}
                   ${isSelected ? 'ring-2 ring-accent-primary' : ''}
                   ${count > 0 ? 'cursor-pointer' : 'cursor-default'}
