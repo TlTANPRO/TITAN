@@ -179,7 +179,7 @@ export default function Calendar() {
                   flex flex-col items-center justify-center
                   transition-colors
                   ${cellColor(entry)}
-                  ${current ? '' : 'brightness-75'}
+                  ${current ? '' : 'brightness-50'}
                   ${current ? '' : '!text-white'}
                   ${isToday ? 'ring-1 ring-accent-primary' : ''}
                   ${isSelected ? 'ring-2 ring-accent-primary' : ''}
