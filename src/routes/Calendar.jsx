@@ -180,7 +180,7 @@ export default function Calendar() {
                   flex flex-col items-center justify-center
                   transition-colors
                   ${cellColor(entry)}
-                  ${current ? '' : 'text-text-muted/40'}
+                  ${current ? '' : 'opacity-60'}
                   ${isToday ? 'ring-1 ring-accent-primary' : ''}
                   ${isSelected ? 'ring-2 ring-accent-primary' : ''}
                   ${count > 0 ? 'cursor-pointer' : 'cursor-default'}
@@ -213,7 +213,7 @@ export default function Calendar() {
               <div className="w-3 h-3 rounded bg-accent-tiktok/90" />
             </div>
           </div>
-          <span className="opacity-60">Sedikit ← → Banyak</span>
+          <span className="opacity-100">Sedikit ← → Banyak</span>
         </div>
       </div>
 
