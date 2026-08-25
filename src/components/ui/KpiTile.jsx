@@ -41,7 +41,7 @@ export function KpiTile({ icon, label, value, accent = 'primary', delta, format 
         <span className="text-[10px] uppercase tracking-wider text-text-muted font-medium">{label}</span>
         {deltaEl}
       </div>
-      <div className="text-display-lg text-text-primary tabular-nums leading-none">{display}</div>
+      <div className="text-display-lg text-text-primary tabular-nums leading-none titan-motion-value">{display}</div>
       {children}
     </div>
   );

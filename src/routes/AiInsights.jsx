@@ -4,7 +4,7 @@
 // ST5: custom tab strip → shared <Tabs>, tambah staleness indicator (age days),
 // contextual badge aria-label di tab content count.
 import { useState, useEffect } from 'react';
-import { Lightbulb, Sparkles, TrendingUp, FileText, Calendar, AlertCircle } from 'lucide-react';
+import { Lightbulb, Sparkles, TrendingUp, FileText, Calendar, AlertCircle, RefreshCw } from 'lucide-react';
 import { useAccounts } from '../hooks/useAccount.js';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PageHeader } from '../components/layout/PageHeader.jsx';
@@ -77,9 +77,19 @@ export default function AiInsights() {
 
       <PulseBar />
       {isStale && (
-        <p className="text-xs text-accent-warning -mt-2">
-          Insight sudah {age} hari. Jalankan `pnpm insights:generate` untuk refresh.
-        </p>
+        <div className="flex items-center justify-between gap-3 -mt-2">
+          <p className="text-xs text-accent-warning">
+            Insight sudah {age} hari. Jalankan `pnpm insights:generate` untuk refresh.
+          </p>
+          <a
+            href="https://github.com/TlTANPRO/TITAN/actions/workflows/daily-update.yml"
+            target="_blank"
+            rel="noreferrer"
+            className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold border border-border-subtle bg-bg-tertiary text-text-secondary hover:border-accent-primary/40 hover:text-accent-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+          >
+            <RefreshCw className="w-3 h-3" /> Regenerate
+          </a>
+        </div>
       )}
 
       {/* Tabs (shared, ARIA-compliant) */}

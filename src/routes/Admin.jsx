@@ -265,6 +265,31 @@ export default function Admin() {
           const avgLikes = admin.postCount > 0 ? admin.totalLikes / admin.postCount : 0;
           const avgComments = admin.postCount > 0 ? admin.totalComments / admin.postCount : 0;
           const avgViews = admin.postCount > 0 ? admin.totalViews / admin.postCount : 0;
+          if (admin.postCount === 0) {
+            return (
+              <div key={admin.name} className="relative surface p-4 pt-5 overflow-hidden">
+                <div className={`absolute top-0 left-0 right-0 h-0.5 ${accent.bar}`} aria-hidden="true" />
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className={`w-10 h-10 rounded-full ring-2 ${accent.ring} bg-bg-tertiary flex items-center justify-center text-sm font-bold ${accent.text}`}>
+                    {adminInitials(admin.name)}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-text-primary truncate">{admin.name}</div>
+                    <div className="text-[10px] text-text-muted uppercase tracking-wider">7d sparkline</div>
+                  </div>
+                </div>
+                <div className="pt-3 border-t border-border-subtle py-6 flex flex-col items-center gap-3 text-center">
+                  <div className="text-xs text-text-muted">Belum ada post untuk hashtag ini bulan ini.</div>
+                  <Link
+                    to={`/library?q=${encodeURIComponent((admin.hashtag ?? '').replace('#', ''))}`}
+                    className={`text-xs font-semibold ${accent.text} underline underline-offset-2 hover:opacity-80`}
+                  >
+                    Cek di Library
+                  </Link>
+                </div>
+              </div>
+            );
+          }
           return (
             <div key={admin.name} className="relative surface p-4 pt-5 overflow-hidden transition-colors hover:border-border-default">
               <div className={`absolute top-0 left-0 right-0 h-0.5 ${accent.bar}`} aria-hidden="true" />

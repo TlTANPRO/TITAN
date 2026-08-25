@@ -225,3 +225,29 @@ html:not(.dark) .titan-prose blockquote {
 /* V36: light theme handled entirely by tokens.css (html:not(.dark) overrides
    the CSS vars). No per-class hex overrides needed anymore — Tailwind reads
    var() so every utility follows the theme automatically. */
+
+/* V37 motion system — 4 interactions only, reduced-motion respected.
+   1) Number count-up helper class (used with JS count-up hook or CSS-only fade)
+   2) Card hover lift 2px
+   3) Nav/page transition fade-slide
+   All wrapped in prefers-reduced-motion guard. */
+@keyframes titan-count-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes titan-page-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.titan-motion-value {
+  animation: titan-count-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.titan-motion-page {
+  animation: titan-page-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .titan-motion-value,
+  .titan-motion-page {
+    animation: none;
+  }
+}
