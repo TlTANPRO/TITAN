@@ -109,7 +109,7 @@ export function KomposisiKonten({ accounts }) {
                   return (
                     <div
                       key={p.name}
-                      className="h-full flex items-center justify-center text-[10px] font-semibold text-white tabular-nums flex-shrink-0"
+                      className="h-full flex items-center justify-center text-[10px] font-semibold text-black/80 tabular-nums flex-shrink-0"
                       style={{ width: `${pct}%`, backgroundColor: PLATFORM_COLORS[p.name] ?? FALLBACK }}
                       title={`${platformLabel(p.name)} · ${formatNumber(p.count)} (${pct.toFixed(1)}%)`}
                     >
@@ -138,7 +138,7 @@ export function KomposisiKonten({ accounts }) {
                       return (
                         <div
                           key={type}
-                          className="h-full flex items-center justify-center text-[9px] font-semibold text-white tabular-nums flex-shrink-0"
+                          className="h-full flex items-center justify-center text-[9px] font-semibold text-black/80 tabular-nums flex-shrink-0"
                           style={{ width: `${pct}%`, backgroundColor: MEDIA_COLORS[type] ?? FALLBACK }}
                           title={`${MEDIA_LABELS[type] ?? type} · ${count} (${pct.toFixed(1)}%)`}
                         >

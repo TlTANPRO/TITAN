@@ -41,8 +41,8 @@
   --accent-primary-rgb: 110 160 252;
   --accent-primary-hover: oklch(0.65 0.20 250);
   --accent-primary-hover-rgb: 74 130 244;
-  --accent-secondary: oklch(0.66 0.18 280);
-  --accent-secondary-rgb: 158 116 244;
+  --accent-secondary: oklch(0.74 0.14 280);
+  --accent-secondary-rgb: 176 148 248;
 
   /* V34: brand accent — amber-orange dari logo Majang Mejeng.
      V36: promoted — dipakai di logo, active nav, PulseBar, CTA utama. */
