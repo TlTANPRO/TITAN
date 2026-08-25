@@ -709,6 +709,7 @@ export default function Admin() {
             <select
               id="admin-ranking-sort"
               name="adminRankingSort"
+              aria-label="Urutkan ranking admin berdasarkan metrik"
               value={rankMetric}
               onChange={(e) => setRankMetric(e.target.value)}
               className="bg-bg-tertiary border border-border-subtle rounded px-2 py-1 text-xs text-text-primary focus:outline-none focus:border-accent-primary"

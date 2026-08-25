@@ -173,7 +173,7 @@ export default function Calendar() {
                 key={i}
                 onClick={() => count > 0 && setSelectedDay(date)}
                 disabled={count === 0}
-                aria-label={`${date.toLocaleDateString('id-ID')} · ${count} post${entry ? ` (IG ${entry.byPlatform.instagram ?? 0}, TT ${entry.byPlatform.tiktok ?? 0})` : ''}`}
+                aria-label={`${date.getDate()} — ${date.toLocaleDateString('id-ID')} · ${count} post`}
                 className={`
                   aspect-square rounded text-[10px] font-semibold tabular-nums
                   flex flex-col items-center justify-center
@@ -186,7 +186,7 @@ export default function Calendar() {
                 `}
               >
                 <span>{date.getDate()}</span>
-                {count > 0 && <span className="text-[8px] opacity-90 mt-0.5">{count}</span>}
+                {count > 0 && <span className="text-[8px] mt-0.5 font-semibold">{count}</span>}
               </button>
             );
           })}
