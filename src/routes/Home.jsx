@@ -7,7 +7,7 @@
 // Bot icon removed, TopPerformersCard icon colors migrated to tokens.
 // V33: 3-zone reorganization (PULSE / DEEP-DIVE / PATTERNS) for analytics
 // panel feel. Adds ZoneDivider separator + uppercase zone labels.
-import { useMemo } from 'react';
+import { useMemo, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { Trophy, TrendingUp, Activity, Sparkles, Heart, MessageCircle, Eye, ArrowRight } from 'lucide-react';
 import { useAccounts, useCrossAccountComparison } from '../hooks/useAccount.js';
@@ -15,10 +15,12 @@ import { getLatestPosts } from '../lib/dataStore.js';
 import { Hero } from '../components/Hero.jsx';
 import { AccountHealthGrid } from '../components/AccountHealthGrid.jsx';
 import { LiveActivityFeed } from '../components/LiveActivityFeed.jsx';
-import { CrossAccountTimeline } from '../components/CrossAccountTimeline.jsx';
-import { KomposisiKonten } from '../components/KomposisiKonten.jsx';
+// V37 perf: chart-heavy components lazy-loaded so Home first paint doesn't
+// download/parse the recharts vendor bundle (~420KB) up front.
+const CrossAccountTimeline = lazy(() => import('../components/CrossAccountTimeline.jsx').then(m => ({ default: m.CrossAccountTimeline })));
+const KomposisiKonten = lazy(() => import('../components/KomposisiKonten.jsx').then(m => ({ default: m.KomposisiKonten })));
+const CombinedHeatmap = lazy(() => import('../components/CombinedHeatmap.jsx').then(m => ({ default: m.CombinedHeatmap })));
 import { WeeklyBriefing } from '../components/WeeklyBriefing.jsx';
-import { CombinedHeatmap } from '../components/CombinedHeatmap.jsx';
 import { EnhancedTable } from '../components/EnhancedTable.jsx';
 import { ViralPostCard } from '../components/ViralPostCard.jsx';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
@@ -228,7 +230,9 @@ export default function Home() {
         <BentoGrid>
           <BentoItem colSpan="col-12" padding="p-4">
             <SectionLabel number="06" title="Komposisi Konten" accent="accent" className="mb-3" />
-            <KomposisiKonten accounts={accounts} />
+            <Suspense fallback={<div className="h-64 rounded-lg bg-bg-tertiary/50 animate-pulse" />}>
+              <KomposisiKonten accounts={accounts} />
+            </Suspense>
           </BentoItem>
         </BentoGrid>
 
@@ -238,14 +242,18 @@ export default function Home() {
             more breathing room than col-7 could give). */}
         <BentoGrid>
           <BentoItem colSpan="col-12" padding="p-4">
-            <CombinedHeatmap accounts={accounts} />
+            <Suspense fallback={<div className="h-64 rounded-lg bg-bg-tertiary/50 animate-pulse" />}>
+              <CombinedHeatmap accounts={accounts} />
+            </Suspense>
           </BentoItem>
         </BentoGrid>
 
         {/* ===== ROW 8: Cross-Account Timeline (full) ===== */}
         <BentoGrid>
           <BentoItem colSpan="col-12" padding="p-4">
-            <CrossAccountTimeline accounts={accounts} />
+            <Suspense fallback={<div className="h-72 rounded-lg bg-bg-tertiary/50 animate-pulse" />}>
+              <CrossAccountTimeline accounts={accounts} />
+            </Suspense>
           </BentoItem>
         </BentoGrid>
 
