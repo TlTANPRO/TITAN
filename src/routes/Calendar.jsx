@@ -19,7 +19,7 @@ const PLATFORM_HUE = {
   instagram: {
     name: 'Instagram',
     // V37.1: teks eksplisit per-shade agar kontras ≥4.5 di semua intensitas
-    shades: ['bg-accent-instagram/15 text-text-primary', 'bg-accent-instagram/40 text-text-primary', 'bg-accent-instagram/65 text-white', 'bg-accent-instagram/90 text-white']
+    shades: ['bg-accent-instagram/15 text-text-primary', 'bg-accent-instagram/40 text-text-primary', 'bg-accent-instagram/65 text-white', 'bg-accent-instagram brightness-[0.72] text-white']
   },
   tiktok: {
     name: 'TikTok',
