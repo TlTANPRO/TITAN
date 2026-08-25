@@ -18,11 +18,12 @@ import { MONTH_NAMES_ID, DAY_NAMES_SHORT } from '../lib/titan-tokens.js';
 const PLATFORM_HUE = {
   instagram: {
     name: 'Instagram',
-    shades: ['bg-accent-instagram/15', 'bg-accent-instagram/40', 'bg-accent-instagram/65', 'bg-accent-instagram/90 text-white']
+    // V37.1: teks eksplisit per-shade agar kontras ≥4.5 di semua intensitas
+    shades: ['bg-accent-instagram/15 text-text-primary', 'bg-accent-instagram/40 text-text-primary', 'bg-accent-instagram/65 text-white', 'bg-accent-instagram/90 text-white']
   },
   tiktok: {
     name: 'TikTok',
-    shades: ['bg-accent-tiktok/15', 'bg-accent-tiktok/40', 'bg-accent-tiktok/65', 'bg-accent-tiktok/90 text-text-primary']
+    shades: ['bg-accent-tiktok/15 text-text-primary', 'bg-accent-tiktok/40 text-text-primary', 'bg-accent-tiktok/65 text-text-primary', 'bg-accent-tiktok/90 text-text-primary']
   }
 };
 
@@ -139,7 +140,7 @@ export default function Calendar() {
             <button
               onClick={() => { setCursor(new Date()); setSelectedDay(null); }}
               className="btn-ghost !px-2.5 !py-1 text-[11px]"
-              aria-label="Kembali ke bulan ini"
+              aria-label="Hari ini — Kembali ke bulan ini"
             >
               Hari ini
             </button>
@@ -173,7 +174,7 @@ export default function Calendar() {
                 key={i}
                 onClick={() => count > 0 && setSelectedDay(date)}
                 disabled={count === 0}
-                aria-label={`${date.getDate()} — ${date.toLocaleDateString('id-ID')} · ${count} post`}
+                aria-label={`${date.getDate()} ${date.toLocaleDateString('id-ID')} · ${count} post`}
                 className={`
                   aspect-square rounded text-[10px] font-semibold tabular-nums
                   flex flex-col items-center justify-center
