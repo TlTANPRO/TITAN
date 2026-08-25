@@ -125,7 +125,7 @@ export default function AccountPage() {
 
       <h1 className="sr-only">@{account.username} — Detail Akun</h1>
 
-      <Tabs value={activeTab} onChange={handleTabChange} items={tabItems} />
+      <Tabs value={activeTab} onChange={handleTabChange} items={tabItems} panelIdPrefix="tabpanel" />
 
       <SectionLabel {...TAB_LABELS[activeTab]} />
 

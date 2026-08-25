@@ -7,9 +7,12 @@
 //   - Enter/Space activates the focused tab
 import { useRef, useId } from 'react';
 
-export function Tabs({ value, onChange, items, className = '' }) {
+export function Tabs({ value, onChange, items, className = '', panelIdPrefix = null, labelledByPrefix = null }) {
   const id = useId();
   const tabRefs = useRef(new Map());
+  // V37 a11y: expose the tab ids so consumers can align their tabpanel
+  // aria-labelledby/aria-controls with the button's useId-based ids.
+  const ns = (suffix) => `${id}-${suffix}`;
 
   const focusTab = (val) => {
     const el = tabRefs.current.get(val);
@@ -62,7 +65,11 @@ export function Tabs({ value, onChange, items, className = '' }) {
             role="tab"
             tabIndex={isActive ? 0 : -1}
             aria-selected={isActive}
-            aria-controls={`${id}-panel-${item.value}`}
+            aria-controls={
+              panelIdPrefix ? `${panelIdPrefix}-${item.value}`
+              : labelledByPrefix ? `${labelledByPrefix}-${item.value}` // legacy panel ids
+              : `${id}-panel-${item.value}`
+            }
             onClick={() => onChange(item.value)}
             onKeyDown={(e) => handleKeyDown(e, idx)}
             className={`

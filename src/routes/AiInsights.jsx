@@ -93,7 +93,7 @@ export default function AiInsights() {
       )}
 
       {/* Tabs (shared, ARIA-compliant) */}
-      <Tabs value={activeTab} onChange={setActiveTab} items={tabItems} />
+      <Tabs value={activeTab} onChange={setActiveTab} items={tabItems} panelIdPrefix="panel" labelledByPrefix="tab" />
 
       {/* Account selector (hidden for weekly briefing) */}
       {activeTab !== 'weekly' && (
@@ -126,7 +126,7 @@ export default function AiInsights() {
       {/* Content panel */}
       <div
         role="tabpanel"
-        id={`tabpanel-${activeTab}`}
+        id={`panel-${activeTab}`}
         aria-labelledby={`tab-${activeTab}`}
         className="surface p-5"
       >
