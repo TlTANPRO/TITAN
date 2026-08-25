@@ -237,7 +237,7 @@ export default function Admin() {
             onClick={() => setPageTab(t.id)}
             className={`px-4 py-1.5 rounded-md text-xs font-semibold transition-colors duration-fast focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
               pageTab === t.id
-                ? 'bg-accent-primary text-white'
+                ? 'bg-accent-primary text-[#0b1220]'
                 : 'text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
             }`}
           >
@@ -360,7 +360,7 @@ export default function Admin() {
             <button
               onClick={() => setActiveAdmin(null)}
               className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded transition-colors ${
-                activeAdmin === null ? 'bg-accent-primary text-white' : 'bg-bg-tertiary text-text-muted hover:text-text-primary'
+                activeAdmin === null ? 'bg-accent-primary text-[#0b1220]' : 'bg-bg-tertiary text-text-muted hover:text-text-primary'
               }`}
             >
               Gabungan
@@ -433,7 +433,7 @@ export default function Admin() {
                   key={r}
                   onClick={() => setRange(r)}
                   className={`text-[10px] px-2 py-1 rounded font-medium transition-colors ${
-                    range === r ? 'bg-accent-primary text-white' : 'text-text-muted hover:text-text-primary'
+                    range === r ? 'bg-accent-primary text-[#0b1220]' : 'text-text-muted hover:text-text-primary'
                   }`}
                 >
                   {RANGE_LABELS[r]}
@@ -468,7 +468,7 @@ export default function Admin() {
                   key={m.k}
                   onClick={() => setGrowthMetric(m.k)}
                   className={`text-[10px] px-2 py-1 rounded font-medium transition-colors ${
-                    growthMetric === m.k ? 'bg-accent-primary text-white' : 'text-text-muted hover:text-text-primary'
+                    growthMetric === m.k ? 'bg-accent-primary text-[#0b1220]' : 'text-text-muted hover:text-text-primary'
                   }`}
                 >
                   {m.l}
@@ -984,7 +984,7 @@ export default function Admin() {
                       onClick={() => setAdminFilter('all')}
                       className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
                         adminFilter === 'all'
-                          ? 'bg-accent-primary text-white border-accent-primary'
+                          ? 'bg-accent-primary text-[#0b1220] border-accent-primary'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
                       }`}
                     >

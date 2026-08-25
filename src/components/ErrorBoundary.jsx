@@ -58,7 +58,7 @@ export default class ErrorBoundary extends Component {
             <button
               type="button"
               onClick={this.handleReload}
-              className="chip bg-accent-primary text-white hover:opacity-90"
+              className="chip bg-accent-primary text-[#0b1220] hover:opacity-90"
             >
               <RotateCw className="w-3 h-3" />
               Muat ulang

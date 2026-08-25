@@ -216,7 +216,7 @@ export function StrategyBrief({ account, insights }) {
             <ol className="space-y-1.5 text-sm text-text-primary">
               {actions.map((a, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-accent-primary text-white text-[10px] font-semibold flex items-center justify-center mt-0.5">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-accent-primary text-[#0b1220] text-[10px] font-semibold flex items-center justify-center mt-0.5">
                     {i + 1}
                   </span>
                   <span className="text-text-secondary">{a}</span>
@@ -243,7 +243,7 @@ export function StrategyBrief({ account, insights }) {
             <ol className="space-y-1.5 text-sm text-text-primary">
               {actions.map((a, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-accent-primary text-white text-[10px] font-semibold flex items-center justify-center mt-0.5">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-accent-primary text-[#0b1220] text-[10px] font-semibold flex items-center justify-center mt-0.5">
                     {i + 1}
                   </span>
                   <span className="text-text-secondary">{a}</span>

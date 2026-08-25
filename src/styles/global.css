@@ -23,7 +23,7 @@
 
   /* Skip-link for keyboard users — visible only on focus */
   .skip-link {
-    @apply absolute -top-12 left-4 z-50 px-4 py-2 bg-accent-primary text-white rounded-md text-sm font-semibold;
+    @apply absolute -top-12 left-4 z-50 px-4 py-2 bg-accent-primary text-[#0b1220] rounded-md text-sm font-semibold;
     transition: top 150ms ease-out;
   }
   .skip-link:focus,
@@ -64,7 +64,7 @@
      (tokens.css), not a Tailwind class — use arbitrary value. */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-md
-      text-sm font-semibold bg-accent-primary text-white
+      text-sm font-semibold bg-accent-primary text-[#0b1220]
       hover:bg-accent-primary-hover active:bg-accent-primary-hover
       disabled:opacity-50 disabled:cursor-not-allowed
       transition-colors [transition-duration:var(--duration-fast)]

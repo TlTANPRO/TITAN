@@ -260,7 +260,7 @@ export default function ChatPanel() {
                 <div
                   className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words ${
                     m.role === 'user'
-                      ? 'bg-accent-primary text-white rounded-br-sm'
+                      ? 'bg-accent-primary text-[#0b1220] rounded-br-sm'
                       : 'bg-bg-elevated text-text-primary rounded-bl-sm border border-border-subtle'
                   }`}
                 >
@@ -311,7 +311,7 @@ export default function ChatPanel() {
                 <button
                   type="submit"
                   disabled={!input.trim()}
-                  className="w-10 h-10 rounded-xl bg-accent-primary text-white flex items-center justify-center hover:bg-accent-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+                  className="w-10 h-10 rounded-xl bg-accent-primary text-[#0b1220] flex items-center justify-center hover:bg-accent-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
                   aria-label="Send"
                 >
                   <Send className="w-4 h-4" />

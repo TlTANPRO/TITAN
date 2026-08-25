@@ -485,7 +485,7 @@ export function KomentarAdmin() {
             type="button"
             onClick={() => setActiveGrowthAdmin(null)}
             className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded transition-colors ${
-              activeGrowthAdmin === null ? 'bg-accent-primary text-white' : 'bg-bg-tertiary text-text-muted hover:text-text-primary'
+              activeGrowthAdmin === null ? 'bg-accent-primary text-[#0b1220]' : 'bg-bg-tertiary text-text-muted hover:text-text-primary'
             }`}
           >
             Gabungan
@@ -585,7 +585,7 @@ export function KomentarAdmin() {
                     <button type="button" onClick={() => setActiveAccount('all')}
                       className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
                         activeAccount === 'all'
-                          ? 'bg-accent-primary text-white border-accent-primary shadow-sm'
+                          ? 'bg-accent-primary text-[#0b1220] border-accent-primary shadow-sm'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
                       }`}>Semua Akun</button>
                     <button type="button" onClick={() => setActiveAccount('majangmejeng')}
@@ -608,7 +608,7 @@ export function KomentarAdmin() {
                     <button type="button" onClick={() => setActivePlatform('all')}
                       className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
                         activePlatform === 'all'
-                          ? 'bg-accent-primary text-white border-accent-primary shadow-sm'
+                          ? 'bg-accent-primary text-[#0b1220] border-accent-primary shadow-sm'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
                       }`}>Semua Platform</button>
                     <button type="button" onClick={() => setActivePlatform('instagram')}
@@ -631,7 +631,7 @@ export function KomentarAdmin() {
                     <button type="button" onClick={() => setActiveAdmin('all')}
                       className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
                         activeAdmin === 'all'
-                          ? 'bg-accent-primary text-white border-accent-primary shadow-sm'
+                          ? 'bg-accent-primary text-[#0b1220] border-accent-primary shadow-sm'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
                       }`}>Semua</button>
                     {ADMIN_ORDER.map((name) => {

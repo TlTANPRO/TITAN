@@ -251,7 +251,7 @@ export function GrowthStrategy({ insights, account }) {
             {recs.map((r, i) => (
               <div key={i} className="surface p-3 bg-bg-tertiary/40">
                 <div className="text-sm font-semibold text-text-primary mb-1 flex items-center gap-1.5">
-                  <span className="w-5 h-5 rounded-full bg-accent-primary text-white text-[10px] font-semibold flex items-center justify-center flex-shrink-0">{i + 1}</span>
+                  <span className="w-5 h-5 rounded-full bg-accent-primary text-[#0b1220] text-[10px] font-semibold flex items-center justify-center flex-shrink-0">{i + 1}</span>
                   {r.title}
                 </div>
                 <div className="text-xs text-text-secondary leading-relaxed">{r.detail}</div>

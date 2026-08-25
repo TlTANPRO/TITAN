@@ -165,7 +165,7 @@ export function Sidebar({ limitedCount = 0 }) {
         onClick={() => setMobileOpen((v) => !v)}
         aria-label={mobileOpen ? 'Tutup navigasi' : 'Buka navigasi'}
         aria-expanded={mobileOpen}
-        className="lg:hidden fixed bottom-4 left-4 z-toast w-10 h-10 rounded-full bg-accent-primary text-white shadow-lg flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
+        className="lg:hidden fixed bottom-4 left-4 z-toast w-10 h-10 rounded-full bg-accent-primary text-[#0b1220] shadow-lg flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
       >
         {mobileOpen ? <X className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
       </button>

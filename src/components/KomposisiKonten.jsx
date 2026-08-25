@@ -14,6 +14,12 @@ const PLATFORM_COLORS = {
   instagram: 'oklch(0.58 0.22 0)',
   tiktok: 'oklch(0.88 0.18 195)'
 };
+// V37 a11y: rendered IG bar is dark (#d71f75) → white text passes (4.8:1);
+// TT bar is near-white → dark text passes. Lighthouse flagged black/80 on IG.
+const PLATFORM_TEXT = {
+  instagram: 'text-white',
+  tiktok: 'text-black/80'
+};
 const MEDIA_COLORS = {
   REEL: 'oklch(0.65 0.22 350)',         // pink
   VIDEO: 'oklch(0.58 0.22 280)',        // violet
@@ -21,6 +27,10 @@ const MEDIA_COLORS = {
   CAROUSEL_ALBUM: 'oklch(0.75 0.16 75)',// amber
   OTHER: 'oklch(0.50 0.005 280)'        // slate
 };
+// V37 a11y: per-type text color — rendered bar colors vary (REEL #e942a2 mid,
+// VIDEO #685ef7 dark-ish, IMAGE #0091ff mid-blue). Black text passes on all
+// (5.4:1 worst case); white fails on REEL/IMAGE.
+const MEDIA_TEXT = 'text-black';
 const MEDIA_LABELS = {
   REEL: 'Reels',
   VIDEO: 'Video',
@@ -109,7 +119,7 @@ export function KomposisiKonten({ accounts }) {
                   return (
                     <div
                       key={p.name}
-                      className="h-full flex items-center justify-center text-[10px] font-semibold text-black/80 tabular-nums flex-shrink-0"
+                      className={`h-full flex items-center justify-center text-[10px] font-semibold tabular-nums flex-shrink-0 ${PLATFORM_TEXT[p.name] ?? 'text-black/80'}`}
                       style={{ width: `${pct}%`, backgroundColor: PLATFORM_COLORS[p.name] ?? FALLBACK }}
                       title={`${platformLabel(p.name)} · ${formatNumber(p.count)} (${pct.toFixed(1)}%)`}
                     >
@@ -138,7 +148,7 @@ export function KomposisiKonten({ accounts }) {
                       return (
                         <div
                           key={type}
-                          className="h-full flex items-center justify-center text-[9px] font-semibold text-black/80 tabular-nums flex-shrink-0"
+                          className={`h-full flex items-center justify-center text-[9px] font-semibold tabular-nums flex-shrink-0 ${MEDIA_TEXT}`}
                           style={{ width: `${pct}%`, backgroundColor: MEDIA_COLORS[type] ?? FALLBACK }}
                           title={`${MEDIA_LABELS[type] ?? type} · ${count} (${pct.toFixed(1)}%)`}
                         >

@@ -140,7 +140,7 @@ export function CrossAccountTimeline({ accounts }) {
               <button
                 key={m}
                 onClick={() => setMetric(m)}
-                className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded font-medium transition-colors ${metric === m ? 'bg-accent-primary text-white' : 'text-text-muted hover:text-text-primary'}`}
+                className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded font-medium transition-colors ${metric === m ? 'bg-accent-primary text-[#0b1220]' : 'text-text-muted hover:text-text-primary'}`}
               >
                 {m === 'ER' ? 'ER' : m}
               </button>
@@ -151,7 +151,7 @@ export function CrossAccountTimeline({ accounts }) {
               <button
                 key={r}
                 onClick={() => setRange(r)}
-                className={`text-[10px] px-2 py-1 rounded font-medium transition-colors ${range === r ? 'bg-accent-primary text-white' : 'text-text-muted hover:text-text-primary'}`}
+                className={`text-[10px] px-2 py-1 rounded font-medium transition-colors ${range === r ? 'bg-accent-primary text-[#0b1220]' : 'text-text-muted hover:text-text-primary'}`}
               >
                 {r}
               </button>

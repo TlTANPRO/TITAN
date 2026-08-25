@@ -80,7 +80,7 @@ export function EnhancedTable({ comparison }) {
           <button
             key={f.key}
             onClick={() => setPlatform(f.key)}
-            className={`chip transition-colors flex items-center gap-1 ${platform === f.key ? 'bg-accent-primary text-white' : 'bg-bg-tertiary text-text-secondary hover:text-text-primary'}`}
+            className={`chip transition-colors flex items-center gap-1 ${platform === f.key ? 'bg-accent-primary text-[#0b1220]' : 'bg-bg-tertiary text-text-secondary hover:text-text-primary'}`}
           >
             {f.key !== 'all' && <PlatformIcon platform={f.key} className="w-3 h-3" />}
             {f.label}

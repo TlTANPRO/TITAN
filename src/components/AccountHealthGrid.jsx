@@ -53,7 +53,8 @@ function HealthCard({ acc, posts }) {
   return (
     <Link
       to={`/account/${acc.slug}`}
-      aria-label={`Lihat detail akun @${acc.username}, health score ${score} dari 100, grade ${grade}`}
+      // V37 a11y: accessible name harus mengandung teks visible ("@username")
+      aria-label={`Lihat detail akun @${acc.username}`}
       className="surface p-4 hover:border-border-default transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
     >
       <div className="flex items-center gap-3">

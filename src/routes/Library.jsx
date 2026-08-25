@@ -222,7 +222,7 @@ export default function Library() {
               onClick={() => setViewMode('table')}
               aria-pressed={viewMode === 'table'}
               aria-label="Tampilan tabel"
-              className={`p-1.5 rounded ${viewMode === 'table' ? 'bg-accent-primary text-white' : 'text-text-secondary hover:text-text-primary'}`}
+              className={`p-1.5 rounded ${viewMode === 'table' ? 'bg-accent-primary text-[#0b1220]' : 'text-text-secondary hover:text-text-primary'}`}
             >
               <List className="w-3.5 h-3.5" />
             </button>
@@ -230,7 +230,7 @@ export default function Library() {
               onClick={() => setViewMode('grid')}
               aria-pressed={viewMode === 'grid'}
               aria-label="Tampilan grid"
-              className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-accent-primary text-white' : 'text-text-secondary hover:text-text-primary'}`}
+              className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-accent-primary text-[#0b1220]' : 'text-text-secondary hover:text-text-primary'}`}
             >
               <LayoutGrid className="w-3.5 h-3.5" />
             </button>

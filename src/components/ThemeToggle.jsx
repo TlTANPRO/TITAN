@@ -26,7 +26,7 @@ export default function ThemeToggle() {
             aria-checked={active}
             aria-label={label}
             onClick={() => set(value)}
-            className={`p-1.5 rounded-full transition-colors ${active ? 'bg-accent-primary text-white' : 'text-text-muted hover:text-text-primary'}`}
+            className={`p-1.5 rounded-full transition-colors ${active ? 'bg-accent-primary text-[#0b1220]' : 'text-text-muted hover:text-text-primary'}`}
             title={label}
           >
             <Icon className="w-3.5 h-3.5" />
