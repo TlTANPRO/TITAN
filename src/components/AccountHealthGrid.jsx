@@ -53,8 +53,8 @@ function HealthCard({ acc, posts }) {
   return (
     <Link
       to={`/account/${acc.slug}`}
-      // V37 a11y: accessible name harus mengandung teks visible ("@username")
-      aria-label={`Lihat detail akun @${acc.username}`}
+      // V37 a11y: no aria-label — visible card text (@username, grade, score)
+      // IS the accessible name; overriding it caused label-content-name-mismatch.
       className="surface p-4 hover:border-border-default transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
     >
       <div className="flex items-center gap-3">
