@@ -33,6 +33,11 @@ const renameTemplatePlugin = {
 // To restore PWA in the future, install vite-plugin-pwa and add the VitePWA() plugin.
 export default defineConfig({
   base: '/TITAN/',
+  define: {
+    __APP_VERSION__: JSON.stringify(JSON.parse(
+      (await import('node:fs')).readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8')
+    ).version)
+  },
   plugins: [
     react(),
     renameTemplatePlugin

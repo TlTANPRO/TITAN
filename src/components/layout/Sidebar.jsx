@@ -154,7 +154,7 @@ export function Sidebar({ limitedCount = 0 }) {
         {/* Footer version */}
         {!collapsed && (
           <div className="px-3 py-2 border-t border-border-subtle text-[10px] text-text-muted">
-            <div>TITAN V34</div>
+            <div>TITAN V{__APP_VERSION__}</div>
             <div className="mt-0.5">Marketing Intelligence</div>
           </div>
         )}
