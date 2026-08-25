@@ -174,13 +174,12 @@ export default function Calendar() {
                 key={i}
                 onClick={() => count > 0 && setSelectedDay(date)}
                 disabled={count === 0}
-                aria-label={`${date.getDate()} ${date.toLocaleDateString('id-ID')} · ${count} post`}
                 className={`
                   aspect-square rounded text-[10px] font-semibold tabular-nums
                   flex flex-col items-center justify-center
                   transition-colors
                   ${cellColor(entry)}
-                  ${current ? '' : 'opacity-60'}
+                  ${current ? '' : 'brightness-75'}
                   ${current ? '' : '!text-white'}
                   ${isToday ? 'ring-1 ring-accent-primary' : ''}
                   ${isSelected ? 'ring-2 ring-accent-primary' : ''}
@@ -189,6 +188,8 @@ export default function Calendar() {
               >
                 <span>{date.getDate()}</span>
                 {count > 0 && <span className="text-[8px] mt-0.5 font-semibold">{count}</span>}
+                {/* V37.1: detail tanggal via sr-only, tanpa aria-label (fix label-content-name-mismatch) */}
+                <span className="sr-only">{`${date.getDate()} ${date.toLocaleDateString('id-ID')} · ${count} post`}</span>
               </button>
             );
           })}
