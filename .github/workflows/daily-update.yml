@@ -107,7 +107,28 @@ jobs:
         if: success()
         run: node scripts/bootstrap-scraped-from-bundled.mjs
 
-      # ============== AUTHENTICATED SCRAPE (V36 — PRIMARY, owner cookie) ==============
+      # V26: smart cadence — Sunday = full re-scrape (weekly catch-up).
+      # Other days = incremental 1-day window. Manual override via
+      # workflow_dispatch input `force_full_scrape=true`.
+      # V34.13: export IS_SUNDAY=true env var so downstream steps
+      # (health gate, worker-status writer) can branch on weekday vs Sunday.
+      # Moved BEFORE the scrape steps (V37) so the TT browser scraper can
+      # branch full-vs-incremental on the cadence output.
+      - name: Detect weekly catch-up day (Sunday UTC) + export IS_SUNDAY
+        id: cadence
+        run: |
+          day=$(date -u +%u)
+          if [ "$day" = "7" ]; then
+            echo "weekly_full=true" >> $GITHUB_OUTPUT
+            echo "IS_SUNDAY=true" >> $GITHUB_ENV
+            echo "::notice::Sunday detected → weekly full re-scrape, health gate relaxed"
+          else
+            echo "weekly_full=false" >> $GITHUB_OUTPUT
+            echo "IS_SUNDAY=false" >> $GITHUB_ENV
+            echo "::notice::Weekday ($day) → incremental 1-day scrape"
+          fi
+
+      # ============== AUTHENTICATED SCRAPE (V36/V37 — PRIMARY, owner cookie) ==============
       # All free post-listing endpoints die since ~2026-08-25 (verified 2026-08-29:
       # IG 401/400, TT yt-dlp "Unable to extract secondary user ID", Jina 403,
       # RSS login wall). The owner's own session cookie is now the primary source.
@@ -124,34 +145,28 @@ jobs:
           node scripts/scrape-ig-cookie.mjs pages=6 gap=12
         continue-on-error: true
 
-      - name: Scrape TikTok (authenticated cookie V36)
+      # V37: raw `fetch` with the TT cookie is DEAD — TikTok serves a captcha
+      # shell + demands a per-request a_bogus signature the cookie can't supply.
+      # The headless-browser route works (verified local 2026-08-30): launch
+      # Chrome, inject the owner cookies, load the profile — TikTok's own JS
+      # signs the /api/post/item_list/ calls — then capture the JSON responses
+      # via CDP Network.getResponseBody while auto-scrolling. Full crawl on
+      # Sunday (weekly catch-up), incremental pages=5 (~80 newest) on weekdays
+      # to keep request count low on the owner session.
+      - name: Scrape TikTok (authenticated browser V37)
         id: scrape-tt-cookie
         if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '' }}
         run: |
-          echo "Authenticated TT scrape (owner session cookie)"
-          node scripts/scrape-tt-cookie.mjs
+          if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ] || [ "${{ steps.cadence.outputs.weekly_full }}" = "true" ]; then
+            echo "Full TT browser scrape (V37, all posts via headless Chrome)"
+            node scripts/scrape-tt-browser.mjs
+          else
+            echo "Incremental TT browser scrape (V37, pages=5 ≈ newest 80)"
+            node scripts/scrape-tt-browser.mjs pages=5
+          fi
         continue-on-error: true
 
       # ============== SCRAPE PHASE (free FALLBACK — only if cookie step didn't succeed) ==============
-
-      # V26: smart cadence — Sunday = full re-scrape (weekly catch-up).
-      # Other days = incremental 1-day window. Manual override via
-      # workflow_dispatch input `force_full_scrape=true`.
-      # V34.13: export IS_SUNDAY=true env var so downstream steps
-      # (health gate, worker-status writer) can branch on weekday vs Sunday.
-      - name: Detect weekly catch-up day (Sunday UTC) + export IS_SUNDAY
-        id: cadence
-        run: |
-          day=$(date -u +%u)
-          if [ "$day" = "7" ]; then
-            echo "weekly_full=true" >> $GITHUB_OUTPUT
-            echo "IS_SUNDAY=true" >> $GITHUB_ENV
-            echo "::notice::Sunday detected → weekly full re-scrape, health gate relaxed"
-          else
-            echo "weekly_full=false" >> $GITHUB_OUTPUT
-            echo "IS_SUNDAY=false" >> $GITHUB_ENV
-            echo "::notice::Weekday ($day) → incremental 1-day scrape"
-          fi
 
       - name: Scrape Instagram (free fallback)
         if: ${{ (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ig' || github.event.inputs.platform == '') && steps.scrape-ig-cookie.outcome != 'success' }}
