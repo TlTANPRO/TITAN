@@ -57,23 +57,38 @@ function igHeaders() {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // Cheap human-style jitter so request timing doesn't look like a bot burst.
-const jitter = (base) => base + Math.random() * 1200;
+const jitter = (base) => base + Math.random() * 1500;
+
+// slow=1 → very conservative pacing (6-7.5s/page, 30s gap/account) for
+// full-depth backfill. Normal daily runs use the fast path (3s/page, 8s gap).
+const SLOW = process.argv.includes('slow=1');
+const pageDelayMs = SLOW ? 6000 : 3000;
+const accountGapDefault = SLOW ? 30000 : 8000;
 
 // Extra wait between accounts (IG throttles rapid multi-account bursts and
 // replies with a FAKE `login_required`). Override per run: gap=10.
 function accountGapMs() {
   const a = process.argv.find((x) => x.startsWith('gap='));
   const n = Number(a?.split('=')[1]);
-  return Number.isFinite(n) && n > 0 ? n * 1000 : 8000;
+  return Number.isFinite(n) && n > 0 ? n * 1000 : accountGapDefault;
 }
 
-// Max pages. feed/user returns 12/media per page → pages*12 posts max.
+// Max pages. feed/user returns count/media per page → pages*count posts max.
 // Default 12 (144 posts) is plenty for a daily incremental + slow backfill.
 // Override per run: pages=20
 function MAX_PAGES() {
   const a = process.argv.find((x) => x.startsWith('pages='));
   const n = Number(a?.split('=')[1]);
-  return Number.isFinite(n) && n > 0 ? Math.min(n, 60) : 12;
+  return Number.isFinite(n) && n > 0 ? Math.min(n, 200) : 12;
+}
+
+// Items per page. Android API happily returns more than 12 (e.g. 32-33) which
+// CUTS request count — important to stay far under IG's throttle. count=32
+// default for backfill runs; keep 12 if IG rejects higher.
+function PAGE_COUNT() {
+  const a = process.argv.find((x) => x.startsWith('count='));
+  const n = Number(a?.split('=')[1]);
+  return Number.isFinite(n) && n > 0 ? Math.max(12, Math.min(n, 50)) : 12;
 }
 
 // login_required can mean (a) session really expired → persists across retries,
@@ -158,7 +173,7 @@ async function fetchAllFeedPosts(userId) {
   let lastError = null;
   const pages = MAX_PAGES();
   for (let page = 0; page < pages && moreAvailable; page++) {
-    let p = `/feed/user/${userId}/?count=12`;
+    let p = `/feed/user/${userId}/?count=${PAGE_COUNT()}`;
     if (maxId) p += `&max_id=${encodeURIComponent(maxId)}`;
     let raw;
     try {
@@ -174,7 +189,7 @@ async function fetchAllFeedPosts(userId) {
     maxId = raw.next_max_id ?? '';
     moreAvailable = raw.more_available ?? false;
     console.log(`  feed/user page ${page + 1}: ${all.length} so far, more=${moreAvailable}`);
-    if (moreAvailable && maxId) await sleep(jitter(3000));
+    if (moreAvailable && maxId) await sleep(jitter(pageDelayMs));
   }
   return { posts: all, error: lastError };
 }
