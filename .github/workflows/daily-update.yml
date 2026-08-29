@@ -118,7 +118,10 @@ jobs:
         if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ig' || github.event.inputs.platform == '' }}
         run: |
           echo "Authenticated IG scrape (owner session cookie)"
-          node scripts/scrape-ig-cookie.mjs
+          echo "pages=6 (72 newest posts/account) + gap=12s — deliberately low volume"
+          echo "to stay far under IG throttle (bursts of 150+ pages trip a fake"
+          echo "login_required checkpoint on the session)"
+          node scripts/scrape-ig-cookie.mjs pages=6 gap=12
         continue-on-error: true
 
       - name: Scrape TikTok (authenticated cookie V36)

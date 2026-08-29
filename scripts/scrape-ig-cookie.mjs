@@ -27,8 +27,6 @@ import { ACCOUNTS_IG } from './accounts.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = path.join(__dirname, 'scraped');
-const DELAY_MS = 2500; // i.instagram.com cooldown between pages
-const MAX_PAGES = 15;  // 15 × 12 = 180 posts max per account
 
 const COOKIE = process.env.IG_SESSION_COOKIE || '';
 
@@ -58,9 +56,29 @@ function igHeaders() {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// Throws {terminal:true} on login/invalid session (no point retrying), plain
-// Error on transient failures (still non-fatal — we keep old data).
-async function igGet(path) {
+// Cheap human-style jitter so request timing doesn't look like a bot burst.
+const jitter = (base) => base + Math.random() * 1200;
+
+// Extra wait between accounts (IG throttles rapid multi-account bursts and
+// replies with a FAKE `login_required`). Override per run: gap=10.
+function accountGapMs() {
+  const a = process.argv.find((x) => x.startsWith('gap='));
+  const n = Number(a?.split('=')[1]);
+  return Number.isFinite(n) && n > 0 ? n * 1000 : 8000;
+}
+
+// Max pages. feed/user returns 12/media per page → pages*12 posts max.
+// Default 12 (144 posts) is plenty for a daily incremental + slow backfill.
+// Override per run: pages=20
+function MAX_PAGES() {
+  const a = process.argv.find((x) => x.startsWith('pages='));
+  const n = Number(a?.split('=')[1]);
+  return Number.isFinite(n) && n > 0 ? Math.min(n, 60) : 12;
+}
+
+// login_required can mean (a) session really expired → persists across retries,
+// or (b) IG throttle → clears after a pause. Retry with backoff, then classify.
+async function igGet(path, { pageRetries = 0 } = {}) {
   let res;
   try {
     res = await fetch(`${BASE_URL}${path}`, {
@@ -71,10 +89,19 @@ async function igGet(path) {
     throw new Error(`network: ${e.message}`);
   }
   const text = await res.text();
-  if (text.includes('"login_required"') || text.includes('"require_login":true') || (res.status === 401 && /login/i.test(text.slice(0, 200)))) {
+  const isLoginWall =
+    text.includes('"login_required"') || text.includes('"require_login":true') ||
+    (res.status === 401 && /login/i.test(text.slice(0, 200)));
+  const throttled = res.status === 429 || res.status === 403 || (res.status === 401 && !isLoginWall);
+  if (isLoginWall && pageRetries < 2) {
+    console.log(`  [retry] login_required at page ${path} — likely throttle, waiting ${10 * (pageRetries + 1)}s`);
+    await sleep(10000 * (pageRetries + 1));
+    return igGet(path, { pageRetries: pageRetries + 1 });
+  }
+  if (isLoginWall) {
     throw Object.assign(new Error(`login_required at ${path}`), { terminal: true });
   }
-  if (res.status === 403 || res.status === 429) {
+  if (throttled) {
     throw new Error(`HTTP ${res.status} at ${path}: ${text.slice(0, 120)}`);
   }
   if (!res.ok) {
@@ -122,23 +149,34 @@ function normalizeMedia(m) {
   };
 }
 
+// Best-effort pagination: keeps whatever pages we already got if a later page
+// is throttled, instead of throwing away the whole account.
 async function fetchAllFeedPosts(userId) {
   const all = [];
   let maxId = '';
   let moreAvailable = true;
-  for (let page = 0; page < MAX_PAGES && moreAvailable; page++) {
+  let lastError = null;
+  const pages = MAX_PAGES();
+  for (let page = 0; page < pages && moreAvailable; page++) {
     let p = `/feed/user/${userId}/?count=12`;
     if (maxId) p += `&max_id=${encodeURIComponent(maxId)}`;
-    const raw = await igGet(p);
+    let raw;
+    try {
+      raw = await igGet(p);
+    } catch (e) {
+      lastError = e;
+      console.log(`  stop pagination after ${all.length} posts: ${e.message.slice(0, 90)}`);
+      break;
+    }
     const items = raw.items ?? [];
     if (items.length === 0) break;
     all.push(...items.map(normalizeMedia));
     maxId = raw.next_max_id ?? '';
     moreAvailable = raw.more_available ?? false;
     console.log(`  feed/user page ${page + 1}: ${all.length} so far, more=${moreAvailable}`);
-    if (moreAvailable && maxId) await sleep(DELAY_MS);
+    if (moreAvailable && maxId) await sleep(jitter(3000));
   }
-  return all;
+  return { posts: all, error: lastError };
 }
 
 // Append-only merge keyed by shortcode (stable IG post identifier).
@@ -216,16 +254,17 @@ async function scrapeAccount(account) {
     return { ok: true, added: 0, error: 'no_pk' };
   }
 
-  const fresh = await fetchAllFeedPosts(userId);
+  const { posts: fresh, error: feedError } = await fetchAllFeedPosts(userId);
   if (fresh.length === 0) {
     console.log(`  feed/user returned 0 items — keeping existing data`);
     if (existing) {
       existing.stats = existing.stats || {};
       existing.stats.lastIgCookieAttempt = new Date().toISOString();
       existing.stats.igCookieZero = true;
+      if (feedError) existing.stats.igCookieError = feedError.message.slice(0, 160);
       await atomicWriteJson(outPath, existing);
     }
-    return { ok: false, error: 'empty_feed', added: 0 };
+    return { ok: false, error: 'empty_feed', added: 0, feedError: feedError?.message };
   }
 
   const { merged, addedCount, upgradedCount } = mergePosts(existing?.posts, fresh);
@@ -244,7 +283,8 @@ async function scrapeAccount(account) {
       isDummy: false,
       source: 'ig-cookie-authenticated',
       newPostsAdded: addedCount,
-      metricsUpgraded: upgradedCount
+      metricsUpgraded: upgradedCount,
+      ...(feedError ? { igCookiePartialError: feedError.message.slice(0, 160) } : {})
     }
   };
   await atomicWriteJson(outPath, out);
@@ -270,17 +310,20 @@ async function main() {
       console.error(`[IG-COOKIE] @${account.username} FAILED: ${err.message}`);
       results.push({ slug: account.slug, ok: false, error: err.message });
     }
-    await sleep(DELAY_MS);
+    await sleep(accountGapMs());
   }
   console.log(`\n=== IG-COOKIE SCRAPE COMPLETE ===`);
   console.log('Results:', JSON.stringify(results, null, 2));
+  // A *persistent* login_required everywhere = cookie dead. But partial success
+  // (some accounts filled, even with throttled pages) = keep data, exit 0 so
+  // the health gate judges from the merged files.
   const terminals = results.filter((r) => !r.ok && /login_required/i.test(r.error || ''));
   const allFailed = results.length > 0 && results.every((r) => !r.ok);
-  if (terminals.length > 0) {
-    console.error(`::error::IG session cookie invalid/expired for ${terminals.length} account(s) — refresh IG_SESSION_COOKIE secret`);
+  if (allFailed && terminals.length === results.length) {
+    console.error('::error::IG session cookie invalid/expired for all accounts — refresh IG_SESSION_COOKIE secret');
     process.exit(2);
   }
-  if (allFailed) {
+  if (results.length > 0 && allFailed) {
     process.exit(2);
   }
 }
