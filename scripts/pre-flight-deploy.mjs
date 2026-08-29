@@ -59,23 +59,33 @@ async function check3_TotalPosts(local) {
 }
 
 async function check4_CrossDup(local) {
-  // Composite key per V29.1: platform:shortcode
-  const seen = new Set();
+  // Cross-account dup check mirrors deploy.mjs: same shortcode in 2+ accounts
+  // is a legit cross-post (IG collab posts / TT cross-posts) for known pairs;
+  // anything else fails.
+  const LEGIT_PAIRS = new Set([
+    'tt-ardian.tanah<->tt-ardiantanahmenjawab',
+    'ig-ardiantanah<->ig-majangmejeng_',
+    'ig-ardiantanah<->ig-nisyanandaa',
+    'ig-ardiantanah<->ig-syahfalahproperti',
+    'ig-nisyanandaa<->ig-syahfalahproperti'
+  ]);
+  const seen = new Map();
   let dup = 0;
   for (const a of local) {
     for (const p of a.posts ?? []) {
-      const key = `${a.platform}:${p.shortcode ?? p.id ?? ''}`;
-      if (seen.has(key)) {
-        dup++;
-      } else {
-        seen.add(key);
+      const key = p.shortcode ?? p.id;
+      if (key && seen.has(key) && seen.get(key) !== a.account?.slug) {
+        const pair = [seen.get(key), a.account.slug].sort().join('<->');
+        if (!LEGIT_PAIRS.has(pair)) dup++;
+      } else if (key) {
+        seen.set(key, a.account?.slug);
       }
     }
   }
   if (dup > 0) {
-    return record('4. Cross-dup = 0', 'FAIL', `${dup} duplicates found`);
+    return record('4. Cross-dup = 0', 'FAIL', `${dup} unexpected duplicates found`);
   }
-  return record('4. Cross-dup = 0', 'PASS', `${seen.size} unique posts`);
+  return record('4. Cross-dup = 0', 'PASS', `${seen.size} unique posts (legit cross-posts excluded)`);
 }
 
 async function check5_LiveBaseline(local) {

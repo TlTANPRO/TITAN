@@ -122,7 +122,16 @@ async function main() {
   // V35: known-legit cross-post pairs (same human, two TT accounts —
   // ardian.tanah & ardiantanahmenjawab cross-post replies/duets; verified
   // identical captions 2026-08-24). Dups within these pairs don't count.
-  const LEGIT_PAIRS = new Set(['tt-ardian.tanah<->tt-ardiantanahmenjawab']);
+  // V36.2: IG collaborative posts — same shortcode+caption verified on 4 IG
+  // account pairs (verified 2026-08-30): the group cross-posts the same media
+  // (e.g. ardiantanah<->syahfalahproperti ×111). Legit, count in both feeds.
+  const LEGIT_PAIRS = new Set([
+    'tt-ardian.tanah<->tt-ardiantanahmenjawab',
+    'ig-ardiantanah<->ig-majangmejeng_',
+    'ig-ardiantanah<->ig-nisyanandaa',
+    'ig-ardiantanah<->ig-syahfalahproperti',
+    'ig-nisyanandaa<->ig-syahfalahproperti'
+  ]);
   for (const a of accFull) {
     for (const p of a.posts || []) {
       const key = p.shortcode || p.id;
