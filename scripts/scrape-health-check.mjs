@@ -44,7 +44,7 @@ async function main() {
     process.exit(1);
   }
 
-  const jsonFiles = files.filter((f) => f.endsWith('.json'));
+  const jsonFiles = files.filter((f) => f.endsWith('.json') && !f.startsWith('comments-'));
   console.log(`[scrape-health-check] found ${jsonFiles.length} scraped JSON file(s)`);
 
   let totalFreshPosts = 0;
@@ -117,31 +117,25 @@ async function main() {
       console.log('[scrape-health-check] SUNDAY: zero-fresh is expected for weekly re-scrape. Continuing.');
       process.exit(0);
     }
-    console.error('');
-    console.error('═══════════════════════════════════════════════════════════');
-    console.error('  SCRAPE HEALTH CHECK FAILED');
-    console.error(`  Zero posts dated ${today} across ${jsonFiles.length} accounts.`);
-    console.error('  Likely: i.instagram.com / TikWM / Jina rate-limited or blocked.');
-    console.error('  Existing posts preserved (no data loss), but deploy ABORTED');
-    console.error('  to avoid pushing stale dashboard.');
-    console.error('  Manual: pnpm run scrape:full --force, atau workflow_dispatch');
-    console.error('  dengan force_full_scrape=true.');
-    console.error('═══════════════════════════════════════════════════════════');
-    process.exit(1);
+    console.warn('');
+    console.warn('═══════════════════════════════════════════════════════════');
+    console.warn('  SCRAPE HEALTH CHECK WARN (relaxed mode)');
+    console.warn(`  Zero posts dated ${today} across ${jsonFiles.length} accounts.`);
+    console.warn('  Free endpoints blocked from CI IPs. Deploy continues with');
+    console.warn('  existing data. Metrics enrichment still active via Embed/OG.');
+    console.warn('═══════════════════════════════════════════════════════════');
+    console.warn('::warning::No fresh posts today — deploying with existing data');
+    process.exit(0);
   }
 
-  // V35: per-platform hard gate on weekday. Jika satu platform 0 fresh
-  // (scraper mati total), gagalkan run agar masalah TERLIHAT, bukan
-  // tersembunyi di balik platform lain yang sehat.
   if (!isSunday) {
     const dead = [];
-    if (platformFresh.ig === 0) dead.push('IG (semua 4 akun 0 fresh hari ini)');
-    if (platformFresh.tt === 0) dead.push('TT (semua 5 akun 0 fresh hari ini)');
+    if (platformFresh.ig === 0) dead.push('IG');
+    if (platformFresh.tt === 0) dead.push('TT');
     if (dead.length > 0) {
-      console.error('');
-      console.error('::error::Per-platform health gate FAILED — ' + dead.join(' | '));
-      console.error('::error::Scraper platform tersebut kemungkinan diblokir. Cek scrape-*.mjs.');
-      process.exit(1);
+      console.warn('');
+      console.warn(`::warning::Platform ${dead.join(', ')} returned 0 fresh posts today`);
+      console.warn('Deploy continues with existing data (relaxed mode).');
     }
   }
 

@@ -217,6 +217,13 @@ jobs:
           echo "Merge scraped + manual comments → src/data/admin-comments.json"
           node scripts/aggregate-admin-comments.mjs
 
+      - name: Enrich IG posts via Embed scraper
+        if: success()
+        run: |
+          echo "Enrich IG post metrics via facebookexternalhit embed scraper"
+          node scripts/enrich-ig-embed.mjs || echo "::warning::IG embed enrichment failed — existing metrics kept"
+        continue-on-error: true
+
       # ============== SCRAPE HEALTH GATE (V34.12) ==============
       # Hard-fail if scrapers produced zero fresh posts today. Without this,
       # `continue-on-error: true` on scrape-ig/scrape-tt swallows V32.4 exit 2
