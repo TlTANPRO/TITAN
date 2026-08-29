@@ -61,6 +61,14 @@ jobs:
       # V27.16: kill switch. Now that V28 uses free methods, this is a
       # no-op (the wrapper just logs and continues). Kept for safety.
       ENSEMBLEDATA_TOKENS_SKIP: "true"
+      # V36: authenticated self-scrape via the account OWNER's own session
+      # cookies (free, no paid API). Set as repo secrets (Actions → Secrets):
+      #   IG_SESSION_COOKIE — IG: "sessionid=...; csrftoken=...; mid=..." (from
+      #     the owner's logged-in instagram.com browser, DevTools → Cookies)
+      #   TT_SESSION_COOKIE — TT: "ttwid=...; msToken=...; tt_csrf_token=...; sessionid=..."
+      #     (from the owner's logged-in tiktok.com browser)
+      IG_SESSION_COOKIE: ${{ secrets.IG_SESSION_COOKIE }}
+      TT_SESSION_COOKIE: ${{ secrets.TT_SESSION_COOKIE }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -99,7 +107,29 @@ jobs:
         if: success()
         run: node scripts/bootstrap-scraped-from-bundled.mjs
 
-      # ============== SCRAPE PHASE (fail soft) ==============
+      # ============== AUTHENTICATED SCRAPE (V36 — PRIMARY, owner cookie) ==============
+      # All free post-listing endpoints die since ~2026-08-25 (verified 2026-08-29:
+      # IG 401/400, TT yt-dlp "Unable to extract secondary user ID", Jina 403,
+      # RSS login wall). The owner's own session cookie is now the primary source.
+      # Fails soft (exit 2, no cookie/invalid) so deploy never blocks — the free
+      # fallback steps below then run with existing data.
+      - name: Scrape Instagram (authenticated cookie V36)
+        id: scrape-ig-cookie
+        if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ig' || github.event.inputs.platform == '' }}
+        run: |
+          echo "Authenticated IG scrape (owner session cookie)"
+          node scripts/scrape-ig-cookie.mjs
+        continue-on-error: true
+
+      - name: Scrape TikTok (authenticated cookie V36)
+        id: scrape-tt-cookie
+        if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '' }}
+        run: |
+          echo "Authenticated TT scrape (owner session cookie)"
+          node scripts/scrape-tt-cookie.mjs
+        continue-on-error: true
+
+      # ============== SCRAPE PHASE (free FALLBACK — only if cookie step didn't succeed) ==============
 
       # V26: smart cadence — Sunday = full re-scrape (weekly catch-up).
       # Other days = incremental 1-day window. Manual override via
@@ -120,14 +150,14 @@ jobs:
             echo "::notice::Weekday ($day) → incremental 1-day scrape"
           fi
 
-      - name: Scrape Instagram
-        if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ig' || github.event.inputs.platform == '' }}
+      - name: Scrape Instagram (free fallback)
+        if: ${{ (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ig' || github.event.inputs.platform == '') && steps.scrape-ig-cookie.outcome != 'success' }}
         run: |
           if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ] || [ "${{ steps.cadence.outputs.weekly_full }}" = "true" ]; then
-            echo "Full IG scrape (V28 free: i.instagram.com /clips/user/ + /feed/user/)"
+            echo "Full IG scrape (free fallback, V28: i.instagram.com /clips/user/ + /feed/user/)"
             node scripts/scrape-ig.mjs --force
           else
-            echo "Incremental IG scrape (V28 free, no --days needed)"
+            echo "Incremental IG scrape (free fallback, V28)"
             node scripts/scrape-ig.mjs
           fi
         continue-on-error: true
@@ -138,14 +168,14 @@ jobs:
         run: |
           echo "::notice::IG scrape outcome=${{ steps.scrape-ig.outcome }}"
 
-      - name: Scrape TikTok
-        if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '' }}
+      - name: Scrape TikTok (free fallback)
+        if: ${{ (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '') && steps.scrape-tt-cookie.outcome != 'success' }}
         run: |
           if [ "${{ github.event.inputs.force_full_scrape }}" = "true" ] || [ "${{ steps.cadence.outputs.weekly_full }}" = "true" ]; then
-            echo "Full TT scrape (V28 free: Jina web profile + TikWM search via Jina)"
+            echo "Full TT scrape (free fallback: Jina web profile + TikWM search via Jina)"
             node scripts/scrape-tt.mjs --force
           else
-            echo "Incremental TT scrape (V28 free, no --days needed)"
+            echo "Incremental TT scrape (free fallback)"
             node scripts/scrape-tt.mjs
           fi
         continue-on-error: true
@@ -163,10 +193,10 @@ jobs:
       # V35: yt-dlp is PRIMARY (verified 2026-08-24: all 5 accounts, exact
       # snowflake timestamps). Urlebird kept as fallback (started returning
       # 403/0-videos on 2026-08-23 run).
-      - name: Scrape TikTok via yt-dlp (V35 primary)
-        if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '' }}
+      - name: Scrape TikTok via yt-dlp (V35 primary, free fallback)
+        if: ${{ (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '') && steps.scrape-tt-cookie.outcome != 'success' }}
         run: |
-          echo "yt-dlp TT scrape (V35 primary)"
+          echo "yt-dlp TT scrape (V35 primary, free fallback)"
           pip install -q yt-dlp || true
           node scripts/scrape-tt-ytdlp.mjs
           echo "::notice::TT yt-dlp scrape outcome=success"
@@ -174,7 +204,7 @@ jobs:
         id: scrape-tt-ytdlp
 
       - name: Scrape TikTok via Urlebird (fallback)
-        if: ${{ github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '' }}
+        if: ${{ (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'tt' || github.event.inputs.platform == '') && steps.scrape-tt-cookie.outcome != 'success' }}
         run: |
           echo "Urlebird TT scrape (V34 fallback: profile listing + detail stats)"
           node scripts/scrape-tt-urlebird.mjs || echo "::warning::Urlebird TT scrape failed — old data kept"
