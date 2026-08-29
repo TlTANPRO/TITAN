@@ -20,6 +20,7 @@ scripts/scraped-15jul-backup/
 scripts/scraped-backups/
 # V37 headless-browser scraper temp Chrome profile (never commit)
 .tmp-tt-chrome-profile/
+.tmp-tt-comments-profile/
 # V29.1 audit snapshots (ad-hoc backups, never commit)
 scripts/.snapshot-*/
 scripts/.snapshot-*.json

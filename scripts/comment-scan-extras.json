@@ -1,0 +1,31 @@
+{
+  "_comment": "V38 external comment-scan targets. tt[] is scanned by scrape-comments-tt-browser.mjs (first, never limited). ig[] reserved for when the IG post pipeline is alive again. Entries here mirror posts where our admins already left comments (seen manually in src/data/admin-comments.json) — used to backfill/verify via browser.",
+  "tt": [
+    {
+      "url": "https://www.tiktok.com/@kreator_lumajang/video/7509335025398123794",
+      "owner": "kreator_lumajang"
+    }
+  ],
+  "ig": [
+    {
+      "url": "https://www.instagram.com/reel/DZtx3nUzmoV/",
+      "owner": "properti_lumajang"
+    },
+    {
+      "url": "https://www.instagram.com/reel/DZ3xlS3TgDl/",
+      "owner": "jelajah_lumajang"
+    },
+    {
+      "url": "https://www.instagram.com/p/Db7Kd4sztSZ/",
+      "owner": "lumbung_informasi"
+    },
+    {
+      "url": "https://www.instagram.com/reel/Da4TUP2TEsq/",
+      "owner": "kabar_lumajang_hari_ini"
+    },
+    {
+      "url": "https://www.instagram.com/p/DbOAfvPGIwT/",
+      "owner": "lumajang_kabar"
+    }
+  ]
+}

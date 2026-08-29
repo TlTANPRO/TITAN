@@ -1,4 +1,8 @@
 // Scrape comments from Instagram posts via Jina web proxy.
+// DEPRECATED (hidden) — Jina r.jina.ai returns 403 since ~25 Aug, and the IG
+// scraped file has no posts since 2026-08-01 (stale). Kept as a no-op guard:
+// exits 2 fast when there are no candidates. Manual IG comments in
+// src/data/admin-comments.json are unaffected (aggregator preserves them).
 // Targets majangmejeng_ IG posts from scripts/scraped/ig-majangmejeng_.json
 // Filters to posts from 2026-08-01 onwards (matches FILTER_START_MS in
 // src/lib/adminComments.js). Output: scripts/scraped/comments-ig-majangmejeng_.json

@@ -235,15 +235,20 @@ jobs:
           echo "::notice::TT Urlebird scrape outcome=${{ steps.scrape-tt-urlebird.outcome }}"
 
       # ============== ADMIN COMMENTS PHASE (fail soft) ==============
-      # V34.9: scrape comments left by our admins (Reni/Rifqi/Reta/Julian) on
-      # their own posts and on other people's posts. Targets majangmejeng_
-      # accounts (IG + TT). Free endpoints only:
-      #   - TT: TikWM /api/comment/list (no auth, rate limit ~1 req/sec)
-      #   - IG: Jina r.jina.ai proxy for IG post pages (rate limit ~1 req/3sec)
+      # V34.9 → V38: scrape comments left by our admins (Reni/Rifqi/Reta/Julian)
+      # on their own posts and on other people's posts.
+      #   - TT: V38 headless-Chrome/CDP (scrape-comments-tt-browser.mjs) — opens
+      #     each video, opens the comment tray, captures the page's own signed
+      #     /api/comment/list/ XHRs. No more TikWM (dead). Scans own posts of all
+      #     5 TT accounts since 2026-08-01 + external targets in
+      #     scripts/comment-scan-extras.json. limit= tuned per day below.
+      #   - IG: Jina proxy is dead (403 since ~25 Aug) and the IG scraped file is
+      #     stale (no posts since Aug 1) — step kept as a no-op guard; manual
+      #     dataset entries are preserved by the aggregator regardless.
       # Aggregate merges raw scraped + existing manual dataset via dedup by id.
       # Fails soft per step so a single API hiccup doesn't block deploy.
 
-      - name: Scrape comments IG (Jina proxy)
+      - name: Scrape comments IG (Jina proxy — dead, no-op)
         if: success()
         run: |
           echo "Scrape IG comments via Jina (majangmejeng_ only)"
@@ -251,11 +256,15 @@ jobs:
         continue-on-error: true
         id: scrape-comments-ig
 
-      - name: Scrape comments TT (TikWM free)
+      - name: Scrape comments TT (V38 headless Chrome)
         if: success()
         run: |
-          echo "Scrape TT comments via TikWM (majangmejeng_ only)"
-          node scripts/scrape-comments-tt.mjs || echo "::warning::TT comments scrape failed — continuing with manual dataset only"
+          echo "Scrape TT comments via headless Chrome (V38)"
+          if [ "${{ steps.cadence.outputs.weekly_full }}" = "true" ]; then
+            node scripts/scrape-comments-tt-browser.mjs limit=250
+          else
+            node scripts/scrape-comments-tt-browser.mjs limit=30
+          fi
         continue-on-error: true
         id: scrape-comments-tt
 

@@ -57,6 +57,21 @@ function makeId(platform, postId, admin, ts) {
   return `${platform}-${postId}-${admin}-${ts}`;
 }
 
+// Derive a stable postId from the post URL when the raw record omits it
+// (manual entries historically skipped postId). IG → shortcode (last URL
+// segment); TT → numeric /video/{id}. This keeps dedup ids aligned with
+// scraper-generated records so the same real comment never doubles.
+function postIdFromUrl(url) {
+  const s = String(url ?? '');
+  if (!s) return '';
+  if (/instagram\.com/i.test(s)) {
+    const seg = s.replace(/\/+$/, '').split('/').pop();
+    return seg || '';
+  }
+  const m = s.match(/\/video\/(\d+)/);
+  return m ? m[1] : '';
+}
+
 function normalize(raw, sourcePlatform) {
   if (!raw) return null;
   const text = String(raw.commentText ?? '');
@@ -67,7 +82,7 @@ function normalize(raw, sourcePlatform) {
   const platform = raw.platform ?? sourcePlatform;
   if (platform !== 'instagram' && platform !== 'tiktok') return null;
 
-  const postId = String(raw.postId ?? raw.postShortcode ?? '');
+  const postId = String(raw.postId ?? raw.postShortcode ?? postIdFromUrl(raw.postUrl) ?? '');
   const postUrl = String(raw.postUrl ?? (platform === 'instagram'
     ? `https://www.instagram.com/p/${postId}/`
     : `https://www.tiktok.com/@x/video/${postId}`));
