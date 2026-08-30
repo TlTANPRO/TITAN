@@ -235,35 +235,36 @@ jobs:
           echo "::notice::TT Urlebird scrape outcome=${{ steps.scrape-tt-urlebird.outcome }}"
 
       # ============== ADMIN COMMENTS PHASE (fail soft) ==============
-      # V34.9 → V38: scrape comments left by our admins (Reni/Rifqi/Reta/Julian)
-      # on their own posts and on other people's posts.
+      # Scrape comments left by our admins (Reni/Rifqi/Reta/Julian) on their own
+      # majangmejeng_ posts AND on other people's posts (scope = majangmejeng_
+      # account, TT + IG — user clarification 2026-08-30).
       #   - TT: V38 headless-Chrome/CDP (scrape-comments-tt-browser.mjs) — opens
-      #     each video, opens the comment tray, captures the page's own signed
-      #     /api/comment/list/ XHRs. No more TikWM (dead). Scans own posts of all
-      #     5 TT accounts since 2026-08-01 + external targets in
-      #     scripts/comment-scan-extras.json. limit= tuned per day below.
-      #   - IG: Jina proxy is dead (403 since ~25 Aug) and the IG scraped file is
-      #     stale (no posts since Aug 1) — step kept as a no-op guard; manual
-      #     dataset entries are preserved by the aggregator regardless.
+      #     the video, opens the comment tray, deep-scrolls and captures the
+      #     page's own signed /api/comment/list/ XHRs. Scans majangmejeng_ own
+      #     posts since 2026-08-01 + external TT targets.
+      #   - IG: cookie-based Android API (scrape-comments-ig-cookie.mjs) via
+      #     IG_SESSION_COOKIE. Scans majangmejeng_ own posts with comments
+      #     (majang ID from scraped file) + external IG targets. Jina no longer
+      #     works (dead since ~25 Aug).
       # Aggregate merges raw scraped + existing manual dataset via dedup by id.
       # Fails soft per step so a single API hiccup doesn't block deploy.
 
-      - name: Scrape comments IG (Jina proxy — dead, no-op)
+      - name: Scrape comments IG (authenticated cookie)
         if: success()
         run: |
-          echo "Scrape IG comments via Jina (majangmejeng_ only)"
-          node scripts/scrape-comments-ig.mjs || echo "::warning::IG comments scrape failed — continuing with manual dataset only"
+          echo "Scrape IG comments via owner session cookie (majangmejeng_ only)"
+          node scripts/scrape-comments-ig-cookie.mjs limit=40 slow=1 || echo "::warning::IG comments scrape failed — continuing with manual dataset only"
         continue-on-error: true
         id: scrape-comments-ig
 
       - name: Scrape comments TT (V38 headless Chrome)
         if: success()
         run: |
-          echo "Scrape TT comments via headless Chrome (V38)"
+          echo "Scrape TT comments via headless Chrome (V38, majangmejeng_ only)"
           if [ "${{ steps.cadence.outputs.weekly_full }}" = "true" ]; then
-            node scripts/scrape-comments-tt-browser.mjs limit=250
+            node scripts/scrape-comments-tt-browser.mjs limit=250 scrolls=20
           else
-            node scripts/scrape-comments-tt-browser.mjs limit=30
+            node scripts/scrape-comments-tt-browser.mjs limit=30 scrolls=20
           fi
         continue-on-error: true
         id: scrape-comments-tt

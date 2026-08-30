@@ -13,12 +13,14 @@
 // (-Re / -Rf / -Rm / -Ju with aliases /-Riki/ etc.) — the same rule as the
 // manual dataset. Non-admin comments are ignored (dashboard only tracks admins).
 //
-// Targets:
-//   1. OWN posts: scripts/scraped/tt-{slug}.json for all 5 TT accounts,
-//      filtered to posts since 2026-08-01 (matches FILTER_START_MS in
+// Targets (scoped to majangmejeng_ — user clarification 30 Aug 2026):
+//   1. OWN posts: scripts/scraped/tt-majangmejeng_.json only, filtered to
+//      posts since 2026-08-01 (matches FILTER_START_MS in
 //      aggregate-admin-comments.mjs + src/lib/adminComments.js), newest first.
 //   2. EXTERNAL posts: scripts/comment-scan-extras.json → tt[] entries
 //      ({ url, owner }). These run first and are not subject to limit=.
+// Pagination scrolls deep (default up to 30 passes, scrolls=N to override) so
+// admin markers deep in comment threads are not missed.
 //
 // Output: scripts/scraped/comments-tt-majangmejeng_.json in the exact shape the
 // aggregator expects (adminComments[] with postId/postUrl/postOwner/isOwnPost/…).
@@ -29,9 +31,9 @@
 // Per-video errors are logged and skipped.
 //
 // Usage:
-//   node scripts/scrape-comments-tt-browser.mjs                    # default limit
-//   node scripts/scrape-comments-tt-browser.mjs limit=200          # full scan
-//   node scripts/scrape-comments-tt-browser.mjs only=tt-majangmejeng_ extras=0
+//   node scripts/scrape-comments-tt-browser.mjs                    # full scan majang
+//   node scripts/scrape-comments-tt-browser.mjs limit=200          # cap own posts
+//   node scripts/scrape-comments-tt-browser.mjs scrolls=60         # deeper pagination
 //
 // Environment:
 //   TT_SESSION_COOKIE  optional session cookie header (injected when present)
@@ -51,7 +53,7 @@ const OUT_DIR = path.join(__dirname, 'scraped');
 const EXTRAS_PATH = path.join(__dirname, 'comment-scan-extras.json');
 const COOKIE = process.env.TT_SESSION_COOKIE || '';
 const PORT = Number(process.env.TT_BROWSER_PORT || 9365);
-const DEFAULT_LIMIT = Number(process.env.TT_BROWSER_LIMIT || 60);
+const DEFAULT_LIMIT = Number(process.env.TT_BROWSER_LIMIT || 400);
 const PROFILE = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
   '..',
@@ -170,18 +172,25 @@ async function main() {
   } catch {}
   const onlyTT = j => (typeof j === 'string') ? j : j[0];
 
-  for (const ex of extras) {
-    const url = String(ex.url ?? '');
-    const m = url.match(/\/video\/(\d+)/);
-    if (!m) continue;
-    candidates.push({
-      post: { shortcode: m[1] }, slug: null, username: null, isOwnPost: false,
-      owner: ex.owner || '', postUrl: url, postId: m[1], external: true
-    });
+  if (withExtras) {
+    for (const ex of extras) {
+      const url = String(ex.url ?? '');
+      const m = url.match(/\/video\/(\d+)/);
+      if (!m) continue;
+      candidates.push({
+        post: { shortcode: m[1] }, slug: null, username: null, isOwnPost: false,
+        owner: ex.owner || '', postUrl: url, postId: m[1], external: true
+      });
+    }
   }
 
+  // Scope (user clarification 2026-08-30): the Komentar Admin tab tracks only
+  // the majangmejeng_ account (TikTok crash for the post/caption hashtag KPI is
+  // separate). We scan majangmejeng_ own posts + every external target; the
+  // other 4 TT accounts are out of scope to keep the run fast and focused.
+  const scopeAccounts = ACCOUNTS_TT.filter((a) => a.slug === 'tt-majangmejeng_');
   let ownCandidates = 0;
-  for (const account of ACCOUNTS_TT) {
+  for (const account of scopeAccounts) {
     if (onlySlug && account.slug !== onlySlug) continue;
     const src = path.join(OUT_DIR, `${account.slug}.json`);
     let payload = null;
@@ -316,10 +325,20 @@ async function main() {
 
       await drain();
 
-      // Scroll (window + comment container) to trigger pagination.
+      // Scroll (window + comment container) to trigger pagination. Deeper than
+      // the old fixed 6 passes: admin markers often sit deep in a thread, so we
+      // keep scrolling until the comments actually stop growing (genuine
+      // stagnation threshold = SCROLL_STAGNANT consecutive empty passes) or we
+      // hit the scroll cap. Set scrolls=0 to disable scrolling entirely.
+      const SCROLL_MAX = (() => {
+        const a = process.argv.find((x) => x.startsWith('scrolls='));
+        const n = Number(a?.split('=')[1]);
+        return Number.isFinite(n) && n >= 0 ? n : 20;
+      })();
+      const SCROLL_STAGNANT = 4;
       let stagnant = 0;
-      for (let i = 0; i < 6; i++) {
-        if (i > 0 && stagnant >= 3) break;
+      let scrolls = 0;
+      while (scrolls < SCROLL_MAX) {
         await cmd('Runtime.evaluate', {
           expression: `(()=>{
             const cont = document.querySelector('[data-e2e="comment-list"]');
@@ -331,8 +350,10 @@ async function main() {
         });
         await sleep(jitter(2200));
         const added = await drain();
+        scrolls++;
         if (added === 0) stagnant++;
         else stagnant = 0;
+        if (stagnant >= SCROLL_STAGNANT) break;
       }
 
       const admin = adminComments;
