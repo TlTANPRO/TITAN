@@ -73,6 +73,17 @@ async function main() {
   console.log('  TITAN V17 — Single Deploy');
   console.log('============================================');
 
+  // Step 0.0 (V39): dated local-only backup of the raw scraped JSON *before* any
+  // generation/cleanup, so if a downstream step misses/corrupts data we can diff
+  // against the raw scrape instead of re-scraping (re-scrape risks IG feed cache
+  // / throttle / errors). Local-only: scripts/scraped/ is .gitignore'd.
+  console.log('\n[0.0/6] Backup raw scraped data (dated, local-only)...');
+  try {
+    execSync('node scripts/backup-scraped.mjs', { cwd: ROOT, stdio: 'inherit' });
+  } catch (e) {
+    console.warn(`[deploy] backup-scraped failed (non-fatal): ${e.message}`);
+  }
+
   // Step 0: clean OLD chunk hashes in root assets/ (NOT the whole assets/ dir).
   // The root assets/ contains both:
   //   - source assets/avatars/ (real photos, downloaded by scrape-avatars.mjs)
