@@ -1,6 +1,6 @@
 {
   "_schema": "TITAN admin-comments dataset v1 — tracks every comment our admins (Reni/Rifqi/Reta/Julian) leave on posts since 2026-08-01. Populated manually + auto-aggregated from scripts/scraped/comments-*.json. Marker rules in _markerRules.",
-  "_schemaUpdated": "2026-08-30",
+  "_schemaUpdated": "2026-08-31",
   "_markerRules": "Marker tag uses dash-prefix (NOT hashtag) — `-Rf`/`-Rm`/`-Re`/`-Ju`. Optional spacers allowed: `- Rf ` or `-Rf`. Case-insensitive match. Aliases accepted: `-Riki`/`-Rifki` → Rifqi, `-Reta` → Reta, `-Reni` → Reni, `-Julian` → Julian.",
   "_fieldDocs": {
     "id": "Synthetic stable ID = `${platform}-${postId}-${adminTag}-${timestampMs}`",
@@ -15,6 +15,18 @@
     "isOwnPost": "true if we commented on our own post, false if commented on someone else's"
   },
   "comments": [
+    {
+      "id": "tiktok-7679326964028624148-Reta-1788153729000",
+      "platform": "tiktok",
+      "accountSlug": "tt-majangmejeng_",
+      "adminTag": "-Rm",
+      "admin": "Reta",
+      "postUrl": "https://www.tiktok.com/@majangmejeng_/video/7679326964028624148",
+      "postOwner": "majangmejeng_",
+      "commentText": "hmm -Rm",
+      "timestampMs": 1788153729000,
+      "isOwnPost": true
+    },
     {
       "id": "tiktok-7679297208843324692-Rifqi-1787981938000",
       "platform": "tiktok",
