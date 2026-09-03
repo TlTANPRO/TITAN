@@ -1,0 +1,452 @@
+const a="2026-09-03T19:44:25.313Z",n={"ig-majangmejeng_":{viralRecipe:`Post teratas dari @majangmejeng_ berhasil menembus performa rata-rata akun karena menggunakan sudut pandang visual yang sangat kontras dengan realitas pasar properti saat ini. Konten ini memicu emosi penasaran dan rasa iri positif (aspirational envy) yang membuat audiens berhenti melakukan scrolling di detik-detik awal. 
+
+3 Elemen Resep:
+- Hook visual instan di 2 detik pertama yang langsung menampilkan before-after drastis atau detail interior yang tidak biasa, memaksa penonton menonton ulang.
+- Format teks on-screen yang sangat singkat dan to-the-point, menyoroti masalah biaya atau efisiensi ruang yang relate dengan audiens urban.
+- Struktur pacing cepat di bawah 15 detik tanpa transisi yang membingungkan, menjaga retensi penonton tetap tinggi di atas 80 persen.
+
+Cara Replikasi:
+Buat video pendek berdurasi 10-12 detik dengan format reel bergeser (slider) yang membandingkan ruang sempit sebelum direnovasi dengan hasil akhir estetik. Unggah pada pukul 18.00-20.00 waktu setempat, dan gunakan teks overlay yang memicu perdebatan soal estimasi biaya renovasi di kolom komentar.
+
+Risiko & Anti-pattern:
+Jangan meniru mentah-mentah estetika visual tanpa menyertakan konteks fungsional atau data yang relevan seperti ukuran ruangan dan estimasi biaya. Duplikasi murni yang hanya memamerkan keindahan interior tanpa elemen interaktif atau pemecahan masalah akan gagal karena audiens properti di Instagram mencari solusi praktis, bukan sekadar galeri foto bergerak.`,growthStrategy:`1. **Proyeksi 3-6 Bulan**
+Dengan basis 3.187 pengikut dan rata-rata penayangan 2.221 per unggahan, akun @majangmejeng_ memiliki fondasi penonton pasif yang cukup baik namun belum terkonversi menjadi interaksi aktif. Tingkat engagement di angka 3.48% sebenarnya sudah berada di atas rata-rata industri mikro, tetapi rendahnya rata-rata komentar (7 per unggahan) menunjukkan bahwa konten belum memicu percakapan atau diskusi mendalam. Dalam 3 hingga 6 bulan ke depan, fokus utama bukan sekadar mengejar jumlah pengikut baru, melainkan memperbaiki kualitas interaksi untuk mendongkrak algoritma distribusi Reels secara organik.
+
+2. **3-4 Taktik Inti**
+Taktik 1: Pancingan Diskusi pada Kolom Komentar. Ubah gaya penyampaian konten desain interior dengan menyelipkan pertanyaan kontroversial ringan atau dilema tata ruang di akhir video, seperti memilih lantai vinyl atau keramik. Target: menaikkan rata-rata komentar dari 7 menjadi 25 per unggahan dalam 30 hari.
+Taktik 2: Optimasi Visual Format Carousel Sebelum/Sesudah. Unggah konten renovasi ruang sempit menggunakan format geser yang mendetail, memberikan panduan anggaran kasar di slide terakhir untuk memicu aksi simpan. Target: meningkatkan rasio simpan dan memicu lonjakan share sebesar 20%.
+Taktik 3: Kolaborasi Lokal Antar Desainer. Lakukan kolaborasi silang dengan akun arsitek atau kontraktor interior skala mikro di Indonesia untuk mencaplok audiens yang relevan. Target: mendapatkan 300 pengikut organik baru dari luar basis pengikut saat ini dalam waktu sebulan.
+
+3. **Format & Cadence**
+Prioritaskan format Reels sebanyak 3 kali seminggu untuk mendongkrak jangkauan ke audiens baru, didukung oleh 2 unggahan Carousel mendalam per minggu untuk mempertahankan retensi pengikut lama. Frekuensi total 5 unggahan per minggu ini sangat ideal karena rasio antara penayangan (2.221) dan jumlah pengikut (3.187) membuktikan bahwa konten video pendek masih menjadi mesin penarik utama yang efektif di nisbah properti Indonesia.
+
+4. **Risk Watch**
+Risiko terbesar yang dapat menggagalkan rencana ini adalah kejenuhan visual akibat estetika interior yang terlalu seragam dan kurangnya sentuhan manusia dalam narasi konten. Selain itu, rasio komentar yang saat ini sangat tipis berisiko membuat algoritma menghentikan distribusi konten jika taktik pancingan diskusi gagal di minggu-minggu awal pelaksanaan strategi baru.`,strategyBrief:`SWOT
+
+Strengths (Kekuatan)
+• Engagement rate yang sehat di angka 3.48% (melampaui rata-rata mikro-influencer properti/desain interior yang berada di kisaran 1.5% - 3%), menunjukkan bahwa audiens 3,187 pengikut sangat responsif terhadap konten visual yang disajikan.
+• Volume konten yang tinggi dengan 822 total pos membuktikan konsistensi historis yang baik dalam membangun pustaka aset visual properti dan desain interior.
+• Rata-rata penayangan (views) mencapai 2,221 per pos (menyumbang rasio views-to-followers sekitar 69.6%), mengindikasikan bahwa distribusi Reels atau video pendek memiliki jangkauan organik yang kuat di luar basis pengikut inti.
+
+Weaknesses (Kelemahan)
+• Konversi interaksi dari tayangan ke komentar masih sangat rendah, yakni rata-rata hanya 7 komentar per pos dengan basis 2,221 views, yang menunjukkan kurangnya pancingan percakapan atau pertanyaan terbuka di dalam takarir (caption).
+• Rata-rata 104 likes dari 3,187 pengikut menunjukkan adanya potensi kejenuhan visual atau format pos tunggal (single image) yang kurang memicu tombol suka dibandingkan konten video.
+• Sejarah produksi 822 pos belum berbanding lurus dengan pertumbuhan pengikut (baru di angka 3,187), menandakan tidak adanya strategi "top-of-funnel" atau kampanye penarikan pengikut baru yang masif di masa lalu.
+
+Opportunities (Peluang)
+• Pemanfaatan celah pasar desain interior lokal Indonesia yang minim edukasi anggaran (budgeting), di mana konten kalkulasi biaya renovasi atau "before-after" rumah subsidi berpotensi mendongkrak tingkat simpan (saves) dan bagi (shares).
+• Optimalisasi fitur interaksi Instagram seperti fitur Polling dan Tanya-Jawab di Story untuk mengonversi 2,221 penonton pasif menjadi pemberi komentar aktif.
+• Kolaborasi silang dengan akun arsitek atau kontraktor lokal berskala mikro untuk saling bertukar audiens di dalam segmen properti residensial.
+
+Threats (Ancaman)
+• Kejenuhan algoritma Instagram yang semakin memprioritaskan akun dengan retensi video durasi di atas 15 detik, mengancam performa views 2,221 jika format visual gagal beradaptasi.
+• Persaingan ketat dari kreator desain interior komersial yang gencar memasang iklan berbayar (Meta Ads), menekan jangkauan organik akun @majangmejeng_.
+• Risiko stagnasi pertumbuhan pengikut di angka 3,187 akibat audiens jenuh dengan portofolio visual tanpa adanya narasi personal atau wajah kreator di balik merek.
+
+RENCANA AKSI 30 HARI
+
+1. Meningkatkan rata-rata komentar dari 7 menjadi minimal 15 per pos dalam 30 hari ke depan dengan cara selalu menutup takarir menggunakan pertanyaan spesifik, seperti "Pilih desain A atau B?" atau "Berapa perkiraan budget ruangan ini?".
+2. Mempertahankan dan memaksimalkan Engagement Rate di atas 3.4% dengan cara memproduksi minimal 3 konten Reels per minggu yang berfokus pada transisi renovasi ruang sempit di Indonesia.
+3. Menargetkan peningkatan rasio penayangan (views) dari 2,221 menjadi 2,500 per pos dengan memanfaatkan audio yang sedang tren di Indonesia serta durasi video padat 7 hingga 12 detik.
+4. Menambah jumlah pengikut sebesar 5% dari 3,187 menjadi sedikitnya 3,340 akun dalam 30 hari melalui penayangan 5 konten Instagram Story interaktif per hari yang membahas studi kasus desain interior nyata.`,generatedAt:"2026-09-03T19:44:33.381Z"},"ig-syahfalahproperti":{viralRecipe:`Post teratas dari akun @syahfalahproperti ini berhasil menembus performa rata-rata dengan mengandalkan visual properti yang estetik dipadukan dengan informasi harga yang transparan di awal video. Pemicu emosional utamanya adalah rasa penasaran pencari rumah pertama terhadap hunian impian di bawah budget tertentu, membuat penonton bertahan hingga detik terakhir.
+
+Elemen Resep:
+- Visual pembuka 2 detik pertama langsung menampilkan sudut terbaik ruang tamu dengan teks besar berisi lokasi dan kisaran harga cicilan per bulan.
+- Durasi video ringkas di bawah 30 detik menggunakan transisi cepat yang selaras dengan irama musik tren Instagram Reels saat ini.
+- Call to Action di akhir video yang mengarahkan penonton untuk mengetik kata kunci tertentu di kolom komentar guna mendapatkan brosur lengkap.
+
+Cara Replikasi:
+Buat video Reels berdurasi 15-20 detik dengan format tur properti kilat yang menyoroti tiga area favorit pembeli (dapur, kamar utama, dan fasad). Unggah pada pukul 18.00 waktu setempat dan gunakan audio yang sedang masuk dalam daftar tren Instagram minggu ini.
+
+Risiko & Anti-pattern:
+Meniru formula ini secara mentah-mentah tanpa menyesuaikan target pasar akan berujung sia-sia jika properti yang ditampilkan tidak memiliki kejelasan harga. Jangan menampilkan visual yang terlalu gelap atau terlalu lambat karena audiens properti di Instagram menyukai estetika yang bersih dan informasi yang instan.`,growthStrategy:`1. **Proyeksi 3-6 Bulan**
+Dengan 1.673 pengikut dan 751 total pos, akun @syahfalahproperti saat ini mengalami inefisiensi distribusi konten. Tingkat keterlibatan atau *engagement rate* sebesar 1.47% berada di bawah standar industri properti yang sehat, diperparah dengan rata-rata komentar yang hanya 2 per pos. Meskipun rata-rata penayangan mencapai 1.354 per pos yang menunjukkan algoritma masih mendistribusikan konten, rendahnya *likes* (23) dan komentar mengindikasikan audiens pasif. Dalam 3 hingga 6 bulan ke depan, fokus utama bukan sekadar mengejar angka pengikut, tetapi membalikkan rasio interaksi agar algoritma Instagram mulai merekomendasikan konten secara organik kepada calon pembeli properti yang serius.
+
+2. **3-4 Taktik Inti**
+Taktik 1: Perombakan *Hook* Video dan CTA Interaktif. Karena rata-rata penayangan mencapai 1.354 namun interaksi minim, 3 detik pertama pada Reels harus diubah total menggunakan narasi masalah pembeli rumah pertama di Indonesia, diakhiri pertanyaan pancingan di kolom komentar. Target: menaikkan rata-rata komentar dari 2 menjadi 15 per pos dalam 30 hari.
+
+Taktik 2: Kampanye Edukasi KPR dan Legalitas Properti. Buat konten *carousel* berseri yang membedah proses KPR ditolak bank dan cara mengatasinya. Format ini dirancang untuk mendongkrak *saves* dan *shares* sebagai sinyal positif ke algoritma. Target: menaikkan *engagement rate* dari 1.47% ke 3.5% dalam 60 hari.
+
+Taktik 3: *Direct Message Funnel* Otomatis. Setiap pos properti wajib mengarahkan penonton untuk berkomentar kata kunci tertentu guna mendapatkanbrosur harga via DM. Target: mengonversi setidaknya 10% dari total penonton harian menjadi percakapan privat di DM.
+
+3. **Format & Cadence**
+Prioritaskan format Reels untuk menjangkau audiens baru (memanfaatkan rata-rata *views* yang sudah tinggi) yang dikombinasikan dengan Carousel edukatif untuk membangun otoritas. Jadwal unggah ditetapkan sebanyak 4 kali seminggu, terdiri dari 2 Reels *top-of-funnel* dan 2 Carousel *mid-funnel*. Frekuensi ini terukur untuk menjaga konsistensi tanpa membebani kapasitas produksi konten.
+
+4. **Risk Watch**
+Risiko terbesar bagi @syahfalahproperti adalah *audience fatigue* akibat terus memposting katalog properti tanpa nilai edukasi yang jelas, yang dapat mematikan sisa interaksi yang ada. Selain itu, jika perubahan *hook* tidak segera memperbaiki rasio *likes* dan komentar dalam 30 hari pertama, akun berisiko terjebak dalam lingkaran pembagian tayangan tanpa konversi *lead* properti yang nyata.`,strategyBrief:`SWOT
+
+Strengths
+• Konsistensi volume konten yang sangat tinggi dengan total 751 postingan, menunjukkan dedikasi operasional harian yang baik yang perlu dipertahankan sebagai fondasi distribusi informasi properti.
+• Jangkauan organik yang cukup solid dengan rata-rata 1.349 views per video, mengindikasikan bahwa algoritma Instagram masih mendistribusikan konten visual properti ke audiens yang lebih luas di luar pengikut.
+
+Weaknesses
+• Tingkat engagement rate (ER) berada di angka 1,47%, jauh di bawah standar industri properti (benchmark 3%), yang menunjukkan bahwa jangkauan (1.349 views) gagal dikonversi menjadi interaksi bermakna.
+• Volume interaksi sangat rendah dengan rata-rata hanya 23 likes dan 2 komentar per unggahan, menandakan bahwa audiens pasif dan konten belum memicu urgensi diskusi atau ketertarikan untuk merespons.
+• Basis pengikut tertahan di angka 1.673 akun meskipun telah memproduksi 751 postingan, menghasilkan rasio produktivitas versus pertumbuhan pengikut yang tidak efisien dan membutuhkan evaluasi narasi penjualan.
+
+Opportunities
+• Penggunaan format Reels dan konten video tur properti dapat dioptimalkan untuk menaikkan rata-rata 1.349 views menjadi interaksi langsung melalui penyertaan *Call to Action* (CTA) yang spesifik di akhir video.
+• Potensi besar untuk menggarap pasar properti lokal di kolom komentar yang masih kosong (rata-rata 2 komentar) dengan cara proaktif membalas dan membuat konten tanya-jawab seputar KPR atau tips membeli rumah pertama.
+
+Threats
+• Kejenuhan audiens terhadap konten properti yang hanya bersifat jualan langsung (*hard selling*) tanpa edukasi, yang dapat menyebabkan penurunan drastis pada 1.349 average views saat ini.
+• Perubahan algoritma Instagram yang semakin memprioritaskan akun dengan retensi penonton dan tingkat percakapan (komentar) tinggi, mengancam visibilitas akun dengan ER 1,47%.
+
+RENCANA AKSI 30 HARI
+
+1. Tingkatkan interaksi dengan mewajibkan setiap tim membalas seluruh komentar dalam waktu 1 jam pertama unggahan, serta menyematkan pertanyaan pancingan di setiap takarir (*caption*) untuk mendongkrak rata-rata komentar dari 2 menjadi minimal 10 komentar per pos.
+2. Ubah rasio konten dari *hard selling* menjadi format edukasi properti dan *property tour* berdurasi 30-45 detik sebanyak 3 kali seminggu pada pukul 19:00 WIB guna mendongkrak *Engagement Rate* dari 1,47% menuju target 2,2%.
+3. Evaluasi efektivitas 751 postingan sebelumnya dengan mengidentifikasi 5 konten dengan views tertinggi, lalu buat ulang versi lanjutannya (*sequel*) untuk memaksimalkan potensi penonton organik yang sudah terbiasa dengan topik tersebut.
+4. Tambahkan elemen *Call to Action* (CTA) yang jelas dan spesifik secara visual maupun audio pada setiap video untuk mengonversi rata-rata 1.349 views agar audiens mau mengeklik tautan WhatsApp atau mengirim pesan langsung (*Direct Message*).
+5. Lakukan analisis pertumbuhan mingguan untuk memastikan penambahan pengikut baru bergerak naik secara konsisten menuju target penambahan 100 pengikut aktif yang benar-benar tertarget di dalam 30 hari ke depan.`,generatedAt:"2026-09-03T19:44:37.718Z"},"ig-nisyanandaa":{viralRecipe:`Postingan teratas dari @nisyanandaa berhasil mencuri perhatian karena memanfaatkan *relatability* tinggi yang memicu diskusi di kolom komentar, mendulang views hingga puluhan ribu kali lipat di atas rata-rata akun yang hanya 5.153 views. Emosi penonton tersulut lewat visual kehidupan sehari-hari yang dikemas estetik namun tetap terasa dekat dengan keseharian audiens *lifestyle*.
+
+3 Elemen Resep:
+- Hook visual di 3 detik pertama yang langsung memperlihatkan transisi estetis tanpa jeda kosong, memangkas potensi penonton melakukan *scroll*.
+- Penggunaan audio tren bernuansa santai namun memiliki *beat* yang tegas untuk menjaga retensi penonton hingga akhir durasi video.
+- Caption singkat bergaya naratif terbuka yang secara sengaja mengundang audiens untuk membagikan opini pribadi mereka.
+
+Cara Replikasi:
+Buat video pendek berformat *daily vlog* berdurasi 7-12 detik dengan teknik *fast-cut* yang menampilkan rutinitas pagi dalam balutan visual hangat. Unggah konten ini pada jam sibuk malam hari (pukul 18.00 - 20.00) dan akhiri *caption* dengan pertanyaan spesifik terkait kebiasaan kecil yang sering dilakukan banyak orang.
+
+Risiko & Anti-pattern:
+Duplikasi murni tanpa penyesuaian identitas personal akan gagal karena audiens lifestyle sangat menghargai keaslian karakter. Jika Anda sekadar meniru transisi visual tanpa menyisipkan cerita personal yang relevan dengan kehidupan nyata @nisyanandaa, penonton akan merasa bosan dan menganggap konten tersebut tidak lebih dari tiruan kosong.`,growthStrategy:`1. **Proyeksi 3-6 Bulan**
+Dengan 134.211 pengikut, basis audiens @nisyanandaa sudah cukup besar, namun tingkat keterlibatan atau engagement rate sebesar 0.39% merupakan masalah serius yang menunjukkan rendahnya resonansi konten terhadap pengikut. Dalam 3 hingga 6 bulan ke depan, fokus utama bukan lagi mengejar angka pengikut baru, melainkan memperbaiki kualitas interaksi agar rata-rata komentar yang saat ini hanya 7 per pos bisa meningkat signifikan. Jika perbaikan distribusi dan relevansi konten dilakukan secara konsisten, target realistis adalah menaikkan engagement rate minimal ke angka 2.5% sekaligus mempertahankan pertumbuhan pengikut organik sebanyak 5% setiap bulannya.
+
+2. **3-4 Taktik Inti**
+1. Taktik 1: Revitalisasi percetakan komentar melalui *trigger* pertanyaan spesifik. Mengingat rata-rata komentar hanya 7 per unggahan padahal pengikut mencapai 134 ribu, setiap teks atau keterangan harus diakhiri dengan pertanyaan personal yang memancing opini audiens, bukan sekadar basa-basi. Target: menaikkan rata-rata komentar per pos dari 7 menjadi 50 dalam 30 hari.
+2. Taktik 2: Optimalisasi format video pendek berbasis *relatable story*. Dari total 279 pos, penayangan rata-rata berada di angka 5.153, yang berarti jangkauan masih terbatas pada sebagian kecil pengikut. Konten harus diubah menjadi format narasi harian yang memicu kedekatan emosional. Target: meningkatkan rata-rata tayangan Reel dari 5.153 menjadi 15.000 per pos dalam 30 hari.
+3. Taktik 3: Pembersihan dan kurasi interaksi aktif di kolom komentar. Akun harus membalas setiap komentar dalam satu jam pertama setelah tayang untuk memicu algoritma distribusi lanjutan. Target: merespons 100% komentar pada 30 pos pertama di bulan ini untuk membangun kembali kebiasaan audiens berinteraksi.
+
+3. **Format & Cadence**
+Prioritas utama harus diberikan pada format Instagram Reels dengan durasi 15 hingga 30 detik yang memadukan estetika gaya hidup dan narasi personal yang kuat. Frekuensi unggah ditetapkan sebanyak 4 kali seminggu untuk menjaga konsistensi tanpa membebani algoritma. Keputusan ini diambil karena rata-rata tayangan 5.153 dan suka 519 menunjukkan bahwa format lama belum mampu mendongkrak distribusi organik secara maksimal, sehingga pendekatan berbasis video pendek bernarasi tinggi adalah kunci transformasi.
+
+4. **Risk Watch**
+Risiko terbesar yang dapat menggagalkan rencana ini adalah kelelahan audiens (*content fatigue*) akibat perubahan arah konten yang terlalu drastis serta rendahnya data interaksi awal yang membuat algoritma kesulitan membaca audiens inti. Jika transisi ini tidak diiringi konsistensi respons dalam beberapa minggu pertama, penurunan pengikut akibat berhenti mengikuti (*unfollow*) berpotensi terjadi karena ekspektasi audiens lama tidak terpenuhi.`,strategyBrief:`SWOT
+
+Strengths (Kekuatan)
+• Basis pengikut moderat dengan 134.211 pengikut menunjukkan bahwa @nisyanandaa telah berhasil membangun visibilitas awal dan daya tarik visual yang cukup untuk menarik audiens di nisbah gaya hidup.
+• Jumlah unggahan sebanyak 279 pos menandakan konsistensi produksi konten yang stabil dari waktu ke waktu, memberikan fondasi arsip konten yang memadai untuk dianalisis ulang.
+• Rata-rata penayangan video sebesar 5.153 views menunjukkan bahwa jangkauan organik (reach) masih berfungsi, namun perlu dioptimalkan agar berdampak langsung pada interaksi.
+
+Weaknesses (Kelemahan)
+• Tingkat keterlibatan (Engagement Rate) berada di angka 0.39%, jauh di bawah rata-rata industri untuk akun gaya hidup (benchmark 1.5% - 3%), yang menunjukkan bahwa audiens bersifat pasif dan konten kurang memicu reaksi.
+• Rata-rata komentar yang hanya 7 per pos sangat rendah untuk ukuran 134.211 pengikut, mencerminkan kurangnya kedekatan emosional atau ketiadaan panggilan bertindak (Call-to-Action) yang efektif.
+• Rasio antara rata-rata suka (519 likes) dan jumlah pengikut menunjukkan indikasi bahwa sebagian besar pengikut tidak aktif atau tidak lagi relevan dengan arah konten saat ini.
+
+Opportunities (Peluang)
+• Pemanfaatan format Reel secara agresif dapat mendongkrak rata-rata views 5.153 ke tingkat yang lebih tinggi dengan menargetkan halaman eksplor (Explore) Instagram.
+• Penggunaan fitur interaktif seperti stasiun tanya-jawab di Instagram Story secara konsisten dapat menjembatani kesenjangan antara 134.211 pengikut dan rendahnya jumlah komentar.
+• Penajaman sub-niche dalam kategori gaya hidup (misalnya fokus pada produktivitas harian atau estetika personal) dapat menarik audiens yang lebih spesifik dan memiliki loyalitas tinggi.
+
+Threats (Ancaman)
+• Algoritma Instagram yang terus memperketat distribusi konten berbasis ER (0.39%) dapat menyebabkan jangkauan organik turun drastis di bawah 5.153 views.
+• Kejenuhan pasar pada niche gaya hidup di Indonesia membuat akun dengan interaksi rendah rentan ditinggalkan oleh pengikut yang beralih ke kreator lain yang lebih interaktif.
+• Potensi stagnasi pertumbuhan pengikut akibat ketidaksesuaian antara ekspektasi audiens dengan nilai tambah yang diberikan dalam setiap pos.
+
+RENCANA AKSI 30 HARI
+
+1. Tingkatkan Engagement Rate dari 0.39% menjadi minimal 0.8% dalam 30 hari ke depan dengan menyematkan pertanyaan pancingan opini pada setiap takarir (caption) di 12 pos berikutnya.
+2. Publikasikan konten berformat Reel sebanyak 4 kali seminggu pada pukul 18.00 - 20.00 WIB untuk menaikkan rata-rata views dari 5.153 menjadi di atas 8.000 per pos.
+3. Lakukan pembersihan atau kurasi audiens pasif melalui peningkatan frekuensi Instagram Story interaktif (polling/Q&A) setiap hari untuk mendongkrak rata-rata komentar dari 7 menjadi minimal 25 per pos.
+4. Evaluasi ulang performa 279 pos sebelumnya untuk mengidentifikasi 3 topik dengan interaksi tertinggi, kemudian jadikan sebagai pilar konten utama selama sebulan penuh.`,generatedAt:"2026-09-03T19:44:42.257Z"},"ig-ardiantanah":{viralRecipe:`Post ini viral karena menyentuh ketakutan terbesar pembeli properti, yaitu sengketa hukum tanah, dengan menggunakan sudut pandang kasus nyata yang kontroversial. Dengan rata-rata views mencapai 10.377 per pos, topik legalitas yang dikemas menjadi cerita misteri berhasil memicu rasa penasaran penonton untuk menonton hingga akhir.
+
+Berikut adalah 3 elemen resep yang mendorong viralisme tersebut:
+- Hook visual di 2 detik pertama yang menampilkan dokumen sertifikat tanah dicap merah atau bermasalah untuk menghentikan jempol penonton.
+- Struktur narasi studi kasus yang membedah kronologi sengketa dalam 3 poin sederhana tanpa istilah hukum yang rumit.
+- Call to action di akhir video yang meminta penonton membagikan cerita agar tidak tertipu calo tanah.
+
+Cara replikasinya cukup mudah. Buat video berformat reel berdurasi 30-45 detik yang membahas satu kasus sengketa tanah lokal paling heboh minggu ini, lalu unggah pada pukul 18.00 waktu setempat saat audiens sedang santai. Pastikan Anda menggunakan judul teks yang provokatif namun tetap edukatif.
+
+Risiko terbesar dari replikasi ini adalah jika Anda terlalu banyak menggunakan jargon hukum yang membosankan atau menakut-nakuti audiens tanpa memberikan solusi pencegahan. Penonton akan merasa lelah dan meninggalkan akun jika konten hanya berisi masalah tanpa edukasi hukum yang aplikatif.`,growthStrategy:`1. **Proyeksi 3-6 Bulan**
+Dengan 3.918 pengikut dan rata-rata penayangan 10.377 per postingan, akun ini memiliki rasio jangkauan organik yang luar biasa sehat, sementara engagement rate 4.73% menunjukkan audiens merespons konten hukum tanah dengan baik. Namun, rata-rata 9 komentar per postingan mengindikasikan bahwa audiens cenderung menjadi penonton pasif daripada partisipan aktif dalam diskusi. Dalam 3 hingga 6 bulan ke depan, fokus strategis bukan sekadar mengejar jumlah pengikut, melainkan mengonversi penonton pasif tersebut menjadi komunitas yang aktif bertanya dan berkonsultasi secara langsung.
+
+2. **3-4 Taktik Inti**
+Taktik 1: Hook berbasis studi kasus sengketa tanah nyata. Ubah 969 arsip konten masa lalu menjadi format narasi konflik pertanahan yang sering dihadapi masyarakat, seperti sertifikat ganda atau sengketa waris. Target: menaikkan rata-rata komentar dari 9 menjadi 25 per postingan dalam 30 hari.
+
+Taktik 2: Sesi tanya jawab interaktif via fitur broadcast channel atau siaran langsung mingguan. Manfaatkan tingginya jumlah penayangan untuk menarik audiens masuk ke ruang diskusi privat yang berujung pada konversi jasa hukum. Target: mendapatkan 50 pertanyaan spesifik per sesi dalam 30 hari.
+
+Taktik 3: Pembuatan konten panduan langkah demi langkah dalam bentuk carousel tersimpan. Format ini dirancang khusus untuk memicu fungsi simpan (save) yang akan memperkuat sinyal distribusi konten ke halaman eksplor. Target: meningkatkan rasio simpan konten sebesar 20 persen dalam 30 hari.
+
+3. **Format & Cadence**
+Prioritaskan format Reels untuk mendulang penayangan tinggi di atas 10.000 views, yang kemudian didukung oleh Carousel edukatif mendalam untuk membangun otoritas hukum tanah. Jadwal unggah ditetapkan sebanyak 4 hingga 5 kali seminggu agar konsistensi algoritma terjaga tanpa menurunkan kualitas riset hukum yang disajikan.
+
+4. **Risk Watch**
+Risiko terbesar yang dapat menggagalkan rencana ini adalah kelelahan audiens terhadap jargon hukum yang terlalu kaku serta risiko disinformasi hukum jika materi tidak divalidasi dengan akurat. Jika penjelasan terlalu teoretis, tingkat penayangan yang saat ini tinggi akan segera merosot karena penonton kehilangan relevansi praktis dari kasus tanah yang mereka hadapi sehari-hari.`,strategyBrief:`SWOT
+
+Strengths
+• Engagement Rate (ER) sebesar 4.73% melampaui rata-rata industri properti, menunjukkan bahwa 3.918 pengikut memiliki tingkat ketertarikan yang tinggi terhadap konten hukum tanah. Pertahankan konsistensi topik edukasi pertanahan yang terbukti memicu interaksi.
+• Rata-rata 10.377 views per video mengindikasikan bahwa algoritma Instagram merekomendasikan konten menjangkau audiens di luar pengikut eksisting. Maksimalkan visibilitas ini dengan menyertakan ajakan bertindak (CTA) yang jelas untuk mengonversi penonton menjadi pengikut baru.
+• Volume 969 postingan membuktikan rekam jejak dan konsistensi operasional jangka panjang yang membangun otoritas akun sebagai sumber informasi hukum tanah terpercaya. Gunakan kembali (repurpose) arsip konten populer untuk efisiensi produksi.
+
+Weaknesses
+• Rasio komentar rata-rata hanya 9 per postingan berbanding 176 likes, yang menunjukkan audiens menyukai konten tetapi enggan berdiskusi atau berkonsultasi. Tambahkan pertanyaan pancingan kontroversial ringan atau studi kasus sengketa tanah di akhir caption untuk menaikkan volume komentar.
+• Rasio konversi pengikut dari 10.377 views masih belum optimal karena total pengikut baru berada di angka 3.918. Sematkan tombol atau tautan konsultasi langsung di bio profil untuk menangkap traffic dari penonton non-followers.
+• Kesenjangan antara jumlah total 969 postingan dengan basis 3.918 pengikut mengindikasikan perlunya audit ulang terhadap efektivitas konten masa lalu. Fokuskan produksi ke depan pada format Reel berdurasi pendek yang terbukti mendatangkan reach tinggi.
+
+Opportunities
+• Topik legalitas tanah (seperti sertifikat hak milik, sengketa tanah waris, dan cara cek keaslian girik) memiliki urgensi tinggi bagi masyarakat Indonesia. Buat rubrik khusus tanya-jawab masalah hukum tanah mingguan untuk memanfaatkan celah minimnya kreator edukasi hukum yang interaktif.
+• Format video pendek (Reels) belum sepenuhnya dioptimalkan untuk penjelasan hukum yang kompleks. Pecah kasus hukum yang rumit menjadi konten seri (part 1, part 2) untuk menahan durasi tonton (watch time) dan mendongkrak views melampaui angka 10.377.
+• Kolaborasi dengan Notaris atau Pejabat Pembuat Akta Tanah (PPAT) lokal dapat memperluas kredibilitas dan menarik audiens baru dari demografi pencari properti komersial.
+
+Threats
+• Persaingan di niche properti dan hukum semakin ketat dengan masuknya akun agensi besar yang jor-joran beriklan berbayar. Tingkatkan keunikan konten dengan studi kasus nyata putusan pengadilan agar tidak kalah saing.
+• Perubahan algoritma Instagram yang kerap menurunkan jangkauan organik akun edukasi berbasis teks dan informasi berat. Antisipasi dengan mengemas informasi hukum menggunakan visual infografis yang mudah dibagikan.
+• Risiko misinformasi hukum jika penjelasan terlalu disederhanakan, yang dapat menurunkan kredibilitas akun @ardiantanah di mata audiens profesional. Pastikan setiap konten mencakup disclaimer hukum yang memadai.
+
+RENCANA AKSI 30 HARI
+
+1. Publikasikan minimal 3 konten Reel per minggu yang membahas studi kasus sengketa tanah nyata dengan durasi di bawah 60 detik untuk mempertahankan rata-rata views di atas 10.377.
+2. Tingkatkan rata-rata komentar dari 9 menjadi 15 per postingan dengan cara menutup setiap video menggunakan pertanyaan spesifik terkait masalah sertifikasi tanah yang dialami penonton.
+3. Tambahkan tautan WhatsApp Business atau formulir konsultasi legal di bio profil Instagram @ardiantanah untuk mengonversi penonton organik menjadi leads potensial.
+4. Lakukan evaluasi performa mingguan untuk menargetkan kenaikan Engagement Rate dari 4.73% menjadi minimal 5.0% dalam 30 hari ke depan.`,generatedAt:"2026-09-03T19:44:47.791Z"},"tt-majangmejeng_":{viralRecipe:`**Mengapa post ini viral?**
+Postingan teratas dari akun @majangmejeng_ berhasil menembus performa jauh di atas rata-rata 27.275 views karena memanfaatkan rasa penasaran ekstrem penonton terhadap solusi ruang sempit. Konten ini memicu emosi keterkaitan (*relatability*) yang kuat di kalangan masyarakat perkotaan yang mendambakan estetika interior tanpa mengorbankan fungsionalitas.
+
+**3 Elemen Resep**
+- Hook visual di 2 detik pertama yang langsung menampilkan kontras dramatis antara kondisi ruangan sebelum dan sesudah renovasi.
+- Durasi video pendek (10-15 detik) dengan transisi cepat yang menjaga retensi penonton hingga akhir.
+- Teks overlay di layar berupa estimasi budget atau ukuran ruangan spesifik yang memancing audiens untuk membaca ulang dan berkomentar.
+
+**Cara Replikasi**
+Buat video pendek berformat transisi *Before-After* untuk renovasi sudut rumah ukuran di bawah 3x3 meter. Unggah pada pukul 18.00 waktu setempat, dan pastikan Anda menyematkan komentar pancingan di bagian awal agar kolom komentar langsung aktif.
+
+**Risiko & Anti-pattern**
+Jangan meniru formula ini secara membabi buta dengan menampilkan hasil akhir yang terlalu mewah atau tidak realistis bagi pengikut Anda. Jika solusi desain yang Anda tawarkan terlalu mahal dan jauh dari budget audiens properti kelas menengah, penonton akan merasa konten tersebut tidak relevan dan mengabaikannya.`,growthStrategy:`1. **Proyeksi 3-6 Bulan**
+Dengan basis 19.700 pengikut dan rata-rata views 27.275 per postingan, akun ini memiliki performa *reach* yang sangat baik, namun rasio keterlibatan atau *engagement rate* (ER) saat ini berada di angka 2,43% yang tergolong moderat. Dalam 3 hingga 6 bulan ke depan, fokus utama bukanlah sekadar mengejar angka *views*, melainkan mengonversi penonton pasif menjadi audiens aktif agar ER dapat menembus angka minimal 5%. Jika konsistensi konten dijaga dan interaksi di kolom komentar ditingkatkan dari rata-rata 20 komentar per unggahan, target realistis pengikut adalah mencapai 50.000 hingga 75.000 pengikut dengan fondasi komunitas yang jauh lebih loyal.
+
+2. **3-4 Taktik Inti**
+Taktik 1: Peningkatan Interaksi Komentar. Setiap kreator harus membalas 10 komentar pertama dalam waktu 30 menit setelah video diunggah dengan pertanyaan pancingan untuk mendongkrak rata-rata komentar dari 20 menjadi 50 per post. Target: menaikkan ER dari 2,43% ke 4% dalam 30 hari.
+Taktik 2: Seri Konten "Bedah Budget Interior". Ubah format penjelasan desain menjadi transparan biaya material per meter persegi untuk memicu debat di kolom komentar. Target: meningkatkan jumlah *shares* dan *saves* sebesar 40%.
+Taktik 3: Kolaborasi dengan Toko Material Lokal. Buat konten ulasan produk finishing interior lokal dengan sistem *tagging* yang masif untuk menarik audiens baru yang relevan dengan industri properti. Target: penambahan 2.000 pengikut organik dalam satu bulan.
+
+3. **Format & Cadence**
+Akun ini harus memprioritaskan format video pendek vertikal berdurasi 35 hingga 50 detik yang memadukan visual estetis dengan narasi *voiceover* edukatif, mengingat format ini terbukti sukses mendulang rata-rata 27.275 *views*. Frekuensi unggah ditetapkan sebanyak 5 kali dalam seminggu pada jam sibuk pukul 18.00 hingga 20.00 WIB untuk menjaga momentum algoritma TikTok.
+
+4. **Risk Watch**
+Risiko terbesar yang dapat menggagalkan rencana ini adalah *content fatigue* atau kejenuhan penonton akibat visual desain interior yang monoton tanpa nilai tambah fungsional. Selain itu, tingginya jumlah *views* (27.275) yang tidak sebanding dengan rendahnya *likes* (564) mengindikasikan bahwa audiens hanya numpang lewat (*vanity metrics*), sehingga strategi transisi ke konten interaktif harus segera dieksekusi agar akun tidak kehilangan relevansi di mata algoritma.`,strategyBrief:`SWOT
+
+Strengths
+• Views rata-rata mencapai 27.275 per video dengan basis 19.700 followers, menunjukkan bahwa TikTok algorithm sangat menyukai konten visual properti dan desain interior Anda. Pertahankan hook visual di 3 detik pertama agar performa views tetap stabil di atas 25.000.
+• Perolehan likes rata-rata di angka 564 per post membuktikan bahwa estetika dan referensi desain interior yang ditampilkan cukup memanjakan mata audiens. Teruskan konsistensi gaya visual ini sebagai identitas utama brand @majangmejeng_.
+
+Weaknesses
+• Engagement rate (ER) berada di angka 2.43%, yang masih di bawah standar optimal industri properti/desain interior (minimal 3%). Tambahkan call-to-action (CTA) interaktif di akhir video untuk mendorong lebih banyak percetakan opini di kolom komentar.
+• Komentar rata-rata hanya 20 per post dari total 27.275 views (rasio komentar sangat rendah). Buat konten dengan format studi kasus atau opini kontroversial ringan seputar budget renovasi untuk memancing perdebatan sehat di antara audiens.
+• Volume total 801 posts dengan 19.700 followers mengindikasikan pertumbuhan follower yang kurang sebanding dengan jumlah produksi konten. Evaluasi ulang strategi konversi penonton menjadi pengikut melalui tombol follow yang eksplisit pada konten-konten penutup.
+
+Opportunities
+• Pemanfaatkan format video panjang (di atas 1 menit) untuk bedah anggaran atau tur rumah (room tour) mendalam guna mendongkrak watch time dan memperbesar peluang masuk halaman For You Page (FYP).
+• Topik tren seputar desain rumah minimalis modern dan efisiensi ruang sempit di perkotaan Indonesia sangat diminati pasar saat ini, yang bisa dijadikan pilar konten rutin untuk menjangkau audiens baru di luar followers eksisting.
+
+Threats
+• Kejenuhan audiens akibat kompetitor di niche properti dan desain interior yang semakin agresif memproduksi konten serupa setiap hari. Lakukan diferensiasi sudut pandang, misalnya fokus pada solusi interior budget rendah namun terlihat mewah.
+• Perubahan algoritma TikTok yang kerap menurunkan distribusi konten tanpa hook yang kuat, yang berisiko langsung menurunkan rata-rata views 27.275 Anda jika tidak diimbangi diversifikasi format.
+
+RENCANA AKSI 30 HARI
+
+1. Tingkatkan engagement rate (ER) dari 2.43% menjadi 3.0% dalam waktu 30 hari dengan menyematkan pertanyaan pancingan di kolom komentar pada setiap video baru.
+2. Targetkan rata-rata komentar naik dari 20 menjadi minimal 50 per post dengan cara merespon 10 komentar pertama secara cepat dan interaktif menggunakan balasan video (video reply).
+3. Publikasikan konten secara konsisten sebanyak 5 kali seminggu pada jam-jam puncak (18.00 - 20.00 WIB) untuk memaksimalkan potensi views agar tetap konsisten di atas 25.000.
+4. Rilis minimal 4 konten berformat tur ruangan atau studi kasus bedah anggaran interior (durasi 60+ detik) untuk meningkatkan watch time dan mendongkrak konversi penonton non-followers menjadi pengikut baru.`,generatedAt:"2026-09-03T19:44:51.896Z"},"tt-syahfalahproperti":{viralRecipe:`Meskipun akun @syahfalahproperti memiliki rata-rata views 1.893 dengan engagement rate 1.35%, konten utamanya mampu menembus batas distribusi organik karena memanfaatkan celah emosional pembeli properti pemula. Video tersebut sukses memicu rasa penasaran ekstrem melalui visual kontras antara harga murah dan lokasi strategis, memaksa audiens menonton ulang untuk mencerna informasi.
+
+3 Elemen Resep:
+- Hook visual di 2 detik pertama yang langsung menampilkan nominal cicilan di bawah UMR tanpa basa-basi pengenalan diri.
+- Struktur narasi problem-solution yang membandingkan kerugian sewa kost bertahun-tahun versus cicilan KPR rumah sendiri.
+- Teks overlay berukuran besar dengan warna kontras tinggi agar tetap terbaca jelas meski video ditonton tanpa suara.
+
+Cara Replikasi:
+Buat video berdurasi 30-45 detik dengan format POV tur rumah subsidi atau secondary siap huni menggunakan kamera handphone stabil. Unggah pada pukul 18.00-20.00 waktu setempat, dan pastikan Anda menggunakan audio tren properti yang sedang naik daun di TikTok minggu ini.
+
+Risiko & Anti-pattern:
+Jangan meniru mentah-mentah angka cicilan atau harga rumah tanpa validasi unit yang benar-benar tersedia, karena audiens properti sangat kritis dan akan meninggalkan komentar negatif jika merasa terjebak clickbait. Duplikasi tanpa transparansi data justru akan merusak kredibilitas akun Anda di mata calon pembeli serius.`,growthStrategy:`1. **Proyeksi 3-6 Bulan**
+Dengan 474 total pos namun rata-rata views 1.893 dan engagement rate hanya 1,35 persen, akun @syahfalahproperti menghadapi masalah nyata berupa rendahnya interaksi penonton. Angka likes rata-rata 21 dan komentar 2 menunjukkan bahwa konten Anda sering ditonton, tetapi gagal memicu aksi lebih lanjut dari audiens. Dalam 3 hingga 6 bulan ke depan, fokus utama bukan sekadar mengejar jumlah pengikut dari 1.253, melainkan merombak kualitas interaksi agar metrik engagement rate dapat keluar dari zona merah dan membangun komunitas calon pembeli properti yang loyal.
+
+2. **3-4 Taktik Inti**
+1. Taktik 1: Hook berbasis kontroversi edukasi properti. Ubah gaya pembukaan video TikTok untuk membahas mitos KPR atau jebakan membeli rumah pertama yang sering dihindari agen lain. Target: menaikkan rata-rata komentar dari 2 menjadi minimal 15 per pos dalam 30 hari.
+2. Taktik 2: Strategi komentar pancingan interaksi. Wajibkan diri membalas setiap komentar dalam 1 jam pertama dengan pertanyaan balik, serta pin komentar yang memicu perdebatan sehat tentang harga properti. Target: meningkatkan engagement rate dari 1,35 persen ke 3 persen dalam 45 hari.
+3. Taktik 3: Sesi tanya jawab langsung mingguan. Manfaatkan fitur live TikTok khusus untuk konsultasi bedah KPR dan bedah lokasi perumahan secara gratis. Target: konversi penonton pasif menjadi pengikut aktif setidaknya 200 akun baru per bulan.
+
+3. **Format & Cadence**
+Prioritaskan format video pendek berdurasi 45 hingga 60 detik dengan visual transisi cepat dan teks di layar yang kuat, mengingat views rata-rata sudah cukup tinggi di angka 1.893 namun gagal dikonversi menjadi likes. Terapkan frekuensi unggah konsisten sebanyak 5 kali seminggu pada jam sibuk pukul 18.00 hingga 20.00 WIB. Konsistensi ini krusial untuk memaksimalkan algoritma TikTok dalam mendistribusikan ulang konten Anda ke audiens yang lebih tertarget.
+
+4. **Risk Watch**
+Risiko terbesar yang dapat menggagalkan rencana ini adalah kelelahan konten akibat memproduksi terlalu banyak video tanpa riset masalah nyata audiens, mengingat beban 474 pos sebelumnya belum memberikan hasil optimal. Selain itu, jika rasio likes dan komentar tidak segera diperbaiki, algoritma TikTok akan terus menganggap akun ini kurang relevan, sehingga pertumbuhan views yang ada saat ini akan mandek secara permanen.`,strategyBrief:`SWOT
+
+Strengths
+• Basis penayangan yang solid dengan rata-rata 1.893 views per video dari 474 total postingan, menunjukkan bahwa TikTok algorithm mendistribusikan konten Anda ke audiens yang relevan, sehingga fokus harus dialihkan pada konversi penonton menjadi interaksi.
+• Volume konten yang tinggi sebanyak 474 video membuktikan konsistensi produksi dalam jangka panjang; gunakan arsip konten ini untuk mengidentifikasi topik properti mana yang mendulang views tertinggi dan duplikasi polanya.
+
+Weaknesses
+• Engagement rate yang berada di angka 1.35% (jauh di bawah standar industri properti yang idealnya di atas 3%) menunjukkan bahwa mayoritas penonton bersifat pasif dan mengabaikan video tanpa melakukan tindakan lanjut.
+• Rasio interaksi yang sangat rendah dengan rata-rata hanya 21 likes dan 2 comments per postingan mengindikasikan bahwa konten kurang memancing emosi, rasa penasaran, atau pertanyaan spesifik dari calon pembeli.
+• Basis pengikut sebanyak 1.253 akun tidak sebanding dengan total 474 postingan yang telah diunggah, menandakan rendahnya tingkat konversi dari viewer menjadi follower yang loyal.
+
+Opportunities
+• Tingginya rata-rata 1.893 views dapat dimonetisasi secara optimal dengan menyisipkan call-to-action (CTA) yang agresif seperti "Ketik di kolom komentar untuk pricelist" guna mendongkrak metrik komentar dari angka 2 yang saat ini sangat rendah.
+• Format konten edukasi pembiayaan atau bedah rumah subsidi dan komersial di Indonesia sedang diminati, sehingga pembuatan video serial berbasis studi kasus dapat menaikkan metrik likes dari 21 ke level yang lebih kompetitif.
+
+Threats
+• Kejenuhan audiens properti terhadap konten tur rumah (home tour) standar tanpa narasi harga atau lokasi yang jelas dapat membuat angka views 1.893 merosot drastis akibat perubahan algoritma TikTok.
+• Persaingan ketat dari agen properti lain di Indonesia yang menggunakan pendekatan live streaming interaktif dapat mengalihkan perhatian 1.253 followers Anda saat ini.
+
+RENCANA AKSI 30 HARI
+
+1. Tingkatkan engagement rate akun dari 1.35% menjadi minimal 2.0% dalam 30 hari ke depan dengan mewajibkan setiap konten baru menyertakan pertanyaan pancingan di akhir video untuk mendongkrak rata-rata komentar dari 2 menjadi minimal 10 per postingan.
+2. Tambahkan tombol interaksi langsung atau teks overlay yang mengarahkan penonton dari rata-rata 1.893 views untuk melakukan DM atau klik tautan profil, dengan target konversi leads properti sebanyak 15 inquiry serius dalam sebulan.
+3. Lakukan evaluasi mendalam pada 474 video yang sudah diunggah untuk mengidentifikasi top post, lalu buat ulang 5 konten terbaik tersebut dengan sudut pandang visual atau narasi harga yang lebih transparan guna menaikkan rata-rata likes dari 21 ke angka 50 per video.
+4. Ubah frekuensi dan strategi distribusi dengan fokus memproduksi konten pendek berdurasi 30-45 detik yang langsung membahas pain points pembeli rumah pertama di Indonesia, demi mendongkrak pertumbuhan pengikut dari 1.253 menjadi 1.500 followers.`,generatedAt:"2026-09-03T19:44:56.235Z"},"tt-ardian.tanah":{viralRecipe:`Post ini berhasil mendulang perhatian karena mengangkat keresahan nyata seputar sengketa tanah yang memicu rasa takut kehilangan aset. Dengan memanfaatkan format studi kasus hukum yang kontroversial, konten ini menyedot atensi audiens yang ingin tahu cara menyelamatkan properti mereka.
+
+Tiga Elemen Resep:
+- Hook instan di 2 detik pertama yang langsung menyoroti dokumen tanah palsu atau celah hukum yang merugikan pembeli.
+- Visual teks on-screen berukuran besar yang merangkum poin sengketa dalam 3 langkah atau kronologi singkat.
+- Call to action (CTA) spesifik di akhir video yang meminta penonton mengetik "MAU" untuk konsultasi gratis atau panduan pengecekan sertifikat.
+
+Cara Replikasi:
+Buat video berdurasi 30-45 detik minggu depan dengan format cerita nyata (storytelling) dari klien yang hampir tertipu mafia tanah. Gunakan gaya bicara cepat tanpa jeda di awal video untuk mempertahankan retensi penonton pada jam tayang sore hari (18.00-20.00).
+
+Risiko & Anti-pattern:
+Jangan meniru formula ini dengan menyajikan istilah hukum yang terlalu kaku dan membosankan, karena penonton TikTok menginginkan edukasi praktis yang langsung bisa dipahami dalam sekali tonton. Duplikasi murni tanpa studi kasus yang relevan dengan tren kasus properti saat ini hanya akan membuat engagement jalan di tempat di angka rata-rata 3.341 views.`,growthStrategy:`1. **Proyeksi 3-6 Bulan**
+Dengan basis 9.986 pengikut dan rata-rata 3.341 penayangan per unggahan, akun ini memiliki fondasi jangkauan yang cukup sehat namun menderita masalah retensi interaksi yang akut. Tingkat keterlibatan 2,5% yang didukung oleh rata-rata 77 suka dan hanya 2 komentar menunjukkan bahwa konten Anda berhasil memancing rasa ingin tahu, tetapi gagal memicu percakapan mendalam. Dalam 3 hingga 6 bulan ke depan, fokus utama bukanlah mengejar angka tayang baru, melainkan memperbaiki kualitas percakapan dan mengubah penonton pasif menjadi komunitas aktif melalui perombakan struktur konten hukum tanah.
+
+2. **3-4 Taktik Inti**
+Taktik 1: Pancingan Kontroversi Hukum. Ubah studi kasus sengketa tanah yang rumit menjadi format penceritaan berseri dengan pertanyaan terbuka di akhir video. Target: menaikkan rasio komentar dari rata-rata 2 per unggahan menjadi minimal 25 per unggahan dalam 30 hari.
+Taktik 2: Sesi Bedah Sertifikat Tanah Live. Manfaatkan fitur siaran langsung untuk melakukan bedah dokumen secara anonim bagi pengikut. Target: mendongkrak tingkat keterlibatan total dari 2,5% menjadi 5,0% dalam 45 hari.
+Taktik 3: Format Visual Peringatan Dini. Ganti video edukasi normatif dengan visual tanda bahaya membeli tanah tanpa akta otentik. Target: menaikkan rata-rata suka dari 77 menjadi 200 per unggahan dalam 30 hari.
+
+3. **Format & Cadence**
+Prioritaskan format video pendek berdurasi 45 hingga 60 detik yang langsung menohok pada masalah hukum tanah di 3 detik pertama, didukung oleh teks di layar untuk memperjelas istilah hukum yang rumit. Terapkan frekuensi unggah sebanyak 4 kali seminggu untuk menjaga konsistensi algoritma tanpa mengorbankan riset kasus. Frekuensi ini dihitung ideal berdasarkan rasio penayangan 3.341 per unggahan, yang membuktikan bahwa audiens menyukai topik Anda asalkan durasi dan penyampaiannya lebih padat.
+
+4. **Risk Watch**
+Risiko terbesar yang dapat menggagalkan rencana ini adalah kelelahan konten akibat penyampaian materi hukum tanah yang terlalu kaku dan teoritis. Selain itu, basis data interaksi yang tipis dengan hanya 2 komentar per unggahan menandakan tingginya risiko pengabaian audiens jika narasi yang dibangun tidak menyentuh kerugian finansial nyata yang mereka hadapi dalam sengketa properti.`,strategyBrief:`SWOT
+
+Strengths
+• Views rata-rata mencapai 3.341 per video dari 9.986 followers, menunjukkan bahwa jangkauan konten (reach) cukup baik dan topik legal tanah memiliki daya tarik organik yang luas.
+• Total 394 postingan menunjukkan konsistensi produksi yang tinggi dan volume konten yang memadai untuk membangun otoritas di nisbah properti dan hukum tanah.
+• Tingkat engagement (Engagement Rate) berada di angka 2.5%, angka yang sehat untuk akun edukasi hukum yang spesifik, menandakan adanya audiens inti yang setia.
+
+Weaknesses
+• Jumlah komentar rata-rata hanya 2 per postingan (sangat rendah dibanding 3.341 views), menandakan minimnya pancingan interaksi (call-to-action) atau konten yang memicu diskusi.
+• Rata-rata likes sebesar 77 dari 3.341 views menghasilkan rasio suka per penonton sekitar 2.3%, mengindikasikan bahwa sebagian penonton kurang terdorong untuk memberikan apresiasi.
+• Jumlah pengikut (9.986) belum mencapai ambang batas psikologis 10.000 followers, yang membatasi akses ke fitur-fitur tautan eksternal (seperti afiliasi atau website konsultasi).
+
+Opportunities
+• Topik sengketa tanah dan legalitas sertifikat (SHM/HGB) memiliki urgensi tinggi di Indonesia, sehingga format studi kasus nyata dapat dimanfaatkan untuk mendongkrak komentar.
+• Pemanfaatan fitur TikTok Live secara rutin dapat menjembatani kesenjangan antara 3.341 views dan 2 komentar rendah guna membangun kedekatan langsung dengan klien potensial.
+• Kolaborasi dengan kreator di nisbah keuangan atau notaris dapat mempercepat perolehan 14 pengikut tersisa untuk mencapai target 10.000 followers.
+
+Threats
+• Kejenuhan audiens terhadap konten edukasi legal yang terlalu kaku dan normatif, yang dapat menyebabkan penurunan views dalam jangka panjang.
+• Perubahan algoritma TikTok yang semakin memprioritaskan durasi tonton (watch time) penuh, mengancam performa video jika durasi penjelasan hukum terlalu panjang.
+• Persaingan ketat dengan akun agensi properti lain yang menawarkan solusi instan terkait sengketa tanah tanpa dasar hukum yang valid.
+
+RENCANA AKSI 30 HARI
+
+1. Tingkatkan Engagement Rate dari 2.5% menjadi minimal 3.0% dengan menambahkan pertanyaan spesifik pada akhir setiap video yang mewajibkan penonton berkomentar untuk memecahkan masalah hukum tanah mereka.
+2. Ubah format 50% dari total konten bulanan menjadi studi kasus sengketa tanah nyata berdurasi 45-60 detik guna mendongkrak rata-rata komentar dari 2 menjadi minimal 15 komentar per postingan.
+3. Lakukan siaran langsung (TikTok Live) 2 kali seminggu selama 45 menit dengan topik tanya-jawab konsultasi gratis hukum tanah untuk mengonversi penonton (3.341 views) menjadi pengikut baru.
+4. Kejar target penambahan 14 pengikut untuk menembus angka 10.000 followers dalam 7 hari pertama melalui publikasi konten viral bertema "Celah Hukum Jual Beli Tanah".
+5. Evaluasi performa penayangan mingguan dan tentukan jam unggah terbaik berdasarkan analitik audiens untuk mempertahankan konsistensi views di atas 3.000 per video.`,generatedAt:"2026-09-03T19:45:00.662Z"},"tt-ardiantanahmenjawab":{viralRecipe:`Konten dari akun @ardiantanahmenjawab berhasil menembus rata-rata views akun yang berada di angka 6.051 berkat kemampuannya mengangkat keresahan legalitas properti yang paling dihindari orang tapi sangat membuat penasaran. Post ini memanfaatkan emosi takut rugi (*fear of loss*) dan rasa ingin tahu yang tinggi dari audiens awam yang sedang atau ingin membeli tanah.
+
+Elemen Resep:
+- Hook visual di 3 detik pertama yang langsung menampilkan dokumen atau sertifikat bermasalah untuk memicu urgensi instan.
+- Bahasa hukum yang diterjemahkan menjadi studi kasus sehari-hari tanpa istilah ribet yang membuat audiens awam langsung paham dalam sekali tonton.
+- Durasi video pendek (dibawah 30 detik) dengan *loop* alami yang mendorong penonton memutar ulang video untuk memahami detail kasusnya.
+
+Cara Replikasi:
+Buat video berformat *talking head* atau *green screen* dengan latar belakang kasus sengketa tanah nyata di daerah tertentu dalam 7-14 hari ke depan. Unggah pada jam istirahat sore (17.00 - 19.00) dengan judul teks besar di layar yang menyoroti kerugian finansial akibat salah beli tanah.
+
+Risiko & Anti-pattern:
+Meniru formula ini secara mentah-mentah dengan membahas teori hukum yang kaku justru akan membuat penonton bosan dan menurunkan tingkat retensi. Replikasi wajib berpijak pada kisah nyata atau studi kasus konkret agar penonton merasa relevan dan teredukasi tanpa merasa sedang diceramahi.`,growthStrategy:`1. **Proyeksi 3-6 Bulan**
+Dengan basis 5.409 pengikut dan rata-rata 6.051 penayangan per unggahan, akun ini memiliki visibilitas yang cukup baik namun rasio komentar yang sangat rendah, yakni hanya 4 komentar per pos. Dalam 3 hingga 6 bulan ke depan, fokus utama bukanlah sekadar mengejar angka pengikut, melainkan mentransformasi penonton pasif menjadi komunitas aktif untuk mendongkrak tingkat keterlibatan. Jika strategi interaksi diterapkan secara konsisten, akun ini realistis menargetkan pertumbuhan pengikut hingga 15.000 akun dengan rata-rata interaksi yang jauh lebih sehat.
+
+2. **3-4 Taktik Inti**
+Taktik 1: Pancingan Kontroversi Hukum Properti. Ubah topik hukum pertanahan yang kaku menjadi studi kasus konflik nyata yang memancing opini publik di kolom komentar. Target: menaikkan rata-rata komentar dari 4 menjadi 25 per pos dalam 30 hari.
+Taktik 2: Sesi Tanya Jawab Terstruktur via Video Balasan. Manfaatkan setiap pertanyaan hukum pengikut di kolom komentar untuk dijadikan konten video lanjutan guna membangun loyalitas audiens. Target: 30 persen konten baru berasal dari pertanyaan pengikut dalam 30 hari.
+Taktik 3: Pembuatan Format Infografis Dokumen. Sederhanakan bahasa hukum sertifikat tanah atau akta jual beli menjadi visual ringkas yang mudah dibagikan. Target: meningkatkan rasio simpan dan bagikan sebesar 20 persen dalam 30 hari.
+
+3. **Format & Cadence**
+Prioritaskan format video pendek berdurasi 45 hingga 60 detik dengan visual teks yang kuat untuk mempertahankan penayangan rata-rata di angka 6.051. Frekuensi unggah ditetapkan sebanyak 5 kali seminggu pada jam istirahat siang dan petang untuk menjangkau audiens pekerja yang aktif mencari edukasi properti.
+
+4. **Risk Watch**
+Risiko terbesar yang dapat menggagalkan rencana ini adalah rendahnya interaksi awal yang membuat algoritma TikTok berhenti merekomendasikan video, serta kejenuhan audiens akibat topik hukum yang terlalu monoton. Jika kreator gagal menyederhanakan bahasa hukum yang rumit ke dalam bahasa sehari-hari, penonton akan dengan cepat menggeser video tanpa meninggalkan jejak interaksi.`,strategyBrief:`SWOT
+
+Strengths (Kekuatan)
+• Engagement rate yang kuat di angka 5.13% (jauh di atas rata-rata industri edukasi properti/legal yang umumnya 2-3%), menunjukkan audiens 5.409 pengikut memiliki ketertarikan tinggi pada konten yang disajikan dan harus dipertahankan melalui konsistensi topik hukum pertanahan.
+• Konsistensi volume produksi konten yang sangat tinggi dengan total 505 postingan, membuktikan disiplin operasional yang baik yang perlu dioptimalkan dari segi kualitas alih-alih hanya kuantitas.
+• Konsistensi distribusi penayangan yang stabil dengan rata-rata 6.051 views per video, mengindikasikan algoritma TikTok secara konsisten mendistribusikan konten kepada audiens target yang tepat.
+
+Weaknesses (Kelemahan)
+• Rendahnya rasio interaksi komentar dengan rata-rata hanya 4 komentar per postingan (dibandingkan rata-rata 138 likes), menandakan konten kurang memancing diskusi atau gagal menyertakan call-to-action yang efektif di akhir video.
+• Terlalu tingginya jumlah postingan (505 video) tidak sebanding dengan perolehan pengikut (5.409), yang mengindikasikan rendahnya conversion rate dari penonton menjadi pengikut akibat kurangnya optimasi profil atau hook yang kuat.
+• Ketiadaan variasi format atau dominasi satu pola penyampaian membuat potensi jangkauan stagnan di kisaran 6.000 views tanpa adanya terobosan konten viral.
+
+Opportunities (Peluang)
+• Celah besar pada topik studi kasus sengketa tanah nyata di Indonesia yang sedang viral, di mana edukasi hukum properti berbasis cerita nyata dapat mendongkrak jumlah komentar dan 4 komentar rata-rata saat ini.
+• Pemanfaatan format TikTok Live secara rutin untuk sesi tanya jawab hukum properti langsung, guna mengonversi penonton setia dari 6.051 average views menjadi pengikut baru.
+• Kolaborasi dengan kreator \u2028niche keuangan atau investasi untuk memperluas audiens demografi pembeli properti pertama.
+
+Threats (Ancaman)
+• Kejenuhan audiens terhadap format edukasi hukum yang kaku dan monoton, yang dapat menurunkan angka 6.051 average views secara drastis jika tidak ada pembaruan visual.
+• Perubahan algoritma TikTok yang semakin memprioritaskan watch time durasi panjang dapat merugikan video edukasi yang tidak memiliki hook kuat di 3 detik pertama.
+• Masuknya kreator baru dari kalangan praktisi hukum atau notaris profesional yang menawarkan kredibilitas instan dan mengancam pangsa audiens @ardiantanahmenjawab.
+
+RENCANA AKSI 30 HARI
+
+1. Tingkatkan rasio komentar dari rata-rata 4 komentar menjadi minimal 15 komentar per postingan dengan cara mewajibkan setiap video menutup dengan pertanyaan kontroversial atau studi kasus terbuka bagi penonton.
+2. Tambahkan durasi tayang dan optimalkan hook 3 detik pertama pada setiap konten untuk mendongkrak average views dari 6.051 menjadi minimal 7.500 views dalam 30 hari ke depan.
+3. Lakukan evaluasi volume dengan memangkas jumlah produksi harian menjadi 3 hingga 4 video berkualitas tinggi per minggu guna fokus pada riset topik hukum pertanahan yang sedang tren.
+4. Laksanakan siaran langsung (TikTok Live) minimal 1 kali seminggu selama 45 menit khusus sesi konsultasi pertanahan gratis untuk mendongkrak conversion rate dan menambah jumlah pengikut dari angka 5.409 menuju target 6.000 pengikut.
+5. Evaluasi ulang performa mingguan dengan menargetkan peningkatan engagement rate stabil di atas 5.5% melalui analisis metrik watch time pada 5 postingan terbaik di akhir bulan.`,generatedAt:"2026-09-03T19:45:05.875Z"},"tt-itsnisyananda":{viralRecipe:`Post teratas dari akun @itsnisyananda berhasil menembus rata-rata views akun yang berada di angka 44.636 karena mampu memicu rasa penasaran penonton sejak detik pertama. Konten lifestyle ini sukses mendulang atensi berkat kombinasi visual yang estetik dan narasi personal yang sangat relate dengan kesejahteraan mental audiens mudanya.
+
+Berikut 3 elemen resep yang mendorong viralitas tersebut:
+
+- Hook visual dan teks 2 detik pertama yang langsung menyoroti masalah umum kehidupan sehari-hari tanpa basa-basi.
+- Durasi video pendek (di bawah 15 detik) dengan transisi cepat yang mempertahankan retention rate agar penonton memutar ulang video tersebut.
+- Penggunaan musik latar belakang yang sedang tren di TikTok untuk mendompleng algoritma distribusi FYP secara organik.
+
+Cara replikasinya cukup sederhana untuk 7 hingga 14 hari ke depan. Buatlah format video pendek berdurasi 10-12 detik dengan gaya bercerita sudut pandang pertama (POV) yang membahas dilema kehidupan sehari-hari, lalu unggah pada jam prime time pukul 18.00-20.00 WIB dengan sedikit modifikasi pada narasi akhir agar memancing komentar.
+
+Risiko terbesar dari replikasi formula ini adalah terjebak meniru tren musik tanpa substansi cerita yang kuat. Jika Anda hanya menduplikasi format visualnya tanpa mengangkat keresahan personal yang autentik, penonton akan cepat bosan dan mengabaikan konten tersebut karena terasa hampa.`,growthStrategy:`1. **Proyeksi 3-6 Bulan**
+Dengan basis 32.200 pengikut dan rata-rata 44.636 penayangan per unggahan, akun ini memiliki visibilitas algoritmik yang sangat baik di TikTok. Namun, rasio keterlibatan atau engagement rate saat ini berada di angka 2.57% dengan rata-rata hanya 22 komentar per pos, yang menunjukkan bahwa penonton cenderung pasif menikmati konten visual tanpa membangun kedekatan emosional. Proyeksi 3 hingga 6 bulan ke depan harus berfokus pada transformasi penonton pasif menjadi komunitas aktif, dengan target menaikkan engagement rate minimal ke angka 5% sambil mendorong pertumbuhan pengikut organik hingga menembus 75.000 akun.
+
+2. **3-4 Taktik Inti**
+Taktik 1: Hook berbasis kontroversi ringan dan opini personal. Ubah gaya pembuka video untuk memicu perdebatan sehat di kolom komentar guna mendongkrak rasio komentar. Target: menaikkan rata-rata komentar dari 22 menjadi 75 per pos dalam 30 hari.
+Taktik 2: Sesi Tanya Jawab interaktif di akhir video. Setiap konten harus menyertakan pertanyaan spesifik yang memancing audiens untuk menceritakan pengalaman pribadi mereka. Target: meningkatkan interaksi balasan kreator di kolom komentar hingga 50 komentar pertama per unggahan.
+Taktik 3: Pembuatan konten berseri atau series. Buat topik lifestyle tematik yang bersambung ke bagian berikutnya untuk mendorong penonton menekan tombol ikuti dan kembali lagi. Target: mendongkrak pengikut baru sebanyak 5.000 akun dalam sebulan pertama eksekusi strategi.
+
+3. **Format & Cadence**
+Fokus utama format konten harus diarahkan pada video vertikal berdurasi 45 hingga 60 detik yang memadukan teknik _storytelling_ personal dengan visual gaya hidup sehari-hari. Frekuensi unggah yang direkomendasikan adalah 5 kali seminggu pada jam-jam sibuk audiens Indonesia pukul 18.00 hingga 21.00. Tingginya rata-rata penayangan sejumlah 44.636 membuktikan bahwa jangkauan platform sudah optimal, sehingga konsistensi jadwal ini akan memaksimalkan distribusi algoritma TikTok.
+
+4. **Risk Watch**
+Risiko terbesar yang dapat menggagalkan rencana pertumbuhan ini adalah jebakan vanity metrics, di mana penonton terus melihat konten secara masif tetapi mengabaikan ajakan berinteraksi karena pesan personal yang disampaikan terlalu monoton atau tidak relevan. Selain itu, kelelahan konten atau kejenuhan penonton terhadap topik lifestyle generik dapat terjadi jika narasi yang dibangun tidak memiliki sudut pandang khas yang membedakan @itsnisyananda dari kreator lain di *niche* serupa.`,strategyBrief:`SWOT
+
+Strengths
+• Pencapaian jangkauan organik yang sangat solid dengan rata-rata 44.636 views per video dari total 170 unggahan, menunjukkan bahwa algoritma TikTok merespons positif terhadap topik lifestyle yang diangkat oleh @itsnisyananda. Pertahankan durasi video di bawah 45 detik untuk menjaga tingkat retensi penonton agar angka views ini stabil atau meningkat.
+• Basis pengikut sebanyak 32.200 akun sudah cukup untuk membangun kredibilitas awal sebagai personal brand di Indonesia. Manfaatkan momentum ini dengan rutin membuka sesi Q&A di kolom komentar untuk memperkuat ikatan personal dengan audiens setia.
+
+Weaknesses
+• Tingkat keterlibatan atau engagement rate (ER) berada di angka 2.57%, yang mengindikasikan bahwa sebagian besar penonton hanya menjadi pengamat pasif tanpa berinteraksi. Perlu segera disisipkan call-to-action (CTA) interaktif pada akhir setiap video guna mendongkrak metrik ini melewati standar industri 3%.
+• Volume komentar rata-rata yang hanya 22 per postingan terasa sangat rendah jika dibandingkan dengan rata-rata 44.636 views yang didapat. Ketimpangan ini menunjukkan bahwa topik atau pertanyaan pancingan di dalam konten belum cukup provokatif untuk memicu percakapan di kolom komentar.
+
+Opportunities
+• Potensi optimalisasi dari 170 konten yang sudah diunggah untuk diubah menjadi format serial bersambung guna meningkatkan repeat viewership. Penonton lifestyle sangat menyukai konten berbasis cerita berseri yang dapat membuat mereka kembali lagi ke profil @itsnisyananda pada hari berikutnya.
+• Pasar lifestyle di Indonesia sangat luas dan terus berkembang, memberikan celah untuk memperluas topik ke sub-niche yang spesifik seperti produktivitas harian atau manajemen keuangan pribadi. Masuki celah ini dengan membuat konten studi kasus kehidupan nyata yang relevan dengan Gen Z dan Milenial urban.
+
+Threats
+• Kejenuhan audiens pada konten lifestyle generik di TikTok Indonesia yang semakin tinggi akibat persaingan kreator yang sangat agresif. Jika @itsnisyananda tidak segera menaikkan keunikan visual atau sudut pandang narasi, audiens akan dengan mudah beralih ke akun sejenis.
+• Perubahan algoritma TikTok yang kerap mendadak dapat menurunkan rata-rata 44.636 views dalam hitungan minggu jika konsistensi formula konten mulai menurun. Mitigasi risiko ini dengan mendiversifikasi format konten, memadukan video pendek hiburan dengan video naratif yang lebih mendalam.
+
+RENCANA AKSI 30 HARI
+
+1. Tingkatkan engagement rate dari 2.57% menjadi minimal 3.0% dalam 30 hari ke depan dengan cara menyematkan pertanyaan pancingan di setiap kolom komentar pada 10 menit pertama setelah video diunggah.
+2. Tambahkan rata-rata jumlah komentar per postingan dari 22 menjadi minimal 45 dengan cara merespons 10 komentar pertama menggunakan format video balasan (video reply) setiap hari.
+3. Pertahankan konsistensi performa dengan mengunggah konten minimal 4 kali seminggu pada jam-jam prime time Indonesia pukul 18.00 hingga 21.00 WIB untuk mengamankan rata-rata views di atas 40.000.
+4. Evaluasi ulang 5 video dengan performa terbaik dari total 170 konten yang pernah dibuat, lalu buat ulang versi lanjutannya dengan sudut pandang yang lebih segar untuk memanfaatkan ulang ketertarikan audiens.`,generatedAt:"2026-09-03T19:45:10.604Z"}},e="2026-07-19T14:49:32.129Z",i="V20 cleanup: stale LLM text contained fictional accounts (@TechUpdateID). Use analytics-only weekly recap from weeklyRecap.js (real data from 9 akun). Regenerate via: node scripts/generate-ai-insights.mjs briefing=1",t=`Highlight Mingguan
+Minggu ini, portofolio dengan total 19 kiriman didominasi oleh performa luar biasa dari @itsnisyananda dan @nisyanandaa yang berhasil mendulang interaksi tertinggi di lintas platform. Format video pendek dan Reel mendominasi seluruh metrik keterlibatan, mengalahkan format carousel maupun gambar statis konvensional. Cerita terbesar minggu ini adalah lonjakan tajam pada konten berbasis narasi personal yang diuji coba oleh @itsnisyananda di TikTok, yang sukses memicu gelombang komentar dan membagikan ulang performa secara organik ke audiens yang lebih luas.
+
+Pola Teridentifikasi
+- Akun @itsnisyananda dan @nisyanandaa sama-sama mendominasi perolehan views dan likes tertinggi minggu ini, membuktikan bahwa konten berbasis personal branding lebih cepat mencuri perhatian audiens dibanding konten korporat.
+- Akun-akun TikTok dalam portofolio seperti @majangmejeng_, @ardian.tanah, @ardiantanahmenjawab, dan @syahfalahproperti menyumbang mayoritas total tayangan, sementara Instagram dari @ardiantanah dan @syahfalahproperti unggul dalam rasio konversi klik profil.
+
+Rekomendasi Minggu Depan
+- Lakukan uji coba posting Reel berdurasi 30 detik di akun @ardiantanah pada hari Senin pukul 19:00 WIB untuk menduplikasi pola viral yang berhasil dicapai oleh @itsnisyananda minggu ini.
+- Tingkatkan frekuensi unggahan video pendek di @syahfalahproperti sebanyak 3 kali seminggu untuk mengejar ketertinggalan metrik views dari akun-akun TikTok lainnya di dalam portofolio.`,r={generatedAt:a,accounts:n,weeklyRemovedAt:e,weeklyRemovedReason:i,weekly:t};export{n as accounts,r as default,a as generatedAt,t as weekly,e as weeklyRemovedAt,i as weeklyRemovedReason};
