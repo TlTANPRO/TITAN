@@ -18292,11 +18292,11 @@
         "mentions": []
       }
     ],
-    "scrapedAt": "2026-09-19T18:35:39.977Z",
-    "lastFreeEnrichAt": "2026-09-19T18:35:39.978Z",
+    "scrapedAt": "2026-09-21T20:25:06.522Z",
+    "lastFreeEnrichAt": "2026-09-21T20:25:06.522Z",
     "stats": {
       "totalPosts": 822,
-      "durationMs": 3464,
+      "durationMs": 1915,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -18305,7 +18305,7 @@
       "enrichedLikeCount": 820,
       "enrichedViewCount": 214,
       "enrichedCommentCount": 358,
-      "lastEmbedEnrichAt": "2026-09-19T18:57:14.142Z",
+      "lastEmbedEnrichAt": "2026-09-21T20:46:23.670Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -40908,11 +40908,11 @@
         "mentions": []
       }
     ],
-    "scrapedAt": "2026-09-19T18:35:44.205Z",
-    "lastFreeEnrichAt": "2026-09-19T18:35:44.205Z",
+    "scrapedAt": "2026-09-21T20:25:11.345Z",
+    "lastFreeEnrichAt": "2026-09-21T20:25:11.345Z",
     "stats": {
       "totalPosts": 753,
-      "durationMs": 2215,
+      "durationMs": 2815,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -40921,7 +40921,7 @@
       "enrichedLikeCount": 747,
       "enrichedViewCount": 305,
       "enrichedCommentCount": 221,
-      "lastEmbedEnrichAt": "2026-09-19T18:59:02.325Z",
+      "lastEmbedEnrichAt": "2026-09-21T20:47:59.109Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -46918,22 +46918,60 @@
           "@rockysoenoko"
         ],
         "postedAt": "2023-02-03T11:23:45.000Z"
+      },
+      {
+        "id": "jina-DdYzEtclNIi",
+        "shortcode": "DdYzEtclNIi",
+        "caption": "",
+        "timestamp": 0,
+        "likeCount": 0,
+        "commentCount": 0,
+        "viewCount": 0,
+        "saveCount": 0,
+        "thumbnailUrl": "",
+        "videoUrl": "",
+        "mediaType": "REEL",
+        "isVideo": true,
+        "durationSeconds": 0,
+        "postUrl": "https://www.instagram.com/p/DdYzEtclNIi/",
+        "source": "jina-web",
+        "hashtags": [],
+        "mentions": []
+      },
+      {
+        "id": "jina-DdVe-xFlLq3",
+        "shortcode": "DdVe-xFlLq3",
+        "caption": "",
+        "timestamp": 0,
+        "likeCount": 0,
+        "commentCount": 0,
+        "viewCount": 0,
+        "saveCount": 0,
+        "thumbnailUrl": "",
+        "videoUrl": "",
+        "mediaType": "REEL",
+        "isVideo": true,
+        "durationSeconds": 0,
+        "postUrl": "https://www.instagram.com/p/DdVe-xFlLq3/",
+        "source": "jina-web",
+        "hashtags": [],
+        "mentions": []
       }
     ],
-    "scrapedAt": "2026-09-19T18:35:47.105Z",
-    "lastFreeEnrichAt": "2026-09-19T18:35:47.105Z",
+    "scrapedAt": "2026-09-21T20:25:15.040Z",
+    "lastFreeEnrichAt": "2026-09-21T20:25:15.040Z",
     "stats": {
-      "totalPosts": 279,
-      "durationMs": 889,
+      "totalPosts": 281,
+      "durationMs": 1689,
       "isDummy": false,
-      "enriched": false,
-      "enrichmentSource": "bundled-preservation",
-      "newPostsAdded": 0,
+      "enriched": true,
+      "enrichmentSource": "jina-web",
+      "newPostsAdded": 2,
       "metricsUpgraded": 0,
       "enrichedLikeCount": 279,
       "enrichedViewCount": 121,
       "enrichedCommentCount": 222,
-      "lastEmbedEnrichAt": "2026-09-19T19:00:42.294Z",
+      "lastEmbedEnrichAt": "2026-09-21T20:49:29.946Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -71570,11 +71608,11 @@
         "mentions": []
       }
     ],
-    "scrapedAt": "2026-09-19T18:35:50.005Z",
-    "lastFreeEnrichAt": "2026-09-19T18:35:50.005Z",
+    "scrapedAt": "2026-09-21T20:25:18.208Z",
+    "lastFreeEnrichAt": "2026-09-21T20:25:18.208Z",
     "stats": {
       "totalPosts": 969,
-      "durationMs": 896,
+      "durationMs": 1164,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -71583,7 +71621,7 @@
       "enrichedLikeCount": 969,
       "enrichedViewCount": 849,
       "enrichedCommentCount": 585,
-      "lastEmbedEnrichAt": "2026-09-19T19:02:30.527Z",
+      "lastEmbedEnrichAt": "2026-09-21T20:51:05.454Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -71612,6 +71650,33 @@
       "localAvatar": "/TITAN/assets/avatars/tt-majangmejeng_.jpeg"
     },
     "posts": [
+      {
+        "id": "7679692356022488327",
+        "description": "Ini merupakan penampilan peserta karnaval dari Kecamatan Yosowilangun, dalam acara Lumajang Carnival. Tarian kolosal ditampilkan yang memukau ribuan mata pengunjung. Kabarnya dana untuk menampilkan aksi epic ini sekitar Rp500 juta atau 1/2 Milyar. Informasinya, dana tersebut berasal dari donatur tunggal. Wahhh apa benar ya lur? Gimana menurut kalian penampilan kelompok ini kemarin?  📩 Hubungi kami untuk kolaborasi, promosi, dan sponsorship. #majangmejeng #wongmajang #AgustusRF ",
+        "caption": "Ini merupakan penampilan peserta karnaval dari Kecamatan Yosowilangun, dalam acara Lumajang Carnival. Tarian kolosal ditampilkan yang memukau ribuan mata pengunjung. Kabarnya dana untuk menampilkan aksi epic ini sekitar Rp500 juta atau 1/2 Milyar. Informasinya, dana tersebut berasal dari donatur tunggal. Wahhh apa benar ya lur? Gimana menurut kalian penampilan kelompok ini kemarin?  📩 Hubungi kami untuk kolaborasi, promosi, dan sponsorship. #majangmejeng #wongmajang #AgustusRF ",
+        "createTime": 1788067722,
+        "timestamp": 1788067722000,
+        "coverUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/ocQj74VA3Cxc2RcTGDQQEJLS2NMCeAeOIvIfk4~tplv-tiktokx-cropcenter-q:300:400:q70.jpeg?dr=8596&refresh_token=cf02919d&x-expires=1790107200&x-signature=SrFAxwF9t5jFdKgwoxNemAnP3ZI%3D&t=bacd0480&ps=933b5bde&shp=d05b14bd&shcp=1d1a97fc&idc=useast5&biz_tag=tt_video&s=AWEME_DETAIL&sc=cover",
+        "videoUrl": "https://www.tiktok.com/@majangmejeng_/video/7679692356022488327",
+        "playCount": 174819,
+        "diggCount": 6431,
+        "likeCount": 6431,
+        "commentCount": 128,
+        "shareCount": 565,
+        "collectCount": 261,
+        "saveCount": 261,
+        "durationSeconds": 31,
+        "duration": 31,
+        "mediaType": "VIDEO",
+        "hashtags": [
+          "#majangmejeng",
+          "#wongmajang",
+          "#agustusrf"
+        ],
+        "mentions": [],
+        "musicTitle": "original sound - majangmejeng_",
+        "musicAuthor": "Majang Mejeng"
+      },
       {
         "id": "majangmejeng_-7679436732072316178",
         "shortcode": "7679436732072316178",
@@ -82496,9 +82561,9 @@
         "timestamp": 1782566751000,
         "coverUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/oUw2fAyF8cJZuEQq5PFfBBgkozJi8mQ0RHD5EN~tplv-tiktokx-cropcenter-q:300:400:q70.jpeg?dr=9232&refresh_token=7f16cf84&x-expires=1784160000&x-signature=4YnbJ4ZGGNEG3iIWH%2B1%2FE8TAap8%3D&t=bacd0480&ps=933b5bde&shp=d05b14bd&shcp=132edbea&idc=no1a&biz_tag=tt_video&s=PUBLISH&sc=cover",
         "videoUrl": "https://www.tiktok.com/@majangmejeng_/video/7656065866999663879?_r=1&u_code=0&region=US&mid=7656065911611083541&preview_pb=0&sharer_language=en&_d=f01haf2dj62106&share_item_id=7656065866999663879&source=h5_t",
-        "playCount": 1025783,
-        "diggCount": 47237,
-        "likeCount": 47237,
+        "playCount": 1025909,
+        "diggCount": 47241,
+        "likeCount": 47241,
         "commentCount": 691,
         "shareCount": 3315,
         "collectCount": 1998,
@@ -94509,16 +94574,16 @@
         "durationSeconds": 109
       }
     ],
-    "scrapedAt": "2026-09-19T18:36:22.933Z",
-    "lastFreeEnrichAt": "2026-09-19T18:36:22.933Z",
+    "scrapedAt": "2026-09-21T20:25:49.869Z",
+    "lastFreeEnrichAt": "2026-09-21T20:25:49.869Z",
     "stats": {
-      "totalPosts": 801,
-      "durationMs": 30810,
+      "totalPosts": 802,
+      "durationMs": 29579,
       "isDummy": false,
       "enriched": true,
-      "enrichmentSource": "bundled-preservation",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 0
+      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
+      "newPostsAdded": 1,
+      "metricsUpgraded": 1
     }
   },
   {
@@ -94534,7 +94599,7 @@
       "bio": "TikTok Shop is now available on web!",
       "biography": "TikTok Shop is now available on web!",
       "verified": false,
-      "followerCount": 1256,
+      "followerCount": 1260,
       "followingCount": 316,
       "heartCount": 10200,
       "postCount": 418,
@@ -102967,7 +103032,7 @@
         "timestamp": 1736134045000,
         "coverUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/ooE7IAAAITovAsBzIiBBf15rXbxCNiAwOAaZBO~tplv-tiktokx-cropcenter-q:300:400:q70.jpeg?dr=9232&refresh_token=ac3676ef&x-expires=1784048400&x-signature=A04PB695r43iueYyv%2F0TT322te8%3D&t=bacd0480&ps=933b5bde&shp=d05b14bd&shcp=132edbea&idc=no1a&biz_tag=tt_video&s=PUBLISH&sc=cover",
         "videoUrl": "https://www.tiktok.com/@syahfalahproperti/video/7456638907703217426?_r=1&u_code=0&region=US&mid=7456638957439208209&preview_pb=0&sharer_language=en&_d=f019e3cj7jb7k8&share_item_id=7456638907703217426&source=h5_t",
-        "playCount": 6053,
+        "playCount": 6115,
         "diggCount": 82,
         "likeCount": 82,
         "commentCount": 16,
@@ -110722,16 +110787,16 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-useast2a-p-0037-aiso/oEODGUQ4bAIEn3v6BnVjJeBUODDPeCV1RZKQHH~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=R%2BBx1mQX8hoJbcMaGH1t2pEiJVQ%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-09-19T18:36:48.124Z",
-    "lastFreeEnrichAt": "2026-09-19T18:36:48.124Z",
+    "scrapedAt": "2026-09-21T20:26:14.777Z",
+    "lastFreeEnrichAt": "2026-09-21T20:26:14.777Z",
     "stats": {
       "totalPosts": 474,
-      "durationMs": 22175,
+      "durationMs": 21899,
       "isDummy": false,
       "enriched": true,
-      "enrichmentSource": "bundled-preservation",
+      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0
+      "metricsUpgraded": 1
     }
   },
   {
@@ -110744,17 +110809,17 @@
       "nickname": "ardian tanah",
       "fullName": "ardian tanah",
       "avatarUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-avt-0068/782d92bfd965931c810e859ba88e3f76~tplv-tiktokx-cropcenter:1080:1080.webp?dr=9640&refresh_token=c0f1c713&x-expires=1784703600&x-signature=hWz0wJ5VrGl6B3kZif%2Fxx2LjQe8%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=2472a6c6&idc=useast8",
-      "bio": "TikTok Shop is now available on web!",
-      "biography": "TikTok Shop is now available on web!",
+      "bio": "suka bercanda dan membahas hal hal random owner @JCK Property @syahfalahproperti @pesonakahuripanbangkit ingin belajar bisnis property? lets connect",
+      "biography": "suka bercanda dan membahas hal hal random owner @JCK Property @syahfalahproperti @pesonakahuripanbangkit ingin belajar bisnis property? lets connect",
       "verified": false,
-      "followerCount": 9987,
+      "followerCount": 9985,
       "followingCount": 193,
       "heartCount": 30600,
       "postCount": 359,
       "externalUrl": "",
       "isPrivate": false,
       "profilePicUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-avt-0068/782d92bfd965931c810e859ba88e3f76~tplv-tiktokx-cropcenter:1080:1080.webp?dr=9640&refresh_token=88a6c0b4&x-expires=1784232000&x-signature=dhcHX1bQUAdfuSWGRl0PjgSvsXQ%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=2472a6c6&idc=useast8",
-      "signature": "TikTok Shop is now available on web!",
+      "signature": "suka bercanda dan membahas hal hal random owner @JCK Property @syahfalahproperti @pesonakahuripanbangkit ingin belajar bisnis property? lets connect",
       "videoCount": 359,
       "localAvatar": "/TITAN/assets/avatars/tt-ardian.tanah.jpeg"
     },
@@ -113315,7 +113380,7 @@
         "timestamp": 1768528246000,
         "coverUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/oQGQogZeAALfDtt1jLe3zSGEEA0yAIIrdAmpAm~tplv-tiktokx-cropcenter-q:300:400:q70.jpeg?dr=9232&refresh_token=5fd75dfd&x-expires=1784052000&x-signature=eTiCEPmhwhplp9b0esjksHIwDzk%3D&t=bacd0480&ps=933b5bde&shp=d05b14bd&shcp=132edbea&idc=no1a&biz_tag=tt_video&s=PUBLISH&sc=cover",
         "videoUrl": "https://www.tiktok.com/@ardian.tanah/video/7595770948834381077?_r=1&u_code=0&region=US&mid=7595770985727462161&preview_pb=0&sharer_language=en&_d=f01e996a0g4k06&share_item_id=7595770948834381077&source=h5_t",
-        "playCount": 646,
+        "playCount": 647,
         "diggCount": 18,
         "likeCount": 18,
         "commentCount": 0,
@@ -123410,16 +123475,16 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-maliva-p-0068/oYqDfADQQUxBvFR0n2WZKBJEQEHBB97IjleVEo~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=oWbP6X7tvLoHR0wAwjWbXxONCEw%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-09-19T18:37:18.284Z",
-    "lastFreeEnrichAt": "2026-09-19T18:37:18.284Z",
+    "scrapedAt": "2026-09-21T20:26:43.352Z",
+    "lastFreeEnrichAt": "2026-09-21T20:26:43.352Z",
     "stats": {
       "totalPosts": 394,
-      "durationMs": 27150,
+      "durationMs": 25568,
       "isDummy": false,
       "enriched": true,
-      "enrichmentSource": "bundled-preservation",
+      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0
+      "metricsUpgraded": 1
     }
   },
   {
@@ -123435,7 +123500,7 @@
       "bio": "TikTok Shop is now available on web!",
       "biography": "TikTok Shop is now available on web!",
       "verified": false,
-      "followerCount": 5402,
+      "followerCount": 5401,
       "followingCount": 100,
       "heartCount": 70000,
       "postCount": 497,
@@ -139058,14 +139123,14 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-maliva-p-0068/ogjwYDPEIQFrBK7fEQlGeJmQtrR1xAAuEICBBm~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=18tnWtmDjMKSKnmnOjGX9VrzEc0%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-09-19T18:37:46.181Z",
-    "lastFreeEnrichAt": "2026-09-19T18:37:46.181Z",
+    "scrapedAt": "2026-09-21T20:27:10.781Z",
+    "lastFreeEnrichAt": "2026-09-21T20:27:10.781Z",
     "stats": {
       "totalPosts": 505,
-      "durationMs": 24891,
+      "durationMs": 24425,
       "isDummy": false,
       "enriched": true,
-      "enrichmentSource": "bundled-preservation",
+      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
       "newPostsAdded": 0,
       "metricsUpgraded": 0
     }
@@ -139085,7 +139150,7 @@
       "verified": false,
       "followerCount": 33400,
       "followingCount": 13,
-      "heartCount": 249500,
+      "heartCount": 250100,
       "postCount": 166,
       "externalUrl": "",
       "isPrivate": false,
@@ -140464,7 +140529,7 @@
         "timestamp": 1770968365000,
         "coverUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-alisg-p-0037/oQIABrAPUADi2b0Eau76YBFO1ViISTMYKKiQo~tplv-tiktokx-cropcenter-q:300:400:q70.jpeg?dr=9232&refresh_token=7de09ffc&x-expires=1784113200&x-signature=w8m8MxNUockpXfZ4WhA3muCeiCc%3D&t=bacd0480&ps=933b5bde&shp=d05b14bd&shcp=132edbea&idc=no1a&sc=cover&biz_tag=tt_video&s=PUBLISH",
         "videoUrl": "https://www.tiktok.com/@itsnisyananda/video/7606251195815988498?_r=1&u_code=0&region=US&mid=7606251218406918920&preview_pb=0&sharer_language=en&_d=f01k1mleaj2865&share_item_id=7606251195815988498&source=h5_t",
-        "playCount": 3623,
+        "playCount": 3635,
         "diggCount": 72,
         "likeCount": 72,
         "commentCount": 0,
@@ -142013,7 +142078,7 @@
         "timestamp": 1732537289000,
         "coverUrl": "https://p16-common-sign.tiktokcdn-eu.com/tos-maliva-p-0068/oQAAGIAGE7nAecaaxZEBCFRERB8D6QvJTEfBZQ~tplv-tiktokx-cropcenter-q:300:400:q70.jpeg?dr=9232&refresh_token=639ede99&x-expires=1784113200&x-signature=KQ7CbyYFc9xmWPTBLBpt4Xkg5s0%3D&t=bacd0480&ps=933b5bde&shp=d05b14bd&shcp=132edbea&idc=no1a&s=PUBLISH&sc=cover&biz_tag=tt_video",
         "videoUrl": "https://www.tiktok.com/@itsnisyananda/video/7441190949797088567?_r=1&u_code=0&region=US&mid=7372820786800380678&preview_pb=0&sharer_language=en&_d=f0229233lm6e1m&share_item_id=7441190949797088567&source=h5_t",
-        "playCount": 17833,
+        "playCount": 17839,
         "diggCount": 444,
         "likeCount": 444,
         "commentCount": 18,
@@ -144038,16 +144103,16 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-maliva-p-0068/91719c06458542f9990ccb8224b04e92_1725695759~tplv-tiktokx-origin.image?dr=14575&x-expires=1788199200&x-signature=d3zLi9XBZhaYw1lv9tNFNtKhEOg%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-09-19T18:38:13.979Z",
-    "lastFreeEnrichAt": "2026-09-19T18:38:13.979Z",
+    "scrapedAt": "2026-09-21T20:27:38.502Z",
+    "lastFreeEnrichAt": "2026-09-21T20:27:38.502Z",
     "stats": {
       "totalPosts": 170,
-      "durationMs": 24792,
+      "durationMs": 24715,
       "isDummy": false,
       "enriched": true,
-      "enrichmentSource": "bundled-preservation",
+      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0
+      "metricsUpgraded": 2
     }
   }
 ]
