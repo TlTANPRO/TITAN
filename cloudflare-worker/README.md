@@ -41,9 +41,10 @@ Holds all LLM API keys server-side. The browser only ever talks to this Worker, 
 | `OPENROUTER_API_KEYS` | optional (fallback) | `sk-or-v1-A,sk-or-v1-B` (multi-key rotation) | Free models only via this Worker |
 | `COHERE_KEYS` | optional (last resort) | `...` (rotation supported) | **FREE** trial — 1K req/month |
 | `JINA_KEYS` | optional (web tools) | `jina_...` (rotation supported) | **FREE** — 1M tokens/month |
-| `ALLOWED_ORIGIN` | optional | `https://tltanpro.github.io` (CORS lock-down) | — |
+| `TITAN_CLIENT_KEY` | **required for protected endpoints** | shared client key accepted only by protected Worker routes | — |
+| `ALLOWED_ORIGIN` | optional in local dev | `https://tltanpro.github.io` in production; set `http://localhost:5173` locally | — |
 
-> **At least `GOOGLE_KEYS` is required** for chat. The chain breaks if Google is empty (no other LLM provider runs by default in v3).
+> **Security rule:** the Worker fails closed when `TITAN_CLIENT_KEY` is missing. Do not put that value in a `VITE_*` build variable because Vite exposes it to the browser. The current static SPA still needs a real browser auth/session decision before production chat can be considered fixed.
 
 ### 4. Get the Worker URL
 **Settings → Triggers** → copy the URL, e.g. `https://titan-llm-proxy.YOUR-SUBDOMAIN.workers.dev`
@@ -55,6 +56,8 @@ VITE_LLM_PROXY_URL=https://titan-llm-proxy.YOUR-SUBDOMAIN.workers.dev
 VITE_LLM_PROVIDER=google
 VITE_LLM_MODEL=gemini-flash-lite-latest
 ```
+
+`VITE_LLM_PROXY_URL` is a public endpoint URL and may be bundled. `TITAN_CLIENT_KEY` is a Worker secret and must not be added to this `.env` or to any `VITE_*` variable.
 
 ## Test the Worker manually
 

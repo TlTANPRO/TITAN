@@ -275,7 +275,7 @@ export function weeklyRecommendations(accounts) {
   }
   if (lowByER) {
     out.push(
-      `Brief @${lowByER.username} untuk加倍 posting (target 4-5x/minggu) dan eksperimen 2 format baru minggu depan.`
+      `Brief @${lowByER.username} untuk tambah posting (target 4-5x/minggu) dan eksperimen 2 format baru minggu depan.`
     );
   }
 

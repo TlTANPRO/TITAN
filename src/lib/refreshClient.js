@@ -58,6 +58,8 @@ export async function triggerSoftRefresh() {
       ok: true,
       message: 'Data berhasil di-reload',
       generatedAt: meta.generatedAt,
+      lastScrapeAt: meta.lastScrapeAt ?? meta.generatedAt,
+      latestPostAt: meta.latestPostAt,
       accountCount: meta.accountCount,
       totalPosts: meta.totalPosts,
       source: 'worker-soft'

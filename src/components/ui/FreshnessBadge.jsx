@@ -1,15 +1,18 @@
-// V21: FreshnessBadge — color-coded "data freshness" indicator per account.
-// 🟢 Fresh (<24h), 🟡 Stale (24-72h), 🔴 Missing (7+ days no post).
+// Per-account content freshness indicator. The label describes the newest
+// post, not the pipeline run time.
 import { Chip } from './Chip.jsx';
+import { formatRelativeAge, getAgeMs, getContentTone } from '../../lib/dataFreshness.js';
 
 function freshnessFromLastPost(lastPostAt) {
-  if (!lastPostAt) return { tone: 'danger', label: 'Tanpa data', sublabel: 'perlu enrichment' };
-  const ageMs = Date.now() - new Date(lastPostAt).getTime();
-  const ageDays = ageMs / (1000 * 60 * 60 * 24);
-  if (ageDays < 1) return { tone: 'success', label: 'Fresh', sublabel: '< 1 hari' };
-  if (ageDays < 3) return { tone: 'success', label: 'Fresh', sublabel: `${ageDays.toFixed(1)} hari` };
-  if (ageDays < 7) return { tone: 'warning', label: 'Stale', sublabel: `${Math.floor(ageDays)} hari` };
-  return { tone: 'danger', label: 'Stale', sublabel: `${Math.floor(ageDays)} hari` };
+  const ageMs = getAgeMs(lastPostAt);
+  if (ageMs == null) return { tone: 'danger', label: 'Tanpa data', sublabel: 'perlu enrichment' };
+
+  const tone = getContentTone(ageMs);
+  return {
+    tone,
+    label: tone === 'success' ? 'Aman' : 'Periksa',
+    sublabel: formatRelativeAge(ageMs)
+  };
 }
 
 export function FreshnessBadge({ lastPostAt, size = 'sm' }) {

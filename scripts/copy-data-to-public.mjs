@@ -50,8 +50,7 @@ async function main() {
 
   const jsonFiles = entries.filter((f) => f.endsWith('.json'));
   if (jsonFiles.length === 0) {
-    console.warn(`[prebuild] no JSON files in ${SRC_DIR}, nothing to copy.`);
-    return;
+    console.warn(`[prebuild] no JSON files in ${SRC_DIR}, skipping the src/data copy.`);
   }
 
   for (const file of jsonFiles) {
@@ -64,6 +63,36 @@ async function main() {
       console.log(`[prebuild] ${src} (${sizeKB} KB) → ${dest}`);
     } catch (err) {
       console.warn(`[prebuild] skip ${src}: ${err.message}`);
+    }
+  }
+
+  // V39: derive manifest.json + per-account split payloads from the root SSOT.
+  // The app loads the manifest first so Home can render real freshness numbers
+  // before the 12MB full dataset finishes downloading. A manifest failure must
+  // NOT block the build: the app falls back to the full dataset.
+  try {
+    const { spawnSync } = await import('node:child_process');
+    const result = spawnSync(process.execPath, [path.join(__dirname, 'build-data-manifest.mjs')], {
+      stdio: 'inherit'
+    });
+    if (result.status !== 0) {
+      console.warn('[prebuild] manifest build failed — app will fall back to the full dataset.');
+    }
+  } catch (err) {
+    console.warn(`[prebuild] could not run build-data-manifest.mjs: ${err.message}`);
+  }
+
+  // V39: stage the web app manifest into public/ so `dist/` is self-contained.
+  // It previously existed only at the repo root, which means `vite preview`
+  // served the SPA fallback for /manifest.webmanifest and a local check could
+  // not verify the link that scripts/vite-index.template.html declares.
+  for (const asset of ['manifest.webmanifest', 'favicon.svg']) {
+    const from = path.join(__dirname, '..', asset);
+    const to = path.join(__dirname, '..', 'public', asset);
+    try {
+      await fs.copyFile(from, to);
+    } catch (err) {
+      if (err.code !== 'ENOENT') console.warn(`[prebuild] could not stage ${asset}: ${err.message}`);
     }
   }
 }

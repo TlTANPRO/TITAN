@@ -1,25 +1,137 @@
 // V21: /settings — Settings page (General, Tampilan, Data, Accounts, AI, About sections).
 // Vertical tabs layout. Hard refresh behind simple password gate.
 // V24.1: added Tampilan (Display) section with --app-text-scale toggle.
+// V39: added Sesi AI section — the runtime session handshake that replaces
+// shipping a long-lived shared secret to the browser.
 import { useState } from 'react';
-import { Settings as SettingsIcon, Palette, Database, Users, Lightbulb, Info, ShieldAlert, KeyRound, Type } from 'lucide-react';
+import { Settings as SettingsIcon, Palette, Database, Users, Lightbulb, Info, ShieldAlert, KeyRound, Type, ShieldCheck, TimerReset } from 'lucide-react';
 import { useAccounts } from '../hooks/useAccount.js';
+import { useSession } from '../hooks/useSession.js';
 import { FreshnessBadge } from '../components/ui/FreshnessBadge.jsx';
 import { PageHeader } from '../components/layout/PageHeader.jsx';
 import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
 import { PlatformIcon, platformLabel } from '../components/icons/PlatformIcon.jsx';
 import { triggerHardRefresh } from '../lib/refreshClient.js';
+import { getProxyUrl } from '../lib/proxyConfig.js';
 import { useTextScale, TEXT_SCALE_OPTIONS } from '../hooks/useTextScale.js';
 import { formatNumber } from '../lib/format.js';
 
 const SECTIONS = [
   { id: 'general', label: 'General', icon: SettingsIcon },
   { id: 'display', label: 'Tampilan', icon: Palette },
+  { id: 'session', label: 'Sesi AI', icon: ShieldCheck },
   { id: 'data', label: 'Data & Refresh', icon: Database },
   { id: 'accounts', label: 'Accounts', icon: Users },
   { id: 'ai', label: 'Insight', icon: Lightbulb },
   { id: 'about', label: 'About', icon: Info }
 ];
+
+const SESSION_TONE = {
+  disabled: { text: 'text-text-muted', dot: 'bg-text-muted', label: 'Tidak aktif' },
+  missing: { text: 'text-accent-warning', dot: 'bg-accent-warning', label: 'Belum ada sesi' },
+  active: { text: 'text-accent-success', dot: 'bg-accent-success', label: 'Aktif' },
+  expired: { text: 'text-accent-danger', dot: 'bg-accent-danger', label: 'Kedaluwarsa' },
+  unverified: { text: 'text-text-secondary', dot: 'bg-text-secondary', label: 'Belum diverifikasi' }
+};
+
+function SessionSection() {
+  const { state, status, label, busy, error, hasBootstrap, requestSession, verifySession, clearSession } = useSession();
+  const [bootstrap, setBootstrap] = useState('');
+  const tone = SESSION_TONE[status] ?? SESSION_TONE.unverified;
+  const proxyUrl = getProxyUrl();
+
+  const expiresLabel = state.expiresAt
+    ? new Date(state.expiresAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
+    : '—';
+
+  return (
+    <>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-bold text-text-primary">Sesi AI</h2>
+          <p className="mt-1 max-w-xl text-xs text-text-muted">
+            Browser tidak pernah memegang secret jangka panjang. Bootstrap credential ditukar menjadi
+            session token berumur pendek yang disimpan di <code className="bg-bg-tertiary px-1 rounded">sessionStorage</code>
+            dan otomatis hilang saat tab ditutup.
+          </p>
+        </div>
+        <span className={`inline-flex items-center gap-2 rounded-full border border-border-subtle px-3 py-1.5 text-xs font-semibold ${tone.text}`}>
+          <span className={`h-2 w-2 rounded-full ${tone.dot}`} aria-hidden="true" />
+          {tone.label}
+        </span>
+      </div>
+
+      {!proxyUrl ? (
+        <div className="rounded-md border border-border-subtle bg-bg-tertiary p-3 text-xs text-text-muted">
+          <code>VITE_LLM_PROXY_URL</code> belum di-setup, jadi mode Worker tidak aktif. Sesi tidak diperlukan pada mode langsung.
+        </div>
+      ) : (
+        <>
+          <div className="space-y-1 text-xs">
+            <div className="text-text-muted">Worker proxy</div>
+            <div className="font-mono break-all text-text-secondary">{proxyUrl}</div>
+          </div>
+
+          <div className="pt-1">
+            <label htmlFor="session-bootstrap" className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+              Bootstrap credential
+            </label>
+            <p className="mt-0.5 mb-2 text-[11px] text-text-muted">
+              Nilainya sama dengan Worker secret <code className="bg-bg-tertiary px-1 rounded">TITAN_CLIENT_KEY</code>. Disimpan di{' '}
+              <code className="bg-bg-tertiary px-1 rounded">sessionStorage</code>, bukan di bundle.
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <div className="relative flex-1">
+                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted" aria-hidden="true" />
+                <input
+                  id="session-bootstrap"
+                  name="sessionBootstrap"
+                  type="password"
+                  value={bootstrap}
+                  onChange={(e) => setBootstrap(e.target.value)}
+                  placeholder={hasBootstrap ? 'Tersimpan — ketik untuk mengganti' : 'Masukkan TITAN_CLIENT_KEY'}
+                  autoComplete="off"
+                  className="w-full pl-9 pr-3 py-1.5 text-sm bg-bg-tertiary border border-border-subtle rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-primary"
+                />
+              </div>
+              <button
+                onClick={() => requestSession(bootstrap)}
+                disabled={busy || !bootstrap.trim()}
+                className="btn-primary !px-4 !py-1.5 text-sm disabled:opacity-50"
+              >
+                {busy ? 'Meminta…' : 'Minta sesi'}
+              </button>
+            </div>
+          </div>
+
+          <div className="rounded-md border border-border-subtle bg-bg-tertiary p-3 text-xs text-text-secondary space-y-1">
+            <div aria-live="polite">{label}</div>
+            <div className="text-text-muted">Kedaluwarsa: {expiresLabel}</div>
+            {error ? <div className="text-accent-danger">{error}</div> : null}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={verifySession}
+              disabled={busy || status !== 'active'}
+              className="btn-secondary !px-3 !py-1.5 text-xs disabled:opacity-50 inline-flex items-center gap-1.5"
+            >
+              <TimerReset className="w-3.5 h-3.5" aria-hidden="true" />
+              Verifikasi sesi
+            </button>
+            <button
+              onClick={clearSession}
+              disabled={busy || status === 'disabled' || status === 'missing'}
+              className="btn-secondary !px-3 !py-1.5 text-xs disabled:opacity-50"
+            >
+              Hapus sesi
+            </button>
+          </div>
+        </>
+      )}
+    </>
+  );
+}
 
 export default function Settings() {
   const accounts = useAccounts();
@@ -141,6 +253,8 @@ export default function Settings() {
               </div>
             </>
           )}
+
+          {activeSection === 'session' && <SessionSection />}
 
           {activeSection === 'data' && (
             <>

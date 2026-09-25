@@ -11,6 +11,10 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import './styles/tokens.css';
 import './styles/global.css';
+// V39: CSS lifted from the Motion prompt set (footer dot drift, the @property
+// gradient blobs, the spec bar chart, the bento grid). Kept in its own file so
+// the prompt-to-code mapping stays checkable against docs/PROMPT_TRACEABILITY.md.
+import './styles/prompt-sites.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

@@ -10,6 +10,7 @@ import { DataFreshnessBadge } from './DataFreshnessBadge.jsx';
 import { triggerSoftRefresh } from '../../lib/refreshClient.js';
 import { dataAvailability } from '../../lib/analytics.js';
 import { usePeriod, PERIOD_OPTIONS } from '../../hooks/usePeriod.js';
+import { formatRelativeAge, getAgeMs } from '../../lib/dataFreshness.js';
 
 export function Topbar({ limitedCount = 0 }) {
   const [open, setOpen] = useState(false);
@@ -39,14 +40,17 @@ export function Topbar({ limitedCount = 0 }) {
       if (result.ok) {
         setProgress(100);
         setStatus('success');
-        const generatedAt = result.generatedAt ?? new Date().toISOString();
+        const refreshedAt = result.lastScrapeAt ?? result.generatedAt ?? new Date().toISOString();
+        const contentNote = result.latestPostAt
+          ? ` · konten ${formatRelativeAge(getAgeMs(result.latestPostAt))}`
+          : '';
         setMessage(
           result.fallback
             ? `Cache refresh (${result.totalPosts ?? '?'} post)`
-            : `${result.totalPosts ?? '?'} post dimuat`
+            : `${result.totalPosts ?? '?'} post dimuat${contentNote}`
         );
-        setLastUpdated(generatedAt);
-        window.localStorage.setItem('titan.lastUpdated.v1', generatedAt);
+        setLastUpdated(refreshedAt);
+        window.localStorage.setItem('titan.lastUpdated.v1', refreshedAt);
         setTimeout(() => { setStatus('idle'); setProgress(0); }, 4000);
       } else {
         setStatus('error');
@@ -86,9 +90,9 @@ export function Topbar({ limitedCount = 0 }) {
     <header className="sticky top-0 z-sticky bg-bg-secondary/80 backdrop-blur border-b border-border-subtle">
       <div className="flex items-center gap-3 px-4 md:px-6 py-3">
         {pageTitle && (
-          <h1 className="text-sm font-semibold text-text-primary whitespace-nowrap hidden md:block">
+          <p className="text-sm font-semibold text-text-primary whitespace-nowrap hidden md:block">
             {pageTitle}
-          </h1>
+          </p>
         )}
 
         {/* Search */}

@@ -202,14 +202,20 @@ async function main() {
   const distEntries = await fs.readdir(dist, { withFileTypes: true });
   for (const entry of distEntries) {
     if (entry.name === 'data') {
-      // dist/data/accounts-full.json → root accounts-full.json
-      await fs.mkdir(path.join(ROOT, 'data'), { recursive: true });
+      // V39: dist/data/ holds accounts-full.json (flat) plus the per-account
+      // split payloads under data/accounts/. Flat files land at the repo root
+      // (gh-pages serves from root); the accounts/ subtree is copied verbatim
+      // into root data/ because the app requests `<base>data/accounts/<slug>.json`.
       const dataEntries = await fs.readdir(path.join(dist, 'data'), { withFileTypes: true });
       for (const d of dataEntries) {
-        await fs.copyFile(path.join(dist, 'data', d.name), path.join(ROOT, d.name));
-        console.log(`  cp dist/data/${d.name} → ${d.name}`);
+        if (d.isDirectory()) {
+          await copyDir(path.join(dist, 'data', d.name), path.join(ROOT, 'data', d.name));
+          console.log(`  cp -r dist/data/${d.name}/ → data/${d.name}/`);
+        } else {
+          await fs.copyFile(path.join(dist, 'data', d.name), path.join(ROOT, d.name));
+          console.log(`  cp dist/data/${d.name} → ${d.name}`);
+        }
       }
-      await rmrf(path.join(ROOT, 'data'));
     } else if (entry.name === 'assets') {
       // dist/assets/ → root assets/ (REPLACE, not append — cleans old hashes)
       await copyDir(path.join(dist, 'assets'), path.join(ROOT, 'assets'));

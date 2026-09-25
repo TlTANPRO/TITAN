@@ -39,6 +39,15 @@ scripts/report-*.md
 src/data/accounts-full.json
 # prebuild copy (vite will copy to dist/data/ anyway)
 public/data/accounts-full.json
+# V39 manifest — build staging copy. deploy.mjs flattens the real one to the repo
+# root, which is the copy GitHub Pages actually serves.
+public/data/manifest.json
+# V39 per-account split payloads — regenerated from the root SSOT on every build
+public/data/accounts/
+data/accounts/
+# V39 web app manifest is staged from the repo root by prebuild; the root copy
+# is the tracked source, so the staged duplicate must not be committed.
+public/manifest.webmanifest
 
 # logs
 *.log

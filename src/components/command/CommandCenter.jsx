@@ -10,26 +10,29 @@
 import { useMemo, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { Trophy, TrendingUp, Activity, Sparkles, Heart, MessageCircle, Eye, ArrowRight } from 'lucide-react';
-import { useAccounts, useCrossAccountComparison } from '../hooks/useAccount.js';
-import { getLatestPosts } from '../lib/dataStore.js';
-import { Hero } from '../components/Hero.jsx';
-import { AccountHealthGrid } from '../components/AccountHealthGrid.jsx';
-import { LiveActivityFeed } from '../components/LiveActivityFeed.jsx';
+import { useAccounts, useCrossAccountComparison } from '../../hooks/useAccount.js';
+import { getLatestPosts } from '../../lib/dataStore.js';
+import { Hero } from '../../components/Hero.jsx';
+import { AccountHealthGrid } from '../../components/AccountHealthGrid.jsx';
+import { LiveActivityFeed } from '../../components/LiveActivityFeed.jsx';
 // V37 perf: chart-heavy components lazy-loaded so Home first paint doesn't
 // download/parse the recharts vendor bundle (~420KB) up front.
-const CrossAccountTimeline = lazy(() => import('../components/CrossAccountTimeline.jsx').then(m => ({ default: m.CrossAccountTimeline })));
-const KomposisiKonten = lazy(() => import('../components/KomposisiKonten.jsx').then(m => ({ default: m.KomposisiKonten })));
-const CombinedHeatmap = lazy(() => import('../components/CombinedHeatmap.jsx').then(m => ({ default: m.CombinedHeatmap })));
-import { WeeklyBriefing } from '../components/WeeklyBriefing.jsx';
-import { EnhancedTable } from '../components/EnhancedTable.jsx';
-import { ViralPostCard } from '../components/ViralPostCard.jsx';
-import { ProxiedAvatar } from '../components/ProxiedAvatar.jsx';
-import { BentoGrid, BentoItem } from '../components/ui/BentoGrid.jsx';
-import { SectionLabel } from '../components/ui/SectionLabel.jsx';
-import { PulseBar } from '../components/ui/PulseBar.jsx';
-import { formatNumber, formatPercent } from '../lib/format.js';
-import { dataAvailability } from '../lib/analytics.js';
-import { weeklyTopViral } from '../lib/weeklyRecap.js';
+const CrossAccountTimeline = lazy(() => import('../../components/CrossAccountTimeline.jsx').then(m => ({ default: m.CrossAccountTimeline })));
+const KomposisiKonten = lazy(() => import('../../components/KomposisiKonten.jsx').then(m => ({ default: m.KomposisiKonten })));
+const CombinedHeatmap = lazy(() => import('../../components/CombinedHeatmap.jsx').then(m => ({ default: m.CombinedHeatmap })));
+import { WeeklyBriefing } from '../../components/WeeklyBriefing.jsx';
+import { EnhancedTable } from '../../components/EnhancedTable.jsx';
+import { ViralPostCard } from '../../components/ViralPostCard.jsx';
+import { ProxiedAvatar } from '../../components/ProxiedAvatar.jsx';
+import { BentoGrid, BentoItem } from '../../components/ui/BentoGrid.jsx';
+import { SectionLabel } from '../../components/ui/SectionLabel.jsx';
+import { PulseBar } from '../../components/ui/PulseBar.jsx';
+import { PortfolioStatus } from '../../components/PortfolioStatus.jsx';
+import { DecisionQueue } from '../../components/DecisionQueue.jsx';
+import { StatusRail } from '../../components/StatusRail.jsx';
+import { formatNumber, formatPercent } from '../../lib/format.js';
+import { dataAvailability } from '../../lib/analytics.js';
+import { weeklyTopViral } from '../../lib/weeklyRecap.js';
 
 // V33: Zone separator — thin track + mono index + uppercase zone label.
 // Mirrors Grafana / Datadog dashboard zone bands.
@@ -103,7 +106,7 @@ function TopPerformersCard({ title, icon, accounts, metricKey, suffix }) {
   );
 }
 
-export default function Home() {
+export function CommandCenter({ embedded = false } = {}) {
   const rawAccounts = useAccounts();
   const comparison = useCrossAccountComparison();
   const accounts = useMemo(() => rawAccounts.map(withAvailability), [rawAccounts]);
@@ -121,8 +124,23 @@ export default function Home() {
 
   return (
     <div className="bg-bg-primary">
-      <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-32 md:pb-8 space-y-6">
-        <h1 className="sr-only">TITAN Dashboard — Performa Sosial Media</h1>
+      <section
+      id="command-center"
+      aria-label="Command center"
+      className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-6"
+    >
+        {/* embedded: this block sits inside the landing page, which already owns
+            the page's single h1, so the panel heading drops to h2 here. */}
+        <PortfolioStatus headingAs={embedded ? 'h2' : 'h1'} />
+
+        {/* V39: signature motion (nimbus-ops grammar) — one rail, static rest.
+            Sits above the fold so the pipeline state is visible on arrival. */}
+        <div className="-mx-4 md:-mx-6">
+          <StatusRail />
+        </div>
+
+        {/* V39: worklist. Answers "what next?" before any chart is read. */}
+        <DecisionQueue />
 
         {/* V36: signature PulseBar — replaces the "00 / HOME" mono strip */}
         <PulseBar title="TITAN Pulse" />
@@ -273,7 +291,7 @@ export default function Home() {
             <EnhancedTable comparison={comparison} />
           </BentoItem>
         </BentoGrid>
-      </main>
+      </section>
     </div>
   );
 }

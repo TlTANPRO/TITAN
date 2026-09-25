@@ -15,7 +15,13 @@ import SkeletonCard from './components/SkeletonCard.jsx';
 import { MemoryProvider } from './lib/memory/MemoryProvider.jsx';
 import { AppShell } from './components/layout/AppShell.jsx';
 
-const Home = lazy(() => import('./routes/Home.jsx'));
+// V39: the landing page is its own composition (rivr / technical-specifications /
+// bento-grid-stats / faq-cta / stark-minimal-footer) and carries its own nav, so
+// it sits OUTSIDE AppShell. The tool routes stay inside the shell.
+//   /            landing — hero, metrics, features, command center, specs, bento, FAQ, footer
+//   /dashboard   the command center on its own, with the app chrome
+const Landing = lazy(() => import('./routes/Landing.jsx'));
+const CommandCenterRoute = lazy(() => import('./routes/Dashboard.jsx'));
 const AccountPage = lazy(() => import('./routes/AccountPage.jsx'));
 const AccountList = lazy(() => import('./routes/AccountList.jsx'));
 const Compare = lazy(() => import('./routes/Compare.jsx'));
@@ -54,6 +60,16 @@ function RedirectBootstrap() {
   return null;
 }
 
+function ChatPanelGate() {
+  // The landing page is a prompt-composed front door with its own nav and
+  // footer; a floating chat bubble over it is not part of that composition and
+  // the panel has no account context to offer there anyway. Everywhere else the
+  // chat stays exactly as it was.
+  const { pathname } = useLocation();
+  if (pathname === '/') return null;
+  return <ChatPanel />;
+}
+
 export default function App() {
   return (
     <MemoryProvider>
@@ -62,8 +78,9 @@ export default function App() {
         <Suspense fallback={<PageLoader />}>
           <RedirectBootstrap />
           <Routes>
+            <Route path="/" element={<Landing />} />
             <Route element={<AppShell />}>
-              <Route path="/" element={<Home />} />
+              <Route path="/dashboard" element={<CommandCenterRoute />} />
               <Route path="/account" element={<AccountList />} />
               <Route path="/account/:slug" element={<AccountPage />} />
               <Route path="/compare" element={<Compare />} />
@@ -72,11 +89,13 @@ export default function App() {
               <Route path="/ai" element={<AiInsights />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/admin" element={<Admin />} />
+              {/* The old / command center is now /dashboard; keep old links alive. */}
+              <Route path="/home" element={<Navigate to="/dashboard" replace />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-        <ChatPanel />
+        <ChatPanelGate />
       </ErrorBoundary>
     </MemoryProvider>
   );

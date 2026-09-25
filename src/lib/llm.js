@@ -4,14 +4,19 @@
 // Mode auto-detection:
 //   If VITE_LLM_PROXY_URL is set, all calls route through a Cloudflare Worker
 //   that holds the API keys server-side, does multi-key rotation per provider,
-//   and falls back across providers (OpenRouter → Google → Groq → Cohere).
-//   Otherwise, the user must set keys via localStorage (not recommended).
+//   and falls back across providers. The browser never holds a long-lived key:
+//   it exchanges the bootstrap credential for a short-lived session token
+//   (see session.js) and sends that as X-Titan-Session.
 //
 // Worker contract:
 //   POST {VITE_LLM_PROXY_URL}
 //   Headers: X-Titan-Provider: auto  (Worker picks best available)
+//            X-Titan-Session: <runtime token from session.js>
 //   Body: OpenAI-style { model, messages, temperature, max_tokens, stream: true }
 //   Response: SSE stream (OpenAI-compatible data: {...}\n\n) — parsed by existing code
+import { getProxyUrl, isProxyMode, getRequestedProvider } from './proxyConfig.js';
+import { getSessionToken } from './session.js';
+
 const OPENROUTER_BASE = 'https://openrouter.ai/api/v1/';
 const GOOGLE_BASE = 'https://generativelanguage.googleapis.com/v1beta/';
 
@@ -114,13 +119,15 @@ function getModel(provider) {
  *   - cross-provider fallback chain (OpenRouter → Google → Groq → Cohere)
  *   - Jina web search/reader integration
  */
-export function isProxyMode() {
-  return Boolean(import.meta.env.VITE_LLM_PROXY_URL);
-}
+export { isProxyMode };
 
 export function getLlmMode() {
-  if (isProxyMode()) return 'proxy (multi-key auto-rotation)';
+  if (isProxyMode()) return 'proxy (session auth required)';
   return 'direct (set API keys in Settings)';
+}
+
+function getRuntimeSessionToken() {
+  return getSessionToken();
 }
 
 async function callDirect(provider, messages, opts) {
@@ -149,12 +156,19 @@ async function callDirect(provider, messages, opts) {
 }
 
 async function callProxy(_provider, messages, opts) {
-  const proxyUrl = import.meta.env.VITE_LLM_PROXY_URL;
+  const proxyUrl = getProxyUrl();
   if (!proxyUrl) throw new Error('VITE_LLM_PROXY_URL not set');
 
   // Send 'auto' to Worker so it does multi-provider fallback on its side.
   // Worker re-emits OpenAI-compatible SSE regardless of which provider answered.
   const model = getModel(_provider);
+  const sessionToken = getRuntimeSessionToken();
+  if (!sessionToken) {
+    throw new Error(
+      'Sesi Worker belum tersedia. Buka Settings → Sesi AI, masukkan bootstrap credential, lalu minta sesi sebelum memakai AI chat.'
+    );
+  }
+
   const body = {
     model,
     messages,
@@ -167,8 +181,7 @@ async function callProxy(_provider, messages, opts) {
     headers: {
       'Content-Type': 'application/json',
       'X-Titan-Provider': 'auto', // Worker picks best available across all configured providers
-      // V36.2: worker requires auth since V34 Faza 1 (key injected at build time)
-      ...(import.meta.env.VITE_TITAN_KEY ? { 'X-Titan-Key': import.meta.env.VITE_TITAN_KEY } : {})
+      'X-Titan-Session': sessionToken
     },
     body: JSON.stringify(body)
   });
@@ -180,6 +193,9 @@ async function callProxy(_provider, messages, opts) {
       if (j.details) detail = j.details.join(' | ');
       else if (j.hint) detail = `${detail} — ${j.hint}`;
     } catch {}
+    if (res.status === 401 || res.status === 403) {
+      throw new Error('Sesi Worker ditolak. Masuk ulang atau minta sesi TITAN yang valid.');
+    }
     throw new Error(`proxy: ${detail}`);
   }
   return res;
@@ -215,7 +231,7 @@ async function* streamFromResponse(res, provider) {
  * fallback and key rotation transparently.
  */
 export async function* streamChat(messages, opts = {}) {
-  const requestedProvider = opts.provider || import.meta.env.VITE_LLM_PROVIDER || 'openrouter';
+  const requestedProvider = opts.provider || getRequestedProvider();
   const proxy = isProxyMode();
 
   if (proxy) {

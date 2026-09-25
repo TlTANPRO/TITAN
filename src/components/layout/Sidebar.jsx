@@ -2,18 +2,21 @@
 // 8 item flat → 3 grup bermakna). Collapsible to icon-only at <1024px.
 // Groups: Analitik (data exploration) · Intelijen (AI) · Operasional (admin+settings).
 import { useState, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, Link } from 'react-router-dom';
 import {
   Home, Users, GitCompareArrows, Calendar as CalIcon, Library, Sparkles, Settings,
   UserCog, ChevronLeft, ChevronRight, X
 } from 'lucide-react';
 
 // V34: grouped navigation — label grup uppercase kecil, hanya tampil saat expanded.
+// V39: "/" is now the marketing-style landing page, so the tool's own home is
+// "/dashboard" and the sidebar points there. Landing is reachable from the
+// wordmark/logo, not from the tool's nav.
 const NAV_GROUPS = [
   {
     label: 'Analitik',
     items: [
-      { to: '/', label: 'Home', icon: Home, exact: true },
+      { to: '/dashboard', label: 'Dashboard', icon: Home, exact: true },
       { to: '/account', label: 'Akun', icon: Users },
       { to: '/compare', label: 'Bandingkan', icon: GitCompareArrows },
       { to: '/calendar', label: 'Kalender', icon: CalIcon },
@@ -116,16 +119,28 @@ export function Sidebar({ limitedCount = 0 }) {
         `}
         aria-label="Main navigation"
       >
-        {/* Logo + collapse button — V34: logo mark pakai brand accent */}
+        {/* Logo + collapse button — V34: logo mark pakai brand accent.
+            V39: the wordmark is the only in-app route back to the landing page,
+            since "/" is no longer part of the tool's navigation. */}
         <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between'} px-3 py-4 border-b border-border-subtle`}>
           {!collapsed && (
-            <div className="flex items-center gap-2">
+            <Link
+              to="/"
+              className="flex items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+              aria-label="TITAN beranda"
+            >
               <div className="w-7 h-7 rounded-md bg-accent-brand flex items-center justify-center text-white font-bold text-sm">T</div>
               <span className="font-bold text-sm tracking-tight text-text-primary">TITAN</span>
-            </div>
+            </Link>
           )}
           {collapsed && (
-            <div className="w-7 h-7 rounded-md bg-accent-brand flex items-center justify-center text-white font-bold text-sm">T</div>
+            <Link
+              to="/"
+              className="w-7 h-7 rounded-md bg-accent-brand flex items-center justify-center text-white font-bold text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+              aria-label="TITAN beranda"
+            >
+              T
+            </Link>
           )}
           <button
             onClick={() => setCollapsed((v) => !v)}

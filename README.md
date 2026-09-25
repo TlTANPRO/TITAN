@@ -1,6 +1,6 @@
 # TITAN — Social Media Marketing Intelligence
 
-A static React + Vite dashboard that surfaces 22 marketing analytics across 9 Instagram & TikTok accounts. Includes a zero-template AI chat (Claude 3 / Gemini 2.0 Flash) with 3-layer persistent memory and free web access. Deployed to GitHub Pages (or Cloudflare Workers); API keys held server-side by a Cloudflare Worker — no manual user input.
+A static React + Vite dashboard that surfaces marketing analytics across 9 Instagram & TikTok accounts. Includes an AI chat with contextual memory and a Cloudflare Worker proxy for provider keys. Deployed to GitHub Pages (or Cloudflare Workers); protected chat requires a runtime session token and never ships provider keys in the browser.
 
 **Live**: [tltanpro.github.io/TITAN](https://tltanpro.github.io/TITAN/) (GitHub Pages).
 
@@ -13,7 +13,7 @@ A static React + Vite dashboard that surfaces 22 marketing analytics across 9 In
 - **22 analytics**: top views/likes/comments, performance tiers, hashtag co-occurrence, hook classification, outlier detection, growth velocity, international benchmark, content pillars, cross-account comparison, dll
 - **Dashboard profesional bahasa Indonesia** dengan **15 section** per akun (Profil, Top 5 Post 3-axis, Distribusi Tingkatan, Tema & Kolaborasi, Performa Harian/Bulanan, Analisis Durasi, Ringkasan Tahunan, Insight & Rekomendasi, Benchmark Industri, Potensi Pertumbuhan, Grafik Pertumbuhan, dll)
 - **AI chat** dengan tiga memory layer (chat history, user profile, per-account context) dan live web access via `allorigins.win`
-- **PWA**: installable, works offline (shell)
+- **PWA metadata**: manifest is linked, but the current build intentionally has no service worker/offline shell
 - **Dual-mode LLM**: auto via Cloudflare Worker (recommended) atau direct (manual)
 
 ---
@@ -30,7 +30,7 @@ A static React + Vite dashboard that surfaces 22 marketing analytics across 9 In
 pnpm install
 pnpm dev               # http://localhost:5173/TITAN/
 ```
-`src/data/accounts-full.json` sudah di-generate dan di-bundle ke dalam build. Bila hilang, jalankan pipeline di bawah.
+`accounts-full.json` is the tracked data source and is loaded at runtime from the deployed site. Use the live data file or the pipeline below to inspect the current snapshot; do not assume the historical counts in older plans.
 
 ### Refresh data (re-scrape semua 9 akun)
 
@@ -130,13 +130,14 @@ git push -u origin main --force
 
 Cloudflare / GitHub Pages auto-redeploy dari branch `main`.
 
-**Setelah deploy, hard-refresh browser** (Ctrl+Shift+R) atau clear service worker cache (DevTools → Application → Service Workers → Unregister) — data bundle di-cache agresif, stale data akan muncul jika tidak.
+**Setelah deploy, hard-refresh browser** (Ctrl+Shift+R). The current build has no service worker; browser cache and GitHub Pages CDN caching can still require a hard refresh after generated assets change.
 
-### Konfigurasi LLM proxy (full-auto mode)
+### Konfigurasi LLM proxy
 
-Tanpa ini, app butuh user masukkan API key di Settings modal. Dengan ini, app 100% otomatis.
+Worker holds provider API keys server-side. Protected chat also needs a short-lived runtime session token. Do not put `TITAN_CLIENT_KEY` or any provider key in a `VITE_*` variable.
 
-Lihat [`cloudflare-worker/README.md`](./cloudflare-worker/README.md) untuk panduan deploy 5 menit. Lalu set di `.env`:
+Lihat [`cloudflare-worker/README.md`](./cloudflare-worker/README.md) untuk panduan deploy dan aturan auth.
+
 ```env
 VITE_LLM_PROXY_URL=https://titan-llm-proxy.YOUR-SUBDOMAIN.workers.dev
 ```
@@ -180,7 +181,7 @@ titan-app/
 ├── dist/                    # (gitignored) build output
 ├── .env                     # (gitignored) tokens + proxy URL
 ├── .env.example             # template
-├── vite.config.js           # base: /TITAN/, PWA, manual chunks
+├── vite.config.js           # base: /TITAN/, manual chunks, service worker disabled
 └── package.json
 ```
 
@@ -191,7 +192,7 @@ titan-app/
 - **Vite 5** + **React 18** + **TypeScript** + **Tailwind 3**
 - **React Router 6** (`/TITAN/` basename)
 - **Recharts** untuk charts, **lucide-react** untuk icons
-- **vite-plugin-pwa** untuk installable PWA + service worker
+- **Manifest metadata** is linked; service worker is currently disabled to avoid stale asset caching
 - **ENSEMBLEDATA API** untuk Instagram & TikTok scraping
 - **OpenRouter** (Claude 3 Haiku) primary + **Google AI Studio** (Gemini 2.0 Flash) fallback
 - **allorigins.win** untuk free CORS-proxy web access

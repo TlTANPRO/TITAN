@@ -15,11 +15,13 @@
 // Pakai di non-React:
 //   import { getAllAccounts, getAccountBySlug } from '../lib/dataStore.js'
 import { normalizeAccount } from './normalize.js';
+import { loadAccountsFromSplit } from './dataManifest.js';
 
 // ===== Module-level state =====
 let _accounts = null;          // Normalized accounts (array)
 let _bySlug = null;            // Map<slug, account>
 let _loadingPromise = null;    // Single in-flight import
+let _degraded = false;         // V39: loaded from split payloads, not the monolith
 const _subscribers = new Set(); // React state updaters
 
 // Stats per account (dari audit-multi-account.mjs, kalau ada)
@@ -27,32 +29,61 @@ let _stats = {};
 
 // ===== Load + normalize =====
 // V36: fetch static JSON at runtime instead of bundling 7.7MB into the JS
-// chunk. public/data/accounts-full.json is copied by scripts/copy-data-to-public.mjs
-// (prebuild). Falls back to the bundled import if fetch fails (offline PWA).
-// V36.1: deploy flattens dist/data → root, so the runtime URL is /TITAN/accounts-full.json
-const DATA_URL = `${import.meta.env.BASE_URL}accounts-full.json`;
+// chunk. local previews expose the prebuild copy under /data/, while the
+// deployed root is flattened to /accounts-full.json. Try both paths.
+const DATA_URLS = [
+  `${import.meta.env.BASE_URL}data/accounts-full.json`,
+  `${import.meta.env.BASE_URL}accounts-full.json`
+];
 
 async function fetchStaticJson() {
-  const res = await fetch(DATA_URL, { cache: 'no-cache' });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return await res.json();
+  let lastError = null;
+
+  for (const url of DATA_URLS) {
+    for (const cache of ['no-cache', 'default']) {
+      try {
+        const res = await fetch(url, { cache });
+        if (!res.ok) {
+          lastError = new Error(`HTTP ${res.status} for ${url}`);
+          continue;
+        }
+        return await res.json();
+      } catch (error) {
+        lastError = error;
+      }
+    }
+  }
+
+  throw lastError ?? new Error('Data TITAN tidak dapat dimuat');
 }
 
 async function loadFromJson() {
   // V36: static fetch only — the 7.7MB bundled import is GONE from the JS
   // chunk (public/data/accounts-full.json is copied by prebuild script).
-  // Two attempts: no-cache (fresh after deploy), then default cache.
-  let raw;
-  try {
-    raw = await fetchStaticJson();
-  } catch {
-    raw = await fetch(DATA_URL).then((r) => {
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      return r.json();
-    });
+  const raw = await fetchStaticJson();
+  // Normalize SEMUA akun lewat schema adapter yang sama. Accept both the
+  // deployed array shape and a future `{ accounts: [...] }` manifest shape.
+  const records = Array.isArray(raw) ? raw : raw?.accounts ?? [];
+  return adoptRecords(records);
+}
+
+// V39 degraded mode: the 12MB monolith is the fast path, but if it is missing
+// or unparseable we rebuild the same records from the per-account split
+// payloads emitted by scripts/build-data-manifest.mjs. Slower first paint,
+// but the dashboard still works instead of rendering empty panels.
+async function loadFromSplit() {
+  const records = await loadAccountsFromSplit();
+  if (records.length === 0) {
+    throw new Error('Data TITAN tidak dapat dimuat dari manifest maupun payload per-akun');
   }
-  // Normalize SEMUA akun lewat schema adapter yang sama
-  const normalized = (raw ?? []).map((a) => normalizeAccount(a, a.platform)).filter(Boolean);
+  console.warn(
+    `[dataStore] falling back to per-account split payloads (${records.length} akun)`
+  );
+  return adoptRecords(records);
+}
+
+function adoptRecords(records) {
+  const normalized = records.map((a) => normalizeAccount(a, a.platform)).filter(Boolean);
   // Defensive in-file dedup (post id uniqueness) — audit sudah handle tapi double-check
   for (const acc of normalized) {
     const seen = new Set();
@@ -65,6 +96,7 @@ async function loadFromJson() {
   }
   _accounts = normalized;
   _bySlug = new Map(normalized.map((a) => [a.slug, a]));
+  _degraded = false;
   // Notify all subscribers
   for (const cb of _subscribers) {
     try { cb(_accounts); } catch (e) { /* ignore */ }
@@ -75,14 +107,25 @@ async function loadFromJson() {
 function ensureLoaded() {
   if (_accounts) return Promise.resolve(_accounts);
   if (_loadingPromise) return _loadingPromise;
-  _loadingPromise = loadFromJson().catch((err) => {
-    console.error('[dataStore] Failed to load accounts:', err);
-    _loadingPromise = null;
-    _accounts = [];
-    _bySlug = new Map();
-    return _accounts;
-  });
+  _loadingPromise = loadFromJson()
+    .catch((err) => {
+      console.warn('[dataStore] full dataset unavailable:', err?.message ?? err);
+      return loadFromSplit();
+    })
+    .catch((err) => {
+      console.error('[dataStore] Failed to load accounts:', err);
+      _loadingPromise = null;
+      _accounts = [];
+      _bySlug = new Map();
+      _degraded = false;
+      return _accounts;
+    });
   return _loadingPromise;
+}
+
+/** V39: true when the UI is running on per-account split payloads. */
+export function isDegradedMode() {
+  return _degraded;
 }
 
 // ===== Public sync API (returns cached) =====
@@ -148,7 +191,8 @@ export async function reload() {
   return ensureLoaded();
 }
 
-// Expose untuk console debugging / re-deploy script
-if (typeof window !== 'undefined') {
-  window.__dataStore = { reload, getAllAccounts, getAccountBySlug };
+// Expose for local development diagnostics only. Production data should not be
+// globally enumerable from the browser console.
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+  window.__dataStore = { reload, getAllAccounts, getAccountBySlug, isDegradedMode };
 }

@@ -19,12 +19,97 @@
 //   Headers: X-Titan-Provider (auto|google|openrouter|cohere|jina), X-Titan-Action (chat|search|read|social)
 //   Body:    { model?, messages: [...], temperature?, max_tokens?, stream: true }
 
+const DEFAULT_ALLOWED_ORIGIN = 'https://tltanpro.github.io';
+
 const CORS = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': DEFAULT_ALLOWED_ORIGIN,
   'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Titan-Provider, X-Titan-Action, X-Titan-Key',
+  'Access-Control-Allow-Headers': 'Content-Type, X-Titan-Provider, X-Titan-Action, X-Titan-Key, X-Titan-Bootstrap, X-Titan-Session',
   'Access-Control-Max-Age': '86400'
 };
+
+// ============ V39: runtime session tokens ============
+// Problem: the browser cannot hold a long-lived shared secret. Shipping
+// TITAN_CLIENT_KEY through VITE_* would publish it in the bundle.
+//
+// Contract (V39):
+//   POST /session          body/header `bootstrap` == TITAN_CLIENT_KEY
+//                          → issues a short-lived HMAC token (default 12h)
+//   GET  /session/verify   header `X-Titan-Session`
+//                          → { valid, expiresAt }
+//   POST /session/revoke   → clears the caller's copy (client-side storage)
+//
+// Protected quota-spending endpoints accept EITHER the bootstrap key
+// (X-Titan-Key, keeps scripts working) OR a valid session token
+// (X-Titan-Session, used by the browser). Tokens are stateless: expiry and
+// signature are both re-derived from TITAN_CLIENT_KEY on every request.
+const SESSION_TTL_SECONDS = 43_200; // 12h — covers a working day, not a month
+const SESSION_ISSUE_LIMIT = { windowMs: 3_600_000, max: 10 };
+const sessionIssueBuckets = new Map(); // ip -> { count, resetAt }
+
+function base64UrlEncode(bytes) {
+  let binary = '';
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+async function hmacKey(secret) {
+  return crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign', 'verify']
+  );
+}
+
+async function signSession(expiresAt, secret) {
+  const key = await hmacKey(secret);
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(String(expiresAt)));
+  return base64UrlEncode(new Uint8Array(sig));
+}
+
+async function issueSessionToken(secret, ttlSeconds = SESSION_TTL_SECONDS) {
+  const expiresAt = Math.floor(Date.now() / 1000) + ttlSeconds;
+  const signature = await signSession(expiresAt, secret);
+  return { token: `${expiresAt}.${signature}`, expiresAt, ttlSeconds };
+}
+
+// Returns { ok, expiresAt } — signature AND expiry must both hold.
+async function verifySessionToken(token, secret) {
+  if (typeof token !== 'string' || !token.includes('.')) return { ok: false };
+  const [expRaw, signature] = token.split('.', 2);
+  const expiresAt = Number(expRaw);
+  if (!Number.isFinite(expiresAt) || !signature) return { ok: false };
+  if (expiresAt * 1000 <= Date.now()) return { ok: false, expired: true, expiresAt };
+  const expected = await signSession(expiresAt, secret);
+  // Constant-time-ish compare: both sides are fixed-length base64url digests.
+  if (expected.length !== signature.length) return { ok: false, expiresAt };
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ signature.charCodeAt(i);
+  return diff === 0 ? { ok: true, expiresAt } : { ok: false, expiresAt };
+}
+
+function timingSafeEqual(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string' || !a || !b) return false;
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+function checkSessionIssueRate(request) {
+  const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+  const now = Date.now();
+  let bucket = sessionIssueBuckets.get(ip);
+  if (!bucket || now > bucket.resetAt) {
+    bucket = { count: 0, resetAt: now + SESSION_ISSUE_LIMIT.windowMs };
+    sessionIssueBuckets.set(ip, bucket);
+    if (sessionIssueBuckets.size > 5_000) sessionIssueBuckets.clear();
+  }
+  bucket.count++;
+  return bucket.count <= SESSION_ISSUE_LIMIT.max;
+}
 
 // ============ Round-robin key state ============
 // Cloudflare Workers are single-threaded per isolate, and we hold no persistence.
@@ -497,6 +582,42 @@ async function handleRefreshStatus(request) {
 
 // ============ /account-meta (V11) — list accounts for topbar popover ============
 // Returns a minimal list of accounts from accounts-full.json (cached at edge).
+function getAccountRecords(payload) {
+  return Array.isArray(payload) ? payload : payload?.accounts ?? [];
+}
+
+function getProfile(record) {
+  return record?.account ?? record ?? {};
+}
+
+function toTimestampMs(value) {
+  if (value == null || value === '') return 0;
+  const numeric = Number(value);
+  if (Number.isFinite(numeric) && String(value).trim() !== '') {
+    return numeric > 1e12 ? numeric : numeric * 1000;
+  }
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function latestRecordTimestamp(records, field) {
+  let latest = 0;
+  for (const record of records) {
+    const profile = getProfile(record);
+    const value = field === 'scrapedAt' ? record?.[field] ?? profile?.[field] : record?.posts;
+    if (field !== 'scrapedAt') {
+      for (const post of Array.isArray(value) ? value : []) {
+        const timestamp = toTimestampMs(post?.createTime ?? post?.timestamp);
+        if (timestamp > latest) latest = timestamp;
+      }
+    } else {
+      const timestamp = toTimestampMs(value);
+      if (timestamp > latest) latest = timestamp;
+    }
+  }
+  return latest || null;
+}
+
 async function handleAccountMeta(request, env) {
   const origin = env.PUBLIC_DATA_URL || 'https://tltanpro.github.io/TITAN';
   try {
@@ -505,16 +626,25 @@ async function handleAccountMeta(request, env) {
     });
     if (!res.ok) return json({ error: `Upstream ${res.status}` }, 502);
     const data = await res.json();
-    const accounts = Array.isArray(data) ? data : data.accounts ?? [];
-    const slim = accounts.map((a) => ({
-      slug: a.slug,
-      username: a.username,
-      platform: a.platform,
-      followerCount: a.followerCount,
-      avatarUrl: a.avatarUrl,
-      postCount: a.postCount ?? a.posts?.length ?? 0
-    }));
-    return json({ accounts: slim, count: slim.length, generatedAt: new Date().toISOString() });
+    const accounts = getAccountRecords(data);
+    const slim = accounts.map((record) => {
+      const profile = getProfile(record);
+      return {
+        slug: profile.slug ?? record?.slug,
+        username: profile.username ?? record?.username,
+        platform: record?.platform ?? profile.platform,
+        followerCount: profile.followerCount ?? record?.followerCount,
+        avatarUrl: profile.localAvatar ?? profile.avatarUrl ?? record?.avatarUrl,
+        postCount: record?.posts?.length ?? profile.postCount ?? record?.postCount ?? 0,
+        latestPostAt: latestRecordTimestamp([record], 'latestPostAt')
+      };
+    });
+    return json({
+      accounts: slim,
+      count: slim.length,
+      generatedAt: latestRecordTimestamp(accounts, 'scrapedAt'),
+      latestPostAt: latestRecordTimestamp(accounts, 'latestPostAt')
+    });
   } catch (e) {
     return json({ error: e.message }, 502);
   }
@@ -533,14 +663,17 @@ async function handleSoftRefresh(request, env) {
     });
     if (!res.ok) return json({ error: `Upstream ${res.status}` }, 502);
     const data = await res.json();
-    const accounts = Array.isArray(data) ? data : data.accounts ?? [];
-    const generatedAt = data.generatedAt ?? data.metadata?.generatedAt ?? null;
+    const accounts = getAccountRecords(data);
+    const generatedAt = data.generatedAt ?? data.metadata?.generatedAt ?? latestRecordTimestamp(accounts, 'scrapedAt');
+    const latestPostAt = latestRecordTimestamp(accounts, 'latestPostAt');
     const lastModified = res.headers.get('Last-Modified');
     return json({
       ok: true,
       accountCount: accounts.length,
-      totalPosts: accounts.reduce((acc, a) => acc + (a.posts?.length ?? a.postCount ?? 0), 0),
+      totalPosts: accounts.reduce((acc, a) => acc + (a.posts?.length ?? getProfile(a).postCount ?? 0), 0),
       generatedAt,
+      lastScrapeAt: generatedAt,
+      latestPostAt,
       lastModified,
       source: origin,
       // Hint to client: use this as the cache-bust target
@@ -701,33 +834,96 @@ async function streamWithProvider(env, providerName, body) {
 }
 
 // ============ Main handler ============
-// ============ V34: CORS origin lock ============
-// Only the live site may call this worker. ALLOWED_ORIGIN is set in wrangler.toml.
+// ============ V38: CORS origin lock ============
+// Only the live site may call this worker by default. Local development must
+// explicitly set ALLOWED_ORIGIN instead of falling back to a wildcard.
 function corsHeaders(env, request) {
   const origin = request?.headers?.get('Origin') ?? '';
-  const allowed = env?.ALLOWED_ORIGIN ?? '*';
+  const allowed = env?.ALLOWED_ORIGIN ?? DEFAULT_ALLOWED_ORIGIN;
   const headers = { ...CORS };
-  if (allowed && allowed !== '*') {
-    headers['Access-Control-Allow-Origin'] = origin === allowed ? origin : allowed;
-    headers['Vary'] = 'Origin';
-  }
+  headers['Access-Control-Allow-Origin'] = origin === allowed ? origin : allowed;
+  headers['Vary'] = 'Origin';
   return headers;
 }
 
 function json401(env, request, msg) {
-  return json({ error: msg ?? 'Unauthorized: missing or invalid X-Titan-Key' }, 401, corsHeaders(env, request));
+  return json({ error: msg ?? 'Unauthorized: missing or invalid X-Titan-Key or X-Titan-Session' }, 401, corsHeaders(env, request));
 }
 
-// ============ V34: shared-secret auth gate ============
-// Protects LLM chat / Jina tools / social fetch — anything that spends API quota.
-// Public read endpoints (avatar, refresh-status, account-meta) stay open.
-// Set secret via: npx wrangler secret put TITAN_CLIENT_KEY
-// Client sends header: X-Titan-Key: <same value>
-function checkAuth(request, env) {
+// ============ V38: shared-secret auth gate ============
+// Protects LLM chat / Jina tools / social fetch. Production fails closed when
+// the secret is not configured; local development must provide an explicit key.
+//
+// V39: accepts either the raw bootstrap key (X-Titan-Key) or a short-lived
+// session token issued by POST /session (X-Titan-Session). checkAuth is now
+// async because session verification is an HMAC operation.
+async function checkAuth(request, env) {
   const expected = env?.TITAN_CLIENT_KEY ?? '';
-  if (!expected) return true; // not configured = auth disabled (dev mode)
-  const got = request.headers.get('X-Titan-Key') ?? '';
-  return got.length > 0 && got === expected;
+  if (!expected) return false;
+
+  const bootstrap = request.headers.get('X-Titan-Key') ?? '';
+  if (timingSafeEqual(bootstrap, expected)) return true;
+
+  const session = request.headers.get('X-Titan-Session') ?? '';
+  if (!session) return false;
+  const verdict = await verifySessionToken(session, expected);
+  return verdict.ok;
+}
+
+// ============ V39: session endpoints ============
+async function handleIssueSession(request, env) {
+  if (!env?.TITAN_CLIENT_KEY) {
+    return json(
+      { error: 'Session disabled: TITAN_CLIENT_KEY is not configured on the Worker' },
+      503,
+      corsHeaders(env, request)
+    );
+  }
+  if (!checkSessionIssueRate(request)) {
+    return json({ error: 'Too many session requests, try again later' }, 429, corsHeaders(env, request));
+  }
+
+  let bootstrap = request.headers.get('X-Titan-Bootstrap') ?? '';
+  if (!bootstrap) {
+    try {
+      const body = await request.json();
+      bootstrap = typeof body?.bootstrap === 'string' ? body.bootstrap : '';
+    } catch {
+      bootstrap = '';
+    }
+  }
+  if (!timingSafeEqual(bootstrap, env.TITAN_CLIENT_KEY)) {
+    return json({ error: 'Invalid bootstrap credential' }, 401, corsHeaders(env, request));
+  }
+
+  const session = await issueSessionToken(env.TITAN_CLIENT_KEY);
+  return json(
+    {
+      token: session.token,
+      expiresAt: session.expiresAt * 1000,
+      ttlSeconds: session.ttlSeconds,
+      storage: 'sessionStorage:titan.sessionToken'
+    },
+    200,
+    corsHeaders(env, request)
+  );
+}
+
+async function handleVerifySession(request, env) {
+  if (!env?.TITAN_CLIENT_KEY) {
+    return json({ valid: false, reason: 'session-disabled' }, 503, corsHeaders(env, request));
+  }
+  const token = request.headers.get('X-Titan-Session') ?? new URL(request.url).searchParams.get('token') ?? '';
+  if (!token) return json({ valid: false, reason: 'missing-token' }, 401, corsHeaders(env, request));
+  const verdict = await verifySessionToken(token, env.TITAN_CLIENT_KEY);
+  if (verdict.ok) {
+    return json({ valid: true, expiresAt: verdict.expiresAt * 1000 }, 200, corsHeaders(env, request));
+  }
+  return json(
+    { valid: false, reason: verdict.expired ? 'expired' : 'invalid', expiresAt: verdict.expiresAt ? verdict.expiresAt * 1000 : null },
+    401,
+    corsHeaders(env, request)
+  );
 }
 
 // ============ V34: per-IP rate limit (in-memory, per-isolate best effort) ============
@@ -778,10 +974,20 @@ export default {
     if (request.method === 'GET' && path === '/account-meta') {
       return handleAccountMeta(request, env);
     }
+    // V39: runtime session issue + verify. These live ABOVE the auth gate on
+    // purpose: /session is the handshake that turns the bootstrap secret into
+    // a short-lived browser-safe token. Rate-limited harder than chat because
+    // each call is a credential comparison.
+    if (request.method === 'POST' && path === '/session') {
+      return handleIssueSession(request, env);
+    }
+    if (request.method === 'GET' && path === '/session/verify') {
+      return handleVerifySession(request, env);
+    }
 
     // ============ V34: auth + rate limit for quota-spending endpoints ============
     // Everything below (LLM chat, Jina tools, social OG) burns API keys.
-    if (!checkAuth(request, env)) {
+    if (!await checkAuth(request, env)) {
       return json401(env, request);
     }
     if (!checkRateLimit(request)) {
@@ -849,7 +1055,9 @@ export default {
           headers: {
             'Content-Type': 'text/event-stream',
             'X-Titan-Provider': pName,
-            'X-Titan-Key': `${r.keyUsed + 1}/${r.totalKeys}`,
+            // V39: renamed away from X-Titan-Key so the response header cannot be
+            // mistaken for (or collide with) the auth credential header.
+            'X-Titan-Provider-Key': `${r.keyUsed + 1}/${r.totalKeys}`,
             ...CORS
           }
         });
