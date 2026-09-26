@@ -35,6 +35,9 @@ const OUT = arg('out', path.join(process.cwd(), '.audit'));
 const STRICT = has('strict');
 const SKIP_IF_UNAVAILABLE = has('skip-unavailable');
 const ONLY = arg('only', null);
+// Dark is the app's default presentation, so it is audited first. A light-only
+// audit leaves the theme most users actually see untested.
+const THEMES = arg('themes', 'dark,light').split(',').map((t) => t.trim()).filter(Boolean);
 
 const CHROME_CANDIDATES = [
   process.env.CHROME_PATH,
@@ -210,41 +213,44 @@ async function main() {
     args: ['--disable-gpu', '--hide-scrollbars', '--no-sandbox']
   });
 
-  // Seed the theme preference ONCE on the origin, before any route is opened.
-  // See the "two measurement bugs" note at the top of this file.
-  const seed = await browser.newPage();
-  await seed.goto(`${BASE}/TITAN/`, { waitUntil: 'domcontentloaded', timeout: 45000 });
-  await seed.evaluate(() => localStorage.setItem('titan.theme.v1', 'light'));
-  await seed.close();
-
   const routes = ONLY ? ROUTES.filter((r) => r.name === ONLY) : ROUTES;
   const results = [];
   let blocking = 0;
 
-  for (const route of routes) {
-    const page = await browser.newPage();
-    const errors = [];
-    const http4xx = [];
-    page.on('pageerror', (e) => errors.push(e.message.slice(0, 140)));
-    page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text().slice(0, 140)); });
-    page.on('response', (r) => { if (r.status() >= 400) http4xx.push(`${r.status()} ${r.url().replace(BASE, '')}`); });
+  // Both themes, always. Dark is this app's default, so a light-only audit
+  // silently leaves the primary presentation untested.
+  for (const theme of THEMES) {
+    // Seed the theme on the origin before any route opens, and once per theme.
+    // See the "two measurement bugs" note at the top of this file.
+    const seed = await browser.newPage();
+    await seed.goto(`${BASE}/TITAN/`, { waitUntil: 'domcontentloaded', timeout: 45000 });
+    await seed.evaluate((t) => localStorage.setItem('titan.theme.v1', t), theme);
+    await seed.close();
 
-    const viewports = [
-      { w: 1440, h: 900, tag: 'desktop' },
-      { w: 375, h: 812, tag: 'mobile' }
-    ];
-    const collected = { issues: [], info: null };
+    for (const route of routes) {
+      const page = await browser.newPage();
+      const errors = [];
+      const http4xx = [];
+      page.on('pageerror', (e) => errors.push(e.message.slice(0, 140)));
+      page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text().slice(0, 140)); });
+      page.on('response', (r) => { if (r.status() >= 400) http4xx.push(`${r.status()} ${r.url().replace(BASE, '')}`); });
 
-    for (const vp of viewports) {
-      // Exactly one navigation per viewport. Never navigate twice to the same URL.
-      await page.setViewport({ width: vp.w, height: vp.h });
-      await page.goto(`${BASE}${route.path}`, { waitUntil: 'networkidle2', timeout: 60000 });
-      await new Promise((r) => setTimeout(r, 2500));
-      const res = await page.evaluate(AUDIT);
-      for (const i of res.issues) collected.issues.push({ ...i, where: vp.tag });
-      if (!collected.info) collected.info = res.info;
-      await page.screenshot({ path: path.join(OUT, `${route.name}-${vp.tag}.png`) });
-    }
+      const viewports = [
+        { w: 1440, h: 900, tag: 'desktop' },
+        { w: 375, h: 812, tag: 'mobile' }
+      ];
+      const collected = { issues: [], info: null };
+
+      for (const vp of viewports) {
+        // Exactly one navigation per viewport. Never navigate twice to the same URL.
+        await page.setViewport({ width: vp.w, height: vp.h });
+        await page.goto(`${BASE}${route.path}`, { waitUntil: 'networkidle2', timeout: 60000 });
+        await new Promise((r) => setTimeout(r, 2500));
+        const res = await page.evaluate(AUDIT);
+        for (const i of res.issues) collected.issues.push({ ...i, where: `${theme}/${vp.tag}` });
+        if (!collected.info) collected.info = res.info;
+        await page.screenshot({ path: path.join(OUT, `${route.name}-${theme}-${vp.tag}.png`) });
+      }
 
     const p0 = collected.issues.filter((i) => i.level === 'P0').length;
     const p1 = collected.issues.filter((i) => i.level === 'P1').length;
@@ -256,27 +262,36 @@ async function main() {
       (e) => !/status of 404/.test(e)
     );
 
-    results.push({ route: route.path, name: route.name, p0, p1, p2, issues: collected.issues, info: collected.info, errors: realErrors, http4xx: [...new Set(http4xx)] });
+    results.push({
+      route: route.path, name: route.name, theme,
+      p0, p1, p2,
+      issues: collected.issues, info: collected.info,
+      errors: realErrors, http4xx: [...new Set(http4xx)]
+    });
     await page.close();
+    }
   }
 
   await browser.close();
   await fs.writeFile(path.join(OUT, 'report.json'), JSON.stringify(results, null, 2));
 
+  const total = (lvl) => results.reduce((n, r) => n + r[lvl], 0);
   console.log('\n  TITAN UI audit');
+  console.log(`  ${THEMES.length} themes x ${routes.length} routes x 2 viewports`);
   console.log('  ' + '-'.repeat(64));
   for (const r of results) {
     const flags = [];
     if (r.p0) flags.push(`P0:${r.p0}`);
     if (r.p1) flags.push(`P1:${r.p1}`);
     if (r.p2) flags.push(`P2:${r.p2}`);
-    console.log(`  ${r.name.padEnd(16)} h1="${(r.info?.h1?.[0] || '-').slice(0, 30)}" main=${r.info?.main ?? 0}  ${flags.join(' ') || 'clean'}`);
+    console.log(`  ${(r.theme + '/' + r.name).padEnd(24)} h1="${(r.info?.h1?.[0] || '-').slice(0, 26)}" main=${r.info?.main ?? 0}  ${flags.join(' ') || 'clean'}`);
     for (const i of r.issues.filter((x) => x.level !== 'P2').slice(0, 3)) {
       console.log(`      [${i.level}/${i.where}] ${i.msg}`);
     }
     if (r.errors.length) console.log(`      [error] ${r.errors.slice(0, 2).join(' | ')}`);
   }
   console.log('  ' + '-'.repeat(64));
+  console.log(`  P0 ${total('p0')}   P1 ${total('p1')}   P2 ${total('p2')}`);
   console.log(`  screenshots + report: ${OUT}`);
 
   if (blocking > 0) {
