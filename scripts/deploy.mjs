@@ -39,6 +39,22 @@ const ROOT = path.join(__dirname, '..');
 const args = process.argv.slice(2);
 const SKIP_PUSH = args.includes('--skip-push');
 const DRY_RUN = args.includes('--dry-run');
+// Deploy the code with the data already in the repo: no generate-data.mjs, no
+// scraped/ requirement. The pre-flight still validates what we are shipping.
+const SKIP_GENERATE = args.includes('--skip-generate') || DRY_RUN;
+if (args.includes('--help') || args.includes('-h')) {
+  console.log(`
+Usage: node scripts/deploy.mjs [options]
+
+  --skip-generate   Deploy without re-running generate-data.mjs. Uses the
+                    accounts-full.json already in the repo. Required on a
+                    machine with no scripts/scraped/ (e.g. a fresh clone).
+  --dry-run         Build and copy only. Implies --skip-generate. No git
+                    operations, no push.
+  --skip-push       Do everything except the git push.
+`);
+  process.exit(0);
+}
 
 function run(cmd, opts = {}) {
   console.log(`\n$ ${cmd}`);
@@ -89,35 +105,83 @@ async function main() {
   //   - source assets/avatars/ (real photos, downloaded by scrape-avatars.mjs)
   //   - deployed chunk hashes (AccountPage-XXX.js, index-XXX.js, etc.)
   // We only want to delete the chunk hashes, not the source avatars.
-  console.log('\n[0/6] Clean old chunk hashes in root assets/ (preserve assets/avatars/)...');
+  //
+  // This cleanup is DEFERRED until after the build succeeds. It used to run
+  // first, which meant a failed build left the repo with zero JS assets: the
+  // tracked deletions were then deployable, and committing them would 404 every
+  // script on the live site. Step 3 performs the cleanup once dist/ is known good.
   const assetsDir = path.join(ROOT, 'assets');
-  if (await fs.stat(assetsDir).then(() => true).catch(() => false)) {
+  const cleanOldChunkHashes = async () => {
+    if (!(await fs.stat(assetsDir).then(() => true).catch(() => false))) return;
     const assetsEntries = await fs.readdir(assetsDir, { withFileTypes: true });
     for (const entry of assetsEntries) {
       if (entry.isDirectory() && entry.name === 'avatars') {
         // KEEP avatars/ — these are source photos
         continue;
       }
-      // Delete old chunk hashes, css, etc.
       await fs.rm(path.join(assetsDir, entry.name), { recursive: true, force: true });
       console.log(`  rm assets/${entry.name}`);
     }
-  }
+  };
 
   // Step 1: ensure data is fresh (regenerate from scraped JSONs)
-  console.log('\n[1/6] Regenerate accounts-full.json from scraped data...');
-  run('node scripts/generate-data.mjs', { stdio: 'inherit' });
+  //
+  // --skip-generate deploys whatever SSOT is already in the repo, without
+  // re-running the scraper. That is the right call when the code changed but the
+  // data did not, and the only way to deploy at all on a machine that has no
+  // scripts/scraped/ (a fresh clone). The pre-flight below still validates the
+  // existing data, so "skip the scraper" never means "skip the safety check".
+  if (SKIP_GENERATE) {
+    console.log('\n[1/6] --skip-generate: using the existing accounts-full.json, no re-scrape...');
+  } else {
+    console.log('\n[1/6] Regenerate accounts-full.json from scraped data...');
+    run('node scripts/generate-data.mjs', { stdio: 'inherit' });
+  }
 
   // Step 1.5: pre-flight sanity check (fail fast BEFORE build/push)
   // Defense against the validate-merge.mjs line 120 bug class (0-post deploy).
   console.log('\n[1.5/6] Pre-flight sanity check...');
   const preFlightErrors = [];
+
+  // The scraped-file count is only meaningful when we actually have a scrape to
+  // validate. Under --skip-generate there is no scripts/scraped/ at all, and the
+  // old unconditional readdir threw ENOENT and aborted every deploy.
   const scrapedDir = path.join(ROOT, 'scripts', 'scraped');
-  const scrapedFiles = (await fs.readdir(scrapedDir)).filter((f) => f.endsWith('.json') && !f.includes('.backup-') && !f.startsWith('comments-'));
-  if (scrapedFiles.length !== 9) {
-    preFlightErrors.push(`Expected 9 scraped files, got ${scrapedFiles.length}`);
+  if (!SKIP_GENERATE) {
+    let scrapedFiles = [];
+    try {
+      scrapedFiles = (await fs.readdir(scrapedDir))
+        .filter((f) => f.endsWith('.json') && !f.includes('.backup-') && !f.startsWith('comments-'));
+    } catch {
+      scrapedFiles = [];
+    }
+    if (scrapedFiles.length !== 9) {
+      preFlightErrors.push(`Expected 9 scraped files, got ${scrapedFiles.length}`);
+    }
   }
-  const accFull = JSON.parse(await fs.readFile(path.join(ROOT, 'src', 'data', 'accounts-full.json'), 'utf-8'));
+
+  // V36 moved the SSOT to the repo root; src/data/accounts-full.json no longer
+  // exists, so reading only the old path aborted the deploy. Try the root first,
+  // then fall back so older checkouts still work.
+  const ssotCandidates = [
+    path.join(ROOT, 'accounts-full.json'),
+    path.join(ROOT, 'src', 'data', 'accounts-full.json')
+  ];
+  let accFull = null;
+  let ssotPath = null;
+  for (const candidate of ssotCandidates) {
+    try {
+      accFull = JSON.parse(await fs.readFile(candidate, 'utf-8'));
+      ssotPath = candidate;
+      break;
+    } catch { /* try the next one */ }
+  }
+  if (!accFull) {
+    console.error('\n❌ [deploy] Pre-flight FAILED:');
+    console.error(`   - accounts-full.json not found or unreadable in any of: ${ssotCandidates.join(', ')}`);
+    process.exit(1);
+  }
+  console.log(`   SSOT: ${path.relative(ROOT, ssotPath)}`);
   if (accFull.length !== 9) {
     preFlightErrors.push(`Expected 9 accounts in accounts-full.json, got ${accFull.length}`);
   }
@@ -197,10 +261,15 @@ async function main() {
   }
 
   // Step 3: copy dist/* → root
+  // The old-chunk cleanup lives here now, after the build succeeded, so a failed
+  // build can never leave the repo without its assets.
+  console.log('\n[0/6] Clean old chunk hashes in root assets/ (preserve assets/avatars/)...');
+  await cleanOldChunkHashes();
+
   console.log('\n[3/6] Copy dist/* → root...');
-  const dist = path.join(ROOT, 'dist');
-  const distEntries = await fs.readdir(dist, { withFileTypes: true });
-  for (const entry of distEntries) {
+    const dist = path.join(ROOT, 'dist');
+    const distEntries = await fs.readdir(dist, { withFileTypes: true });
+    for (const entry of distEntries) {
     if (entry.name === 'data') {
       // V39: dist/data/ holds accounts-full.json (flat) plus the per-account
       // split payloads under data/accounts/. Flat files land at the repo root
@@ -233,7 +302,13 @@ async function main() {
   // Belt-and-suspenders: bersihkan backup files kalau ada di scraped/
   // (walau validate-merge/generate-data sudah punya pre-flight, deploy harus
   // tetap aman kalau user jalankan ad-hoc).
-  const backupFiles = (await fs.readdir(scrapedDir)).filter((f) => f.includes('.backup-') && f.endsWith('.json'));
+  // Guarded: on a machine with no scripts/scraped/ (fresh clone, or any
+  // --skip-generate deploy) this readdir threw ENOENT and aborted the deploy
+  // after the copy had already happened, leaving a half-finished state.
+  let backupFiles = [];
+  try {
+    backupFiles = (await fs.readdir(scrapedDir)).filter((f) => f.includes('.backup-') && f.endsWith('.json'));
+  } catch { /* no scraped/ dir — nothing to clean */ }
   if (backupFiles.length > 0) {
     console.warn(`[deploy] Cleaning ${backupFiles.length} backup file(s) from scraped/`);
     for (const f of backupFiles) await fs.rm(path.join(scrapedDir, f));
