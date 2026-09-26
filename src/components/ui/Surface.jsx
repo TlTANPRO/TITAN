@@ -2,10 +2,10 @@
 import { forwardRef } from 'react';
 
 const VARIANTS = {
-  default: 'bg-bg-surface border border-border-subtle',
-  raised: 'bg-bg-surface-raised border border-border-subtle shadow-sm',
+  default: 'bg-bg-secondary border border-border-subtle',
+  raised: 'bg-bg-tertiary border border-border-subtle shadow-sm',
   inset: 'bg-bg-tertiary/40 border border-border-subtle',
-  overlay: 'bg-bg-surface-overlay border border-border-default shadow-md'
+  overlay: 'bg-bg-elevated border border-border-default shadow-md'
 };
 
 export const Surface = forwardRef(function Surface(

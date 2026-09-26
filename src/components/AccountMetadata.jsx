@@ -19,11 +19,17 @@ const FIELDS = [
 export default function AccountMetadata({ account, aggregates }) {
   const av = account?.availability ?? {};
   return (
-    <section aria-label="Akun & Metadata" className="space-y-3">
+    <section aria-labelledby="account-metadata-heading" className="space-y-3">
       <div className="flex items-baseline justify-between">
-        <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">
+        {/* h2, not h3: this block sits directly under the ProfileHeader h1 on
+            the account page, and h1 -> h3 with no h2 between is a heading-level
+            jump that screen readers announce as a missing section. */}
+        <h2
+          id="account-metadata-heading"
+          className="text-sm font-semibold text-text-secondary uppercase tracking-wider"
+        >
           Akun &amp; Metadata
-        </h3>
+        </h2>
         <span className="text-[10px] text-text-muted">Cakupan per metrik dihitung dari {account?.posts?.length ?? 0} post</span>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">

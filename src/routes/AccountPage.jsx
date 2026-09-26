@@ -123,7 +123,9 @@ export default function AccountPage() {
         <span className="text-text-primary font-semibold truncate">@{account.username}</span>
       </nav>
 
-      <h1 className="sr-only">@{account.username} — Detail Akun</h1>
+      {/* No sr-only h1 here: ProfileHeader already renders the visible
+          "@username" h1 for this route. Keeping both produced two h1 landmarks
+          on the page, which is an accessibility failure. */}
 
       <Tabs value={activeTab} onChange={handleTabChange} items={tabItems} panelIdPrefix="tabpanel" />
 

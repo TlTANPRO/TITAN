@@ -59,10 +59,32 @@ function toMs(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function slugify(record, index) {
+/**
+ * The slug MUST match what the app resolves, or every account link built from
+ * the manifest 404s into "Akun tidak ditemukan".
+ *
+ * normalizeAccount() (src/lib/normalize.js) resolves:
+ *     slug = a.slug ?? `${resolvedPlatform}-${username}`
+ * and the source records already carry a correct slug ("ig-majangmejeng_",
+ * "tt-ardian.tanah"). This function previously rebuilt the slug from the
+ * username alone, producing "majangmejeng_" and "ardian.tanah" — a different
+ * namespace, so the landing page and the DecisionQueue linked nowhere.
+ *
+ * Priority: the record's own slug, then the platform-prefixed username that
+ * normalizeAccount would synthesise, then a last-resort index.
+ */
+function accountSlug(record, index) {
   const profile = record?.profile ?? record?.account ?? record ?? {};
-  const raw = profile.username ?? record?.username ?? record?.slug ?? `account-${index + 1}`;
-  return String(raw)
+  const platform = String(profile.platform ?? record?.platform ?? '').toLowerCase();
+  const username = profile.username ?? record?.username ?? record?.uniqueId ?? '';
+
+  const existing = profile.slug ?? record?.slug;
+  if (typeof existing === 'string' && existing.trim()) {
+    return existing.trim();
+  }
+
+  const base = `${platform || 'unknown'}-${username || `account-${index + 1}`}`;
+  return String(base)
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9._-]+/g, '-')
@@ -127,7 +149,7 @@ async function main() {
     const posts = Array.isArray(record?.posts) ? record.posts : (Array.isArray(profile?.posts) ? profile.posts : []);
     const platform = String(profile.platform ?? record?.platform ?? 'unknown').toLowerCase();
 
-    let slug = slugify(record, index);
+    let slug = accountSlug(record, index);
     while (usedSlugs.has(slug)) slug = `${slug}-${index + 1}`;
     usedSlugs.add(slug);
 

@@ -82,7 +82,7 @@ export function StatusRail() {
   return (
     <section
       aria-labelledby="status-rail-title"
-      className="border-y border-border-subtle bg-bg-surface/40"
+      className="border-y border-border-subtle bg-bg-secondary/40"
     >
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:gap-6 md:px-6">
         <div className="flex items-center gap-2 md:w-44 md:shrink-0">

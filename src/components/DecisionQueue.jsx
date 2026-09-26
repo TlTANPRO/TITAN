@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 import { AlertTriangle, ArrowUpRight, Database, Gauge, Radio, Wrench } from 'lucide-react';
 import { useDataManifest } from '../lib/dataManifest.js';
 import { formatRelativeAge, getLatestPostAt, getAgeMs } from '../lib/dataFreshness.js';
-import { isDegradedMode } from '../lib/dataStore.js';
+import { isDegradedMode, getLoadError } from '../lib/dataStore.js';
 
 const DAY_MS = 86_400_000;
 const STALE_AFTER_MS = 3 * DAY_MS;
@@ -23,9 +23,23 @@ const AGING_AFTER_MS = DAY_MS;
 // Severity: 0 = highest priority. Kept numeric so the sort is stable.
 const SEVERITY = { blocker: 0, warn: 1, info: 2 };
 
-export function buildQueue(accounts, manifest, now) {
+export function buildQueue(accounts, manifest, now, health = {}) {
   const items = [];
   const loaded = accounts?.length ?? 0;
+
+  // 0. Nothing loaded at all. This has to outrank every data-derived signal,
+  //    because with zero accounts the checks below would quietly pass and the
+  //    queue would say "nothing to do" while the dashboard shows only zeros.
+  if (health.loadError) {
+    items.push({
+      id: 'load-failed',
+      severity: 'blocker',
+      icon: Wrench,
+      title: 'Data TITAN gagal dimuat',
+      detail: `Bukan karena tidak ada konten — file datanya tidak terbaca. ${health.loadError}`,
+      action: { label: 'Cek status data', to: '/settings' }
+    });
+  }
 
   // 1. Content age, measured against the documented freshness contract:
   //    <= 24h fine, 24-72h aging, > 72h stale and therefore not decision-grade.
@@ -82,14 +96,14 @@ export function buildQueue(accounts, manifest, now) {
     });
   }
 
-  // 3. Degraded data load — the UI is running on the fallback path.
-  if (isDegradedMode()) {
+  // 3. Degraded data load — the UI is running on the local split payloads.
+  if (health.degraded) {
     items.push({
       id: 'degraded',
       severity: 'warn',
       icon: Wrench,
       title: 'Data dimuat dari payload per-akun, bukan dataset penuh',
-      detail: 'Dataset utama tidak terbaca. Grafik tetap jalan, tapi cek ulang angka sebelum dipakai.',
+      detail: 'Hanya terjadi di mode lokal: file payload per-akun tidak dipublikasikan ke GitHub Pages. Cek ulang angka sebelum dipakai.',
       action: { label: 'Cek pipeline', to: '/settings' }
     });
   }
@@ -129,7 +143,10 @@ export function DecisionQueue() {
   }));
 
   const items = useMemo(
-    () => buildQueue(accounts, manifest, Date.now()),
+    () => buildQueue(accounts, manifest, Date.now(), {
+      degraded: isDegradedMode(),
+      loadError: getLoadError()
+    }),
     [manifest]
   );
 

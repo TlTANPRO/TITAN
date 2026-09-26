@@ -31,8 +31,16 @@ export default function OutlierCard({ outlier }) {
           </span>
         </div>
         {post.postUrl && (
-          <a href={post.postUrl} target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-accent-primary">
-            <ExternalLink className="w-3.5 h-3.5" />
+          // Icon-only anchor: without a label a screen reader announces an empty
+          // link. aria-label is also friendlier than a bare title attribute.
+          <a
+            href={post.postUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Buka post ${post.caption ? `"${post.caption.slice(0, 40)}"` : ''} di platform`}
+            className="text-text-muted hover:text-accent-primary"
+          >
+            <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
           </a>
         )}
       </div>

@@ -22,6 +22,7 @@ let _accounts = null;          // Normalized accounts (array)
 let _bySlug = null;            // Map<slug, account>
 let _loadingPromise = null;    // Single in-flight import
 let _degraded = false;         // V39: loaded from split payloads, not the monolith
+let _loadError = null;         // V39: why both load paths failed, if they did
 const _subscribers = new Set(); // React state updaters
 
 // Stats per account (dari audit-multi-account.mjs, kalau ada)
@@ -64,13 +65,20 @@ async function loadFromJson() {
   // Normalize SEMUA akun lewat schema adapter yang sama. Accept both the
   // deployed array shape and a future `{ accounts: [...] }` manifest shape.
   const records = Array.isArray(raw) ? raw : raw?.accounts ?? [];
-  return adoptRecords(records);
+  return adoptRecords(records, { degraded: false });
 }
 
-// V39 degraded mode: the 12MB monolith is the fast path, but if it is missing
-// or unparseable we rebuild the same records from the per-account split
-// payloads emitted by scripts/build-data-manifest.mjs. Slower first paint,
-// but the dashboard still works instead of rendering empty panels.
+// V39 degraded mode: if the 12MB monolith is missing or unparseable, rebuild the
+// same records from the per-account split payloads.
+//
+// IMPORTANT — this fallback is LOCAL ONLY. data/accounts/*.json is gitignored
+// (see .gitignore) because the daily cron regenerates the dataset, and tracking
+// ~11MB of derived JSON would add that to git history every single day. So the
+// split payloads exist under dist/ and in the browser during `vite preview`,
+// but they are NOT published to GitHub Pages. In production this path will 404
+// for every account and the store will fall through to the failed state below.
+// The production safety net is manifest.json (5.8KB, tracked) plus the monolith,
+// not these files.
 async function loadFromSplit() {
   const records = await loadAccountsFromSplit();
   if (records.length === 0) {
@@ -79,10 +87,10 @@ async function loadFromSplit() {
   console.warn(
     `[dataStore] falling back to per-account split payloads (${records.length} akun)`
   );
-  return adoptRecords(records);
+  return adoptRecords(records, { degraded: true });
 }
 
-function adoptRecords(records) {
+function adoptRecords(records, { degraded = false } = {}) {
   const normalized = records.map((a) => normalizeAccount(a, a.platform)).filter(Boolean);
   // Defensive in-file dedup (post id uniqueness) — audit sudah handle tapi double-check
   for (const acc of normalized) {
@@ -96,7 +104,10 @@ function adoptRecords(records) {
   }
   _accounts = normalized;
   _bySlug = new Map(normalized.map((a) => [a.slug, a]));
-  _degraded = false;
+  // The flag has to be set from the caller, otherwise it is always false and the
+  // degraded warning in DecisionQueue can never fire.
+  _degraded = degraded;
+  _loadError = null;
   // Notify all subscribers
   for (const cb of _subscribers) {
     try { cb(_accounts); } catch (e) { /* ignore */ }
@@ -113,7 +124,10 @@ function ensureLoaded() {
       return loadFromSplit();
     })
     .catch((err) => {
+      // Both paths failed. Record WHY so the UI can say something honest instead
+      // of rendering a dashboard full of zeros and looking like "no engagement".
       console.error('[dataStore] Failed to load accounts:', err);
+      _loadError = err?.message ?? 'Data tidak dapat dimuat';
       _loadingPromise = null;
       _accounts = [];
       _bySlug = new Map();
@@ -126,6 +140,15 @@ function ensureLoaded() {
 /** V39: true when the UI is running on per-account split payloads. */
 export function isDegradedMode() {
   return _degraded;
+}
+
+/**
+ * V39: the reason both load paths failed, or null.
+ * The UI needs this to say "data gagal dimuat" instead of rendering a dashboard
+ * full of zeros that reads like "no engagement happened".
+ */
+export function getLoadError() {
+  return _loadError;
 }
 
 // ===== Public sync API (returns cached) =====
@@ -194,5 +217,5 @@ export async function reload() {
 // Expose for local development diagnostics only. Production data should not be
 // globally enumerable from the browser console.
 if (import.meta.env.DEV && typeof window !== 'undefined') {
-  window.__dataStore = { reload, getAllAccounts, getAccountBySlug, isDegradedMode };
+  window.__dataStore = { reload, getAllAccounts, getAccountBySlug, isDegradedMode, getLoadError };
 }

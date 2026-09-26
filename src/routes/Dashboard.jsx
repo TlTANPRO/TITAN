@@ -3,14 +3,16 @@
 // The body of this page is the pre-existing V33-V37 dashboard, now extracted to
 // components/command/CommandCenter.jsx so the landing page can embed the same
 // component instead of duplicating it.
+//
+// AppShell already renders <main id="main-content">, so this page must not emit
+// a second one: two main landmarks with a duplicate id break the skip-link
+// target and fail the audit.
 import { CommandCenter } from '../components/command/CommandCenter.jsx';
 
 export default function Dashboard() {
   return (
-    <div className="bg-bg-primary">
-      <main id="main-content" tabIndex={-1} className="pb-20 sm:pb-6">
-        <CommandCenter />
-      </main>
+    <div className="bg-bg-primary titan-motion-page">
+      <CommandCenter />
     </div>
   );
 }

@@ -166,7 +166,7 @@ export default function Settings() {
 
       <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4">
         {/* Sidebar tabs */}
-        <nav className="surface p-2 h-fit space-y-0.5">
+        <nav aria-label="Bagian pengaturan" className="surface p-2 h-fit space-y-0.5">
           {SECTIONS.map((s) => {
             const Icon = s.icon;
             return (

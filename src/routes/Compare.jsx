@@ -63,17 +63,19 @@ export default function Compare() {
 
       {/* Picker */}
       <div className="surface p-3">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 mb-1">
           <div className="text-xs font-semibold text-text-muted uppercase tracking-wider">
             Pilih Akun ({selectedSlugs.length}/{MAX_COMPARE})
           </div>
-          <div className="group relative">
-            <Info className="w-3 h-3 text-text-muted cursor-help" aria-label="Info batas pilih akun" />
-            <div className="invisible group-hover:visible absolute left-0 top-full mt-1 z-10 px-2 py-1 rounded bg-bg-overlay text-[10px] text-text-primary whitespace-nowrap shadow-md border border-border-subtle">
-              Maksimal {MAX_COMPARE} akun agar tabel tetap mudah dibaca di layar sempit.
-            </div>
-          </div>
+          <Info className="w-3 h-3 text-text-muted" aria-hidden="true" />
         </div>
+        {/* Was a hover-only tooltip. Two problems: it is unreachable on touch, and
+            its whitespace-nowrap box widened the mobile scroll area to 466px on a
+            375px viewport. TITAN's own rules ban hover-only interaction for
+            content that matters, so the limit is now stated in the open. */}
+        <p className="text-[11px] leading-snug text-text-muted mb-2">
+          Maksimal {MAX_COMPARE} akun agar tabel tetap mudah dibaca di layar sempit.
+        </p>
         <div className="flex flex-wrap gap-2">
           {rawAccounts.map((a) => {
             const isSelected = selectedSlugs.includes(a.slug);

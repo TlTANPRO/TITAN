@@ -113,7 +113,7 @@ export function PortfolioStatus({ headingAs: Heading = 'h1' }) {
           const platformMeta = PLATFORM[platform] ?? { label: platform, icon: 'bg-bg-tertiary text-text-secondary' };
           const platformTone = TONE[platformStatus.tone] ?? TONE.neutral;
           return (
-            <div key={platform} className="flex items-center justify-between gap-4 bg-bg-surface px-5 py-4">
+            <div key={platform} className="flex items-center justify-between gap-4 bg-bg-secondary px-5 py-4">
               <div className="flex min-w-0 items-center gap-3">
                 <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${platformMeta.icon}`}>
                   {platform === 'instagram' ? 'IG' : 'TT'}

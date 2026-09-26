@@ -285,6 +285,9 @@ export default function ChatPanel() {
                 ref={textareaRef}
                 id="chat-message"
                 name="message"
+                // Without this the textarea has no accessible name: a placeholder
+                // is not a label, so screen readers announce an empty control.
+                aria-label="Pesan untuk AI"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {

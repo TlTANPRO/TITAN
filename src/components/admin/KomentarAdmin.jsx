@@ -767,14 +767,17 @@ export function KomentarAdmin() {
                               {expanded ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
                             </button>
                             {url && (
+                              // title alone is not an accessible name for a
+                              // link whose only content is an icon.
                               <a
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                aria-label="Buka post sumber"
                                 className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] text-accent-primary hover:bg-accent-primary/10 transition-colors"
                                 title="Buka post"
                               >
-                                <ExternalLink className="w-3 h-3" />
+                                <ExternalLink className="w-3 h-3" aria-hidden="true" />
                               </a>
                             )}
                           </div>

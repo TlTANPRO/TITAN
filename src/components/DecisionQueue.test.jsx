@@ -105,4 +105,29 @@ describe('buildQueue', () => {
     const items = buildQueue([], manifest({ latestPostAt: null, lastScrapeAt: null }), NOW);
     expect(items.some((i) => i.id === 'stale-content')).toBe(false);
   });
+
+  // --- load health, added after the degraded-flag bug ---
+  it('raises a blocker when the data failed to load, ahead of every other signal', () => {
+    // With zero accounts the content checks would quietly pass, so without this
+    // the queue would claim "nothing to do" over an empty dashboard.
+    const items = buildQueue([], null, NOW, { loadError: 'HTTP 404 for /TITAN/accounts-full.json' });
+    expect(items[0].id).toBe('load-failed');
+    expect(items[0].severity).toBe('blocker');
+    expect(items[0].detail).toMatch(/bukan karena tidak ada konten/i);
+    expect(items[0].detail).toMatch(/404/);
+  });
+
+  it('warns when running on the local split payloads', () => {
+    const items = buildQueue([], manifest(), NOW, { degraded: true });
+    const item = items.find((i) => i.id === 'degraded');
+    expect(item).toBeTruthy();
+    expect(item.severity).toBe('warn');
+    expect(item.detail).toMatch(/hanya terjadi di mode lokal/i);
+  });
+
+  it('stays quiet about degraded mode on a normal load', () => {
+    const items = buildQueue([], manifest(), NOW, { degraded: false, loadError: null });
+    expect(items.some((i) => i.id === 'degraded')).toBe(false);
+    expect(items.some((i) => i.id === 'load-failed')).toBe(false);
+  });
 });
