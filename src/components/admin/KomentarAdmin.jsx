@@ -422,7 +422,7 @@ export function KomentarAdmin() {
                   name="komentarMonth"
                   value={activeMonth}
                   onChange={(e) => setActiveMonth(e.target.value)}
-                  className="bg-bg-tertiary border border-border-subtle rounded px-2 py-1 text-[10px] text-text-primary focus:outline-none focus:border-accent-primary"
+                  className="bg-bg-tertiary border border-border-subtle rounded px-2 py-1.5 text-[10px] text-text-primary focus:outline-none focus:border-accent-primary"
                 >
                   <option value="all">Semua</option>
                   {months.map((key) => (
@@ -484,7 +484,7 @@ export function KomentarAdmin() {
           <button
             type="button"
             onClick={() => setActiveGrowthAdmin(null)}
-            className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded transition-colors ${
+            className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1.5 rounded transition-colors ${
               activeGrowthAdmin === null ? 'bg-accent-primary text-[#0b1220]' : 'bg-bg-tertiary text-text-muted hover:text-text-primary'
             }`}
           >
@@ -498,7 +498,7 @@ export function KomentarAdmin() {
                 key={name}
                 type="button"
                 onClick={() => setActiveGrowthAdmin(isActive ? null : name)}
-                className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded transition-colors inline-flex items-center gap-1.5 ${
+                className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1.5 rounded transition-colors inline-flex items-center gap-1.5 ${
                   isActive ? 'text-white' : 'text-text-muted hover:text-text-primary'
                 }`}
                 style={isActive ? { backgroundColor: accent.hex } : {}}
@@ -583,19 +583,19 @@ export function KomentarAdmin() {
                 <td className="py-2.5 px-3 border-r border-border-subtle/40">
                   <div className="flex flex-wrap gap-1">
                     <button type="button" onClick={() => setActiveAccount('all')}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
+                      className={`px-2.5 py-1.5 rounded-md text-[11px] font-medium border transition-colors ${
                         activeAccount === 'all'
                           ? 'bg-accent-primary text-[#0b1220] border-accent-primary shadow-sm'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
                       }`}>Semua Akun</button>
                     <button type="button" onClick={() => setActiveAccount('majangmejeng')}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
+                      className={`px-2.5 py-1.5 rounded-md text-[11px] font-medium border transition-colors ${
                         activeAccount === 'majangmejeng'
                           ? 'bg-accent-instagram text-white border-accent-instagram shadow-sm'
                           : 'bg-accent-instagram/10 text-accent-instagram border-accent-instagram/30 hover:border-accent-instagram'
                       }`}>Majangmejeng</button>
                     <button type="button" onClick={() => setActiveAccount('other')}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
+                      className={`px-2.5 py-1.5 rounded-md text-[11px] font-medium border transition-colors ${
                         activeAccount === 'other'
                           ? 'bg-bg-tertiary text-text-primary border-border-default shadow-sm'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
@@ -606,19 +606,19 @@ export function KomentarAdmin() {
                 <td className="py-2.5 px-3 border-r border-border-subtle/40">
                   <div className="flex flex-wrap gap-1">
                     <button type="button" onClick={() => setActivePlatform('all')}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
+                      className={`px-2.5 py-1.5 rounded-md text-[11px] font-medium border transition-colors ${
                         activePlatform === 'all'
                           ? 'bg-accent-primary text-[#0b1220] border-accent-primary shadow-sm'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
                       }`}>Semua Platform</button>
                     <button type="button" onClick={() => setActivePlatform('instagram')}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
+                      className={`px-2.5 py-1.5 rounded-md text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
                         activePlatform === 'instagram'
                           ? 'bg-accent-instagram text-white border-accent-instagram shadow-sm'
                           : 'bg-accent-instagram/10 text-accent-instagram  border-accent-instagram/30 hover:border-accent-instagram'
                       }`}><Instagram className="w-3 h-3" />Instagram</button>
                     <button type="button" onClick={() => setActivePlatform('tiktok')}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
+                      className={`px-2.5 py-1.5 rounded-md text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
                         activePlatform === 'tiktok'
                           ? 'bg-accent-tiktok text-white border-accent-tiktok shadow-sm'
                           : 'bg-accent-tiktok/10 text-accent-tiktok  border-accent-tiktok/30 hover:border-accent-tiktok'
@@ -629,7 +629,7 @@ export function KomentarAdmin() {
                 <td className="py-2.5 px-3 border-r border-border-subtle/40">
                   <div className="flex flex-wrap gap-1">
                     <button type="button" onClick={() => setActiveAdmin('all')}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
+                      className={`px-2.5 py-1.5 rounded-md text-[11px] font-medium border transition-colors ${
                         activeAdmin === 'all'
                           ? 'bg-accent-primary text-[#0b1220] border-accent-primary shadow-sm'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
@@ -639,7 +639,7 @@ export function KomentarAdmin() {
                       const active = activeAdmin === name;
                       return (
                         <button key={name} type="button" onClick={() => setActiveAdmin(name)}
-                          className={`px-2.5 py-1 rounded-md text-[11px] font-semibold border transition-colors ${
+                          className={`px-2.5 py-1.5 rounded-md text-[11px] font-semibold border transition-colors ${
                             active ? `${accent.bar} text-white border-transparent shadow-sm` : `${accent.chip} hover:border-border-default`
                           }`}>{name}</button>
                       );
@@ -650,7 +650,7 @@ export function KomentarAdmin() {
                 <td className="py-2.5 px-3">
                   <div className="flex flex-wrap gap-1">
                     <button type="button" onClick={() => setActiveMonth('all')}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
+                      className={`px-2.5 py-1.5 rounded-md text-[11px] font-medium border transition-colors inline-flex items-center gap-1.5 ${
                         activeMonth === 'all'
                           ? 'bg-bg-tertiary text-text-primary border-border-default shadow-sm'
                           : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'
@@ -660,7 +660,7 @@ export function KomentarAdmin() {
                     </button>
                     {months.map((key) => (
                       <button key={key} type="button" onClick={() => setActiveMonth(key)}
-                        className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
+                        className={`px-2.5 py-1.5 rounded-md text-[11px] font-medium border transition-colors ${
                           activeMonth === key
                             ? 'bg-bg-tertiary text-text-primary border-border-default shadow-sm'
                             : 'bg-bg-secondary/40 text-text-secondary border-border-subtle hover:border-border-default'

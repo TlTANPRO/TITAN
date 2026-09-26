@@ -80,3 +80,6 @@ live-afull.js
 logs.zip
 debug-og.mjs
 audit-avatar.mjs
+
+# V39: browser audit output (screenshots + report.json)
+.audit/

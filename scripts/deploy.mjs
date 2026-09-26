@@ -28,7 +28,7 @@
 // If --skip-push is passed, the script stops after the commit.
 // If --dry-run is passed, only build + copy, no git operations.
 
-import { execSync } from 'node:child_process';
+import { execSync, execFileSync, spawn } from 'node:child_process';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -42,6 +42,11 @@ const DRY_RUN = args.includes('--dry-run');
 // Deploy the code with the data already in the repo: no generate-data.mjs, no
 // scraped/ requirement. The pre-flight still validates what we are shipping.
 const SKIP_GENERATE = args.includes('--skip-generate') || DRY_RUN;
+// The browser audit runs on the built dist before it is copied to the repo
+// root. Escape hatch for an emergency release; --require-audit does the
+// opposite and fails the deploy when the audit could not run at all (CI).
+const SKIP_AUDIT = args.includes('--skip-audit');
+const REQUIRE_AUDIT = args.includes('--require-audit');
 if (args.includes('--help') || args.includes('-h')) {
   console.log(`
 Usage: node scripts/deploy.mjs [options]
@@ -52,8 +57,65 @@ Usage: node scripts/deploy.mjs [options]
   --dry-run         Build and copy only. Implies --skip-generate. No git
                     operations, no push.
   --skip-push       Do everything except the git push.
+  --skip-audit      Do not run the pre-copy browser audit. Escape hatch only.
+  --require-audit   Fail if the audit cannot run (missing Chrome, no preview
+                    server) instead of warning and continuing.
 `);
   process.exit(0);
+}
+
+/**
+ * Serve dist/ and run scripts/audit-ui.mjs against it. Returns the audit exit
+ * code: 0 clean, 1 blocking findings, 2 could not run.
+ */
+async function auditBuiltOutput() {
+  console.log('\n[2.5/6] UI audit on the built dist...');
+  const PORT = 4178;
+  const base = `http://127.0.0.1:${PORT}`;
+  let preview = null;
+  try {
+    // vite preview respects the `base` in vite.config, so the app is served at
+    // /TITAN/ — the same path shape GitHub Pages uses.
+    // --host 127.0.0.1 is required: without it vite binds only to ::1 on this
+    // machine and every 127.0.0.1 probe is refused.
+    preview = spawn('node', ['node_modules/vite/bin/vite.js', 'preview', '--port', String(PORT), '--strictPort', '--host', '127.0.0.1'], {
+      cwd: ROOT,
+      stdio: 'ignore'
+    });
+
+    // Poll until the preview answers, or give up after 45s.
+    let up = false;
+    for (let i = 0; i < 45; i += 1) {
+      await new Promise((r) => setTimeout(r, 1000));
+      try {
+        const res = await fetch(`${base}/TITAN/`, { signal: AbortSignal.timeout(2000) });
+        if (res.ok) { up = true; break; }
+      } catch { /* not up yet */ }
+    }
+    if (!up) {
+      console.error('[audit] vite preview never became ready.');
+      return 2;
+    }
+
+    const out = execFileSync(process.execPath, ['scripts/audit-ui.mjs', `--base=${base}`], {
+      cwd: ROOT,
+      stdio: 'inherit'
+    });
+    return 0;
+  } catch (err) {
+    // execFileSync throws on a non-zero exit; audit-ui.mjs uses 1 for blocking
+    // findings and 2 for "could not run".
+    const code = typeof err.status === 'number' ? err.status : 2;
+    if (code === 2) {
+      console.warn('[audit] could not run (no Chrome, or preview failed).');
+      console.warn('[audit] install it with:  pnpm add -D puppeteer-core');
+    }
+    return code;
+  } finally {
+    if (preview) {
+      try { preview.kill('SIGTERM'); } catch { /* already gone */ }
+    }
+  }
 }
 
 function run(cmd, opts = {}) {
@@ -254,6 +316,25 @@ async function main() {
     VITE_TITAN_KEY: process.env.VITE_TITAN_KEY || ''
   };
   run('pnpm run build', { stdio: 'inherit', env: buildEnv });
+
+  // Step 2.5: audit the built output before anything is copied to the repo
+  // root. Copying is the point of no return — after it, `git add` will happily
+  // commit a broken UI. Gating here means a P0/P1 regression stops the release
+  // while the fix is still cheap.
+  if (!SKIP_AUDIT) {
+    const code = await auditBuiltOutput();
+    if (code === 1) {
+      console.error('\n[audit] Blocking findings. Aborting before the copy step;');
+      console.error('[audit] the repo root and origin/main are untouched.');
+      process.exit(1);
+    }
+    if (code === 2 && REQUIRE_AUDIT) {
+      console.error('\n[audit] Could not run, and --require-audit was passed. Aborting.');
+      process.exit(1);
+    }
+  } else {
+    console.log('\n[2.5/6] UI audit skipped (--skip-audit).');
+  }
 
   if (DRY_RUN) {
     console.log('\n[dry-run] Skipping copy + git + push');

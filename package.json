@@ -23,6 +23,8 @@
     "insights:briefing": "node scripts/generate-ai-insights.mjs briefing=1",
     "pipeline": "node scripts/scrape-ig.mjs && node scripts/scrape-tt.mjs && node scripts/validate-merge.mjs && node scripts/generate-data.mjs",
     "test": "vitest run",
+    "audit:ui": "node scripts/audit-ui.mjs",
+    "audit:ui:strict": "node scripts/audit-ui.mjs --strict",
     "deploy": "node scripts/deploy.mjs",
     "deploy:dry": "node scripts/deploy.mjs --dry-run",
     "deploy:nopush": "node scripts/deploy.mjs --skip-push",
@@ -47,6 +49,7 @@
     "typescript": "^5.6.2",
     "vite": "^5.4.8",
     "vitest": "^2.1.2",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "puppeteer-core": "^23.11.1"
   }
 }

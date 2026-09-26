@@ -79,12 +79,39 @@ These came out of rendering the page in a real browser, not from reading the cod
 6. **Dead timestamp branch.** `accounts.length ? getLatestScrapeAt(accounts) : manifest.lastScrapeAt` reported "never ran" when account records loaded without a `scrapedAt`. Replaced with a `resolveTimestamp` fallback chain.
 7. **Unreachable queue warning.** `DecisionQueue` had an `else if` for a 14-day idle warning that could never fire. Replaced with the documented fresh/delayed/stale contract.
 
+## 6b. V39 — tap targets and the audit gate
+
+**8. 47 interactive elements rendered 12-23px tall.** The cause is chips and small buttons built from `px-2 py-1` with 10-11px type, which lands just under the 24px minimum in WCAG 2.2 SC 2.5.8. Three attempts, in order:
+
+- Bumping the utility classes (`py-1` → `py-1.5`) did not move the computed height. Raw component CSS outranks the utility in the cascade, so the padding stayed at 4px.
+- Gating a `min-height` rule behind `@media (pointer: coarse)` silently did nothing: a desktop browser reports `pointer: fine`, so the rule never applied and the audit kept reporting the same targets. WCAG 2.2 asks for 24px regardless of pointer type, so the gate is not needed.
+- The working shape is two rules. `a[href] { min-height: 24px }` unconditional is a no-op on a true inline box and lifts only links that already declare `inline-flex`, so it cannot move anything. `display: inline-flex` is applied separately, scoped to nav, lists, tables, breadcrumbs and the footer.
+
+A blanket `a[href] { display: inline-flex }` was tried and **regressed two pages**: a link that wraps a card switches from block to shrink-to-fit, so its percentage-width children (a 260px chart, an icon) stop resolving against the container and spill past the viewport. The deploy gate caught it as a P0. Do not widen that selector.
+
+**9. The 404 route had no `<main>`.** `NotFound` is routed outside `AppShell`, which is the only other place that emits the landmark, so it now supplies its own.
+
+**10. The audit reported non-compliant targets that are compliant.** A plain 24×24 check flags a row of account handles that measure 19×24. WCAG 2.5.8 has a *spacing exception*: an undersized target passes if a 24px circle centred on it does not touch another target's circle. Measured gap is 32px. The audit now implements that exception and the inline-target exemption, because a gate that cries wolf on a compliant page gets ignored.
+
+**11. `scripts/audit-ui.mjs` — the gate itself.** Two measurement bugs are documented at the top of the file so they are not reintroduced:
+
+- Navigating to the same URL twice (once to seed `localStorage`, once to "reload") makes `vite preview` answer with its *"public base URL is /TITAN/"* error page. Every route then measures ~106 characters and looks empty. Seed the theme on the origin, then navigate exactly once.
+- Toggling the theme class after load fights `AppShell`'s own effect and leaves the app rendering only the skip link. The theme must be set before the app boots.
+
+`vite preview` also needs `--host 127.0.0.1` on this machine; without it vite binds only to `::1` and every IPv4 probe is refused.
+
+The gate runs in `deploy.mjs` between the build and the copy-to-root step, because the copy is the point of no return — after it, `git add` will commit a broken UI. Verified by injecting a deliberate regression: the gate exits 1 and the repo root and `origin/main` are left untouched.
+
 ## 7. Verified
 
-- 167 unit tests pass (12 files)
+- 170 unit tests pass (12 files)
 - Production build passes
+- `node scripts/audit-ui.mjs` — 11 routes × desktop 1440 and mobile 375, **0 P0, 0 P1, 0 P2**
+- Every route has exactly one visible `<h1>` and exactly one `<main>`; the 404 route included
+- Light mode reviewed page by page on all 10 content routes: 0 console errors, 0 invisible text
+- The gate was proven to fail: with a deliberate `main { display: none }` regression it reported `P1: no visible <h1>` on both viewports and exited 1
 - Browser-driven checks: 8 metric tiles, 4 feature cards, 4 tabs, 4 bars, 24 spark traces, 26 dot columns, 6 bento cards, 5 FAQ items, animated gradient, footer wordmark
 - Tab switch replays the animation (`is-ready` drops, then re-fires) and swaps all four bars
 - FAQ opens on click, on Enter, and on Space
 - Mobile menu sets `aria-expanded`, locks body scroll, and closes on Escape
-- One `<h1>`, one `<main>`, 0 images without alt, 0 unlabelled buttons, 0 console errors
+- 0 images without alt, 0 unlabelled buttons

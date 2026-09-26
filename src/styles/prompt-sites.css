@@ -963,6 +963,12 @@
   font-size: 16px;
   font-weight: 650;
   line-height: 1.1;
+  /* Tap target: the prompt's line-height 1.1 renders these 18px tall, below the
+     24px minimum. The min-height keeps the visual type size from the prompt and
+     only enlarges the clickable box. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   transition: color 180ms ease, transform 180ms ease;
 }
 
@@ -1021,7 +1027,17 @@
 }
 
 .site-footer__legal p { margin: 0; }
-.site-footer__legal a { color: inherit; transition: color 180ms ease; }
+
+/* 9px legal text is 12px tall, the smallest target in the whole page. Enlarge
+   the hit area only; the 9px size is the prompt's specification. */
+.site-footer__legal a {
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  transition: color 180ms ease;
+}
+
 .site-footer__legal a:hover { color: #fff; }
 
 @media (max-width: 980px) {

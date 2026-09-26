@@ -251,3 +251,74 @@ html:not(.dark) .titan-prose blockquote {
     animation: none;
   }
 }
+
+/* ============================================================================
+ * V39 — minimum tap target (WCAG 2.2 SC 2.5.8, Target Size Minimum)
+ * ----------------------------------------------------------------------------
+ * An audit of all 11 routes found interactive elements rendering 12-23px tall.
+ * The cause is chips and small buttons built from `px-2 py-1` with 10-11px
+ * type, which lands just under the 24px minimum. Fixing ~250 call sites
+ * individually is not maintainable, and bumping the utility classes does not
+ * work either: raw component CSS wins the specificity battle and the computed
+ * padding stays at 4px.
+ *
+ * So one rule, placed last in the cascade, unconditional:
+ *   - `pointer: coarse` was tried first and gated everything behind a media
+ *     query that never matched in a desktop browser, so the fix silently did
+ *     nothing. WCAG 2.2 asks for 24px regardless of pointer type, so the gate
+ *     is not needed and only hides the problem from the audit.
+ *   - inline-flex + min-height on links keeps them from breaking the line
+ *     rhythm in body text, because min-height alone on an inline box is
+ *     ignored by the layout engine.
+ *   - `.titan-prose` and table cells are excluded: a min-height on a long-form
+ *     paragraph link would open a hole in the text baseline.
+ * ========================================================================== */
+button,
+[role="tab"],
+[role="button"],
+summary,
+label[for] {
+  min-height: 24px;
+}
+
+/* min-height alone is a no-op on an inline box, so this rule only lifts links
+   that already declare `inline-flex` (every CTA and action link in the app
+   does). It cannot move anything, because an inline box ignores min-height. */
+a[href] {
+  min-height: 24px;
+}
+
+/* `display: inline-flex` is still required where the link is a bare inline
+   element. Scoped narrowly: a blanket `a[href] { display: inline-flex }` was
+   tried first and regressed two pages, because a link that wraps a card
+   switches from block to shrink-to-fit and its percentage-width children (a
+   260px chart, an icon) stop resolving against the container. */
+nav a[href],
+footer a[href],
+aside a[href],
+header a[href],
+ol a[href],
+ul a[href],
+td a[href],
+th a[href],
+[aria-label*="readcrumb"] a[href],
+.site-footer__nav a,
+.site-footer__legal a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  max-width: 100%;
+}
+
+/* WCAG 2.2 SC 2.5.8 exempts inline targets — a link inside a sentence is
+   constrained by the line-height of the surrounding text. Table cells are
+   deliberately NOT reset: a handle link in a cell is a control, not prose. */
+p a[href],
+li p a[href],
+.titan-prose a[href],
+figcaption a[href] {
+  display: inline;
+  min-height: 0;
+}
+
+

@@ -1,10 +1,12 @@
 // V21: 404 NotFound page with custom illustration + back link.
+// V39: this route sits outside AppShell, so it must supply its own <main>
+// landmark — AppShell is the only other place that emits one.
 import { Link } from 'react-router-dom';
 import { Home } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-bg-primary">
+    <main id="main-content" tabIndex={-1} className="min-h-screen flex items-center justify-center p-6 bg-bg-primary focus:outline-none">
       <div className="max-w-md text-center">
         <div className="text-8xl font-bold text-accent-brand/20 leading-none select-none">404</div>
         <div className="w-16 h-1 bg-accent-brand rounded-full mx-auto mt-4" aria-hidden="true" />
@@ -22,6 +24,6 @@ export default function NotFound() {
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
