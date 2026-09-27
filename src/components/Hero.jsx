@@ -5,6 +5,8 @@
 import { useMemo } from 'react';
 import { Users, Eye, Heart, Sparkles } from 'lucide-react';
 import { formatNumber } from '../lib/format.js';
+import { formatRelativeAge, getPortfolioFreshness } from '../lib/dataFreshness.js';
+import { toneStyle } from '../lib/freshnessTone.js';
 
 export function Hero({ accounts, allPosts }) {
   const kpi = useMemo(() => {
@@ -61,7 +63,10 @@ export function Hero({ accounts, allPosts }) {
     };
   }, [accounts]);
 
-  const latestScrape = useMemo(() => {
+  // Metrics-enrichment timestamp. This refreshes on every pipeline run even when
+  // no new post arrives, so it is NOT a content-freshness signal and must never
+  // be presented as "data terakhir diupdate".
+  const lastEnrichAt = useMemo(() => {
     const times = accounts
       .map((a) => a.stats?.lastAndroidFeedEnrichAt ?? a.stats?.lastGraphEnrichAt ?? null)
       .filter(Boolean)
@@ -69,6 +74,10 @@ export function Hero({ accounts, allPosts }) {
     if (times.length === 0) return null;
     return new Date(Math.max(...times));
   }, [accounts]);
+
+  // Honest freshness: age of the newest CONTENT, not of the last scrape run.
+  const freshness = useMemo(() => getPortfolioFreshness(accounts), [accounts]);
+  const freshnessTone = toneStyle(freshness.tone);
 
   return (
     <section className="surface p-6 bg-gradient-to-br from-bg-secondary to-bg-tertiary">
@@ -80,11 +89,25 @@ export function Hero({ accounts, allPosts }) {
         <KpiItem icon={<Eye className="w-4 h-4" />} label="Total Tayangan" value={formatNumber(kpi.totalViews)} accent="instagram" delta={delta.views} href="/library?sortBy=viewCount" />
       </div>
 
-      {latestScrape && (
-        <div className="text-[10px] text-text-muted mt-4 pt-3 border-t border-border-subtle/50 text-right">
-          Data terakhir diupdate: {latestScrape.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
-        </div>
-      )}
+        {(freshness.latestPostAt || lastEnrichAt) && (
+          <div className="flex flex-wrap items-baseline justify-end gap-x-4 gap-y-1 text-[10px] text-text-muted mt-4 pt-3 border-t border-border-subtle/50">
+            <span>
+              Konten terbaru:{' '}
+              <span className={freshnessTone.text}>
+                {freshness.latestPostAt
+                  ? new Date(freshness.latestPostAt).toLocaleDateString('id-ID', { dateStyle: 'medium' })
+                  : 'tidak diketahui'}
+              </span>
+              {freshness.ageMs != null && <> · {formatRelativeAge(freshness.ageMs)} lalu</>}
+            </span>
+            {lastEnrichAt && (
+              <span>
+                Enrichment metrik:{' '}
+                {lastEnrichAt.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
+              </span>
+            )}
+          </div>
+        )}
     </section>
   );
 }

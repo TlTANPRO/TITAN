@@ -4,33 +4,7 @@ import { Activity, ArrowRight, Database, RefreshCw, ShieldQuestion } from 'lucid
 import { useAccounts } from '../hooks/useAccount.js';
 import { formatRelativeAge, getPortfolioFreshness } from '../lib/dataFreshness.js';
 import { getManifestCoverage, useDataManifest } from '../lib/dataManifest.js';
-
-const TONE = {
-  success: {
-    dot: 'bg-accent-success',
-    text: 'text-accent-success',
-    border: 'border-accent-success/30',
-    background: 'bg-accent-success/10'
-  },
-  warning: {
-    dot: 'bg-accent-warning',
-    text: 'text-accent-warning',
-    border: 'border-accent-warning/30',
-    background: 'bg-accent-warning/10'
-  },
-  danger: {
-    dot: 'bg-accent-danger',
-    text: 'text-accent-danger',
-    border: 'border-accent-danger/30',
-    background: 'bg-accent-danger/10'
-  },
-  neutral: {
-    dot: 'bg-text-muted',
-    text: 'text-text-muted',
-    border: 'border-border-subtle',
-    background: 'bg-bg-tertiary'
-  }
-};
+import { TONE } from '../lib/freshnessTone.js';
 
 const PLATFORM = {
   instagram: { label: 'Instagram', icon: 'bg-platform-instagram/15 text-platform-instagram' },
