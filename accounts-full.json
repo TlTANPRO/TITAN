@@ -18520,11 +18520,11 @@
         "mentions": []
       }
     ],
-    "scrapedAt": "2026-10-20T20:00:50.786Z",
-    "lastFreeEnrichAt": "2026-10-20T20:00:50.786Z",
+    "scrapedAt": "2026-10-22T19:54:57.216Z",
+    "lastFreeEnrichAt": "2026-10-22T19:54:57.216Z",
     "stats": {
       "totalPosts": 834,
-      "durationMs": 16041,
+      "durationMs": 1105,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -18533,14 +18533,9 @@
       "enrichedLikeCount": 820,
       "enrichedViewCount": 214,
       "enrichedCommentCount": 358,
-      "lastEmbedEnrichAt": "2026-10-21T20:24:51.799Z",
+      "lastEmbedEnrichAt": "2026-10-22T20:15:05.406Z",
       "embedEnrichAttempted": 50,
-      "embedEnrichUpgraded": 0,
-      "bootstrappedFromBundled": true,
-      "bootstrappedAt": "2026-10-21T19:59:09.407Z",
-      "lastIgCookieAttempt": "2026-10-21T19:59:40.427Z",
-      "igCookieZero": true,
-      "igCookieError": "login_required at /feed/user/36883918534/?count=12"
+      "embedEnrichUpgraded": 0
     }
   },
   {
@@ -41141,11 +41136,11 @@
         "mentions": []
       }
     ],
-    "scrapedAt": "2026-10-20T20:00:54.055Z",
-    "lastFreeEnrichAt": "2026-10-20T20:00:54.055Z",
+    "scrapedAt": "2026-10-22T19:55:00.124Z",
+    "lastFreeEnrichAt": "2026-10-22T19:55:00.124Z",
     "stats": {
       "totalPosts": 753,
-      "durationMs": 1256,
+      "durationMs": 895,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -41154,14 +41149,9 @@
       "enrichedLikeCount": 747,
       "enrichedViewCount": 305,
       "enrichedCommentCount": 221,
-      "lastEmbedEnrichAt": "2026-10-21T20:26:30.664Z",
+      "lastEmbedEnrichAt": "2026-10-22T20:16:43.433Z",
       "embedEnrichAttempted": 50,
-      "embedEnrichUpgraded": 0,
-      "bootstrappedFromBundled": true,
-      "bootstrappedAt": "2026-10-21T19:59:09.414Z",
-      "lastIgCookieAttempt": "2026-10-21T20:00:22.867Z",
-      "igCookieZero": true,
-      "igCookieError": "login_required at /feed/user/6516969650/?count=12"
+      "embedEnrichUpgraded": 0
     }
   },
   {
@@ -47215,16 +47205,20 @@
         "postedAt": "2023-02-03T11:23:45.000Z"
       }
     ],
-    "scrapedAt": "2026-10-21T20:01:07.044Z",
-    "lastIgCookieAt": "2026-10-21T20:01:07.044Z",
+    "scrapedAt": "2026-10-22T19:55:03.752Z",
+    "lastFreeEnrichAt": "2026-10-22T19:55:03.752Z",
     "stats": {
       "totalPosts": 282,
-      "durationMs": 32168,
+      "durationMs": 1617,
       "isDummy": false,
-      "source": "ig-cookie-authenticated",
+      "enriched": false,
+      "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 65,
-      "lastEmbedEnrichAt": "2026-10-21T20:28:06.318Z",
+      "metricsUpgraded": 0,
+      "enrichedLikeCount": 282,
+      "enrichedViewCount": 121,
+      "enrichedCommentCount": 225,
+      "lastEmbedEnrichAt": "2026-10-22T20:18:19.828Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -72047,16 +72041,20 @@
         "mentions": []
       }
     ],
-    "scrapedAt": "2026-10-21T20:01:46.930Z",
-    "lastIgCookieAt": "2026-10-21T20:01:46.930Z",
+    "scrapedAt": "2026-10-22T19:55:17.766Z",
+    "lastFreeEnrichAt": "2026-10-22T19:55:17.766Z",
     "stats": {
       "totalPosts": 978,
-      "durationMs": 27880,
+      "durationMs": 12006,
       "isDummy": false,
-      "source": "ig-cookie-authenticated",
+      "enriched": false,
+      "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 62,
-      "lastEmbedEnrichAt": "2026-10-21T20:29:51.064Z",
+      "metricsUpgraded": 0,
+      "enrichedLikeCount": 972,
+      "enrichedViewCount": 849,
+      "enrichedCommentCount": 587,
+      "lastEmbedEnrichAt": "2026-10-22T20:20:03.585Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -95036,14 +95034,14 @@
         "durationSeconds": 109
       }
     ],
-    "scrapedAt": "2026-10-21T20:03:56.330Z",
-    "lastFreeEnrichAt": "2026-10-21T20:03:56.330Z",
+    "scrapedAt": "2026-10-22T19:55:32.901Z",
+    "lastFreeEnrichAt": "2026-10-22T19:55:32.901Z",
     "stats": {
       "totalPosts": 803,
-      "durationMs": 19723,
+      "durationMs": 13014,
       "isDummy": false,
       "enriched": true,
-      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
+      "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
       "metricsUpgraded": 0
     }
@@ -111249,16 +111247,16 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-useast2a-p-0037-aiso/oEODGUQ4bAIEn3v6BnVjJeBUODDPeCV1RZKQHH~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=R%2BBx1mQX8hoJbcMaGH1t2pEiJVQ%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-10-21T20:04:15.817Z",
-    "lastFreeEnrichAt": "2026-10-21T20:04:15.817Z",
+    "scrapedAt": "2026-10-22T19:55:50.676Z",
+    "lastFreeEnrichAt": "2026-10-22T19:55:50.676Z",
     "stats": {
       "totalPosts": 474,
-      "durationMs": 16472,
+      "durationMs": 14761,
       "isDummy": false,
       "enriched": true,
-      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
+      "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 1
+      "metricsUpgraded": 0
     }
   },
   {
@@ -123937,16 +123935,16 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-maliva-p-0068/oYqDfADQQUxBvFR0n2WZKBJEQEHBB97IjleVEo~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=oWbP6X7tvLoHR0wAwjWbXxONCEw%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-10-21T20:04:38.433Z",
-    "lastFreeEnrichAt": "2026-10-21T20:04:38.433Z",
+    "scrapedAt": "2026-10-22T19:56:03.931Z",
+    "lastFreeEnrichAt": "2026-10-22T19:56:03.931Z",
     "stats": {
       "totalPosts": 394,
-      "durationMs": 19604,
+      "durationMs": 10245,
       "isDummy": false,
       "enriched": true,
-      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
+      "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 1
+      "metricsUpgraded": 0
     }
   },
   {
@@ -139585,14 +139583,14 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-maliva-p-0068/ogjwYDPEIQFrBK7fEQlGeJmQtrR1xAAuEICBBm~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=18tnWtmDjMKSKnmnOjGX9VrzEc0%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-10-21T20:04:58.280Z",
-    "lastFreeEnrichAt": "2026-10-21T20:04:58.280Z",
+    "scrapedAt": "2026-10-22T19:56:18.441Z",
+    "lastFreeEnrichAt": "2026-10-22T19:56:18.441Z",
     "stats": {
       "totalPosts": 505,
-      "durationMs": 16841,
+      "durationMs": 11504,
       "isDummy": false,
       "enriched": true,
-      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
+      "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
       "metricsUpgraded": 0
     }
@@ -144565,16 +144563,16 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-maliva-p-0068/91719c06458542f9990ccb8224b04e92_1725695759~tplv-tiktokx-origin.image?dr=14575&x-expires=1788199200&x-signature=d3zLi9XBZhaYw1lv9tNFNtKhEOg%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-10-21T20:05:21.234Z",
-    "lastFreeEnrichAt": "2026-10-21T20:05:21.234Z",
+    "scrapedAt": "2026-10-22T19:56:33.202Z",
+    "lastFreeEnrichAt": "2026-10-22T19:56:33.202Z",
     "stats": {
       "totalPosts": 170,
-      "durationMs": 19949,
+      "durationMs": 11751,
       "isDummy": false,
       "enriched": true,
-      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
+      "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 2
+      "metricsUpgraded": 0
     }
   }
 ]
