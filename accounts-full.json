@@ -18520,11 +18520,11 @@
         "mentions": []
       }
     ],
-    "scrapedAt": "2026-10-27T20:34:32.900Z",
-    "lastFreeEnrichAt": "2026-10-27T20:34:32.900Z",
+    "scrapedAt": "2026-10-28T20:55:35.339Z",
+    "lastFreeEnrichAt": "2026-10-28T20:55:35.339Z",
     "stats": {
       "totalPosts": 834,
-      "durationMs": 2063,
+      "durationMs": 1416,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -18533,7 +18533,7 @@
       "enrichedLikeCount": 820,
       "enrichedViewCount": 214,
       "enrichedCommentCount": 358,
-      "lastEmbedEnrichAt": "2026-10-27T20:55:37.198Z",
+      "lastEmbedEnrichAt": "2026-10-28T21:08:20.244Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -41136,11 +41136,11 @@
         "mentions": []
       }
     ],
-    "scrapedAt": "2026-10-27T20:34:38.635Z",
-    "lastFreeEnrichAt": "2026-10-27T20:34:38.635Z",
+    "scrapedAt": "2026-10-28T20:55:39.692Z",
+    "lastFreeEnrichAt": "2026-10-28T20:55:39.692Z",
     "stats": {
       "totalPosts": 753,
-      "durationMs": 3721,
+      "durationMs": 2341,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -41149,7 +41149,7 @@
       "enrichedLikeCount": 747,
       "enrichedViewCount": 305,
       "enrichedCommentCount": 221,
-      "lastEmbedEnrichAt": "2026-10-27T20:57:13.308Z",
+      "lastEmbedEnrichAt": "2026-10-28T21:09:52.009Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -47205,20 +47205,20 @@
         "postedAt": "2023-02-03T11:23:45.000Z"
       }
     ],
-    "scrapedAt": "2026-10-27T20:34:44.205Z",
-    "lastFreeEnrichAt": "2026-10-27T20:34:44.205Z",
+    "scrapedAt": "2026-10-28T20:55:57.634Z",
+    "lastFreeEnrichAt": "2026-10-28T20:55:57.634Z",
     "stats": {
       "totalPosts": 282,
-      "durationMs": 3557,
+      "durationMs": 15920,
       "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "jina-web",
+      "enriched": false,
+      "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
       "metricsUpgraded": 0,
       "enrichedLikeCount": 282,
       "enrichedViewCount": 121,
       "enrichedCommentCount": 225,
-      "lastEmbedEnrichAt": "2026-10-27T20:58:45.599Z",
+      "lastEmbedEnrichAt": "2026-10-28T21:11:20.217Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -72041,11 +72041,11 @@
         "mentions": []
       }
     ],
-    "scrapedAt": "2026-10-27T20:34:48.551Z",
-    "lastFreeEnrichAt": "2026-10-27T20:34:48.551Z",
+    "scrapedAt": "2026-10-28T20:56:15.437Z",
+    "lastFreeEnrichAt": "2026-10-28T20:56:15.437Z",
     "stats": {
       "totalPosts": 978,
-      "durationMs": 2338,
+      "durationMs": 15799,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -72054,7 +72054,7 @@
       "enrichedLikeCount": 972,
       "enrichedViewCount": 849,
       "enrichedCommentCount": 587,
-      "lastEmbedEnrichAt": "2026-10-27T21:00:25.861Z",
+      "lastEmbedEnrichAt": "2026-10-28T21:12:54.163Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -95043,7 +95043,11 @@
       "enriched": true,
       "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0
+      "metricsUpgraded": 0,
+      "bootstrappedFromBundled": true,
+      "bootstrappedAt": "2026-10-28T20:52:58.562Z",
+      "lastTtBrowserAt": "2026-10-28T20:54:15.852Z",
+      "ttBrowserZero": true
     }
   },
   {
@@ -111256,7 +111260,11 @@
       "enriched": true,
       "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
       "newPostsAdded": 0,
-      "metricsUpgraded": 1
+      "metricsUpgraded": 1,
+      "bootstrappedFromBundled": true,
+      "bootstrappedAt": "2026-10-28T20:52:58.576Z",
+      "lastTtBrowserAt": "2026-10-28T20:54:35.486Z",
+      "ttBrowserZero": true
     }
   },
   {
@@ -111285,6 +111293,323 @@
     },
     "posts": [
       {
+        "id": "ardian.tanah-7698977981405990165",
+        "shortcode": "7698977981405990165",
+        "createTime": 1792558005,
+        "timestamp": 1792558005000,
+        "postedAt": "2026-10-21T04:46:45.000Z",
+        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7698977981405990165",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "bu boss hobinya belanja teruss @Nisyananda ",
+        "hashtags": [],
+        "likeCount": 0,
+        "commentCount": 0,
+        "viewCount": 72,
+        "saveCount": 2,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/o87EB2lcLIAE5OIqL0QOYfBYbgEf4BDjqIWRpF~tplv-tiktokx-origin.image?dr=14575&x-expires=1793390400&x-signature=kASe6%2BWE7YiHwef0OJyPbMxFeSw%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+        "videoUrl": "",
+        "durationSeconds": 16
+      },
+      {
+        "id": "ardian.tanah-7694596492060937478",
+        "shortcode": "7694596492060937478",
+        "createTime": 1791537862,
+        "timestamp": 1791537862000,
+        "postedAt": "2026-10-09T09:24:22.000Z",
+        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7694596492060937478",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Coba tebak, Parti Libur 2027 ada dimana?? @partilibur  #partilibur2026 #ardiantanah #partilibur ",
+        "hashtags": [
+          "#partilibur2026",
+          "#ardiantanah",
+          "#partilibur"
+        ],
+        "likeCount": 7,
+        "commentCount": 0,
+        "viewCount": 252,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/osfaImfADHCEelABlHDV4VQskQBTysjtWFsIXr~tplv-tiktokx-origin.image?dr=14575&x-expires=1793390400&x-signature=GbyKj2fiD5nja23aYcyfY2iod7w%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+        "videoUrl": "",
+        "durationSeconds": 6
+      },
+      {
+        "id": "ardian.tanah-7693064245965081876",
+        "shortcode": "7693064245965081876",
+        "createTime": 1791181113,
+        "timestamp": 1791181113000,
+        "postedAt": "2026-10-05T06:18:33.000Z",
+        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7693064245965081876",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "semoga istiqomah🤲 #ardiantanah #komedi ",
+        "hashtags": [
+          "#ardiantanah",
+          "#komedi"
+        ],
+        "likeCount": 15,
+        "commentCount": 0,
+        "viewCount": 345,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/o4bBsBACtCi5kI80EvA5LZDuaDIPCYBTNQiXP~tplv-tiktokx-origin.image?dr=14575&x-expires=1793390400&x-signature=y4IvkV4YcY9O46TN2Wke0Do4P7I%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+        "videoUrl": "",
+        "durationSeconds": 29
+      },
+      {
+        "id": "ardian.tanah-7687156203306142997",
+        "shortcode": "7687156203306142997",
+        "createTime": 1789805534,
+        "timestamp": 1789805534000,
+        "postedAt": "2026-09-19T08:12:14.000Z",
+        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7687156203306142997",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "sayonara di parti libur 2027🔥  #partilibur2026 #partilibur #bns ",
+        "hashtags": [
+          "#partilibur2026",
+          "#partilibur",
+          "#bns"
+        ],
+        "likeCount": 5,
+        "commentCount": 0,
+        "viewCount": 288,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p19-common-sign.tiktokcdn.com/tos-alisg-i-photomode-sg/e695773b361c4248963d8081b6f16869~tplv-photomode-image.jpeg?dr=14555&x-expires=1793390400&x-signature=bYR8MXaF7YrIigYOVC7fvc82eco%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=9b759fb9&idc=my2&ftpl=1",
+        "videoUrl": ""
+      },
+      {
+        "id": "ardian.tanah-7686694752418385172",
+        "shortcode": "7686694752418385172",
+        "createTime": 1789698093,
+        "timestamp": 1789698093000,
+        "postedAt": "2026-09-18T02:21:33.000Z",
+        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7686694752418385172",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Beli Rumah Subsidi Tanpa Renovasi, Free Meja Dapur dan Kompor Tanam!!  Langsung gass kesini👇🏻 0813-3337-2016 (mimin syahfalah)  @SYAHFALAH GRIYA AQUILA  #ardiantanah #rumahsubsidilumajang #edukasi #syahfalahproperti ",
+        "hashtags": [
+          "#ardiantanah",
+          "#rumahsubsidilumajang",
+          "#edukasi",
+          "#syahfalahproperti"
+        ],
+        "likeCount": 7,
+        "commentCount": 0,
+        "viewCount": 368,
+        "saveCount": 1,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/oETCXflfWstVFDAwIeDGjovDAEYIoACiJRWRIj~tplv-tiktokx-origin.image?dr=14575&x-expires=1793390400&x-signature=fjLDT8uVJ14RRGkDHMI5vAUcHhM%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+        "videoUrl": "",
+        "durationSeconds": 51
+      },
+      {
+        "id": "ardian.tanah-7686359654565170452",
+        "shortcode": "7686359654565170452",
+        "createTime": 1789620075,
+        "timestamp": 1789620075000,
+        "postedAt": "2026-09-17T04:41:15.000Z",
+        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7686359654565170452",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Rumah Subsidi Tanpa Renovasi, beda dari yang lain hanya di @SYAHFALAH GRIYA AQUILA  Langsung gass booking ke sini 0813-3337-2016 (admin)  #ardiantanah #edukasi #rumahsubsidilumajang ",
+        "hashtags": [
+          "#ardiantanah",
+          "#edukasi",
+          "#rumahsubsidilumajang"
+        ],
+        "likeCount": 9,
+        "commentCount": 0,
+        "viewCount": 440,
+        "saveCount": 1,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/o8qccvrPcByI2AiR2BnIN29CnqEzgSf6OebBiM~tplv-tiktokx-origin.image?dr=14575&x-expires=1793390400&x-signature=LFHPgi21szUkbwofLcJ9%2Bz6ehYA%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+        "videoUrl": "",
+        "durationSeconds": 42
+      },
+      {
+        "id": "ardian.tanah-7685941462218951956",
+        "shortcode": "7685941462218951956",
+        "createTime": 1789522707,
+        "timestamp": 1789522707000,
+        "postedAt": "2026-09-16T01:38:27.000Z",
+        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7685941462218951956",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "naik kapal titanic sama si cantik cakeppppp, ya emang istriku cakepp. Bismillah PS 5☺️🤞 @itsnisyananda  #ardiantanah #komedi #wisatalumajang #selokambang ",
+        "hashtags": [
+          "#ardiantanah",
+          "#komedi",
+          "#wisatalumajang",
+          "#selokambang"
+        ],
+        "likeCount": 21,
+        "commentCount": 3,
+        "viewCount": 946,
+        "saveCount": 2,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/owWVuI9IBrnlPA8KwifxASETSiyi91ACW8EI2p~tplv-tiktokx-origin.image?dr=14575&x-expires=1793390400&x-signature=OgPHuSC1mC405miJ1eTjpRa0wGg%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+        "videoUrl": "",
+        "durationSeconds": 26
+      },
+      {
+        "id": "ardian.tanah-7685675214557957396",
+        "shortcode": "7685675214557957396",
+        "createTime": 1789460715,
+        "timestamp": 1789460715000,
+        "postedAt": "2026-09-15T08:25:15.000Z",
+        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7685675214557957396",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Rumah Subsidi Tanpa Renovasi andalan sak Lumajang🤙🏻 Gass booking cuma 100 Ribu Langsung serbu kesini👇🏻 0813-3337-2016 (admin) @syahfalahproperti  #ardiantanah #edukasi #rumahsubsidilumajang ",
+        "hashtags": [
+          "#ardiantanah",
+          "#edukasi",
+          "#rumahsubsidilumajang"
+        ],
+        "likeCount": 13,
+        "commentCount": 0,
+        "viewCount": 482,
+        "saveCount": 1,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/o02CspAiIgIQVgO1AFCIIAtiXfqzGyCuABCAwu~tplv-tiktokx-origin.image?dr=14575&x-expires=1793390400&x-signature=1iY48vRZtMrT4fzEPyL6WLgAqcE%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+        "videoUrl": "",
+        "durationSeconds": 38
+      },
+      {
+        "id": "ardian.tanah-7685322601085996308",
+        "shortcode": "7685322601085996308",
+        "createTime": 1789378614,
+        "timestamp": 1789378614000,
+        "postedAt": "2026-09-14T09:36:54.000Z",
+        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7685322601085996308",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "siapapun yang ketemu dia jalan sama cowok, langsung lapor saya nggih🙏 #komedi #ardiantanah #ardianfamily ",
+        "hashtags": [
+          "#komedi",
+          "#ardiantanah",
+          "#ardianfamily"
+        ],
+        "likeCount": 15,
+        "commentCount": 1,
+        "viewCount": 851,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/oMVpcQxQD96A8BgQgEfGAeEwgFFb2qBEljIRGP~tplv-tiktokx-origin.image?dr=14575&x-expires=1793390400&x-signature=kk2LB4eq7aIPzaS%2BdNSI51ENClo%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+        "videoUrl": "",
+        "durationSeconds": 30
+      },
+      {
+        "id": "ardian.tanah-7683893711696039189",
+        "shortcode": "7683893711696039189",
+        "createTime": 1789045923,
+        "timestamp": 1789045923000,
+        "postedAt": "2026-09-10T13:12:03.000Z",
+        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7683893711696039189",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "yang galak itu bapak atau ibu???  #ardiantanah #komedi ",
+        "hashtags": [
+          "#ardiantanah",
+          "#komedi"
+        ],
+        "likeCount": 7,
+        "commentCount": 0,
+        "viewCount": 336,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/ooiIgoDCqIqRFagyMcfBRYFzKeHUrqECAEBVnI~tplv-tiktokx-origin.image?dr=14575&x-expires=1793390400&x-signature=8jsCjNqZggxzkIWmX0d8YM2Maro%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+        "videoUrl": "",
+        "durationSeconds": 20
+      },
+      {
+        "id": "ardian.tanah-7683808656147746068",
+        "shortcode": "7683808656147746068",
+        "createTime": 1789026126,
+        "timestamp": 1789026126000,
+        "postedAt": "2026-09-10T07:42:06.000Z",
+        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7683808656147746068",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "nek dadi idamanmu iso gakk?? 😖 #ardiantanah #komedi ",
+        "hashtags": [
+          "#ardiantanah",
+          "#komedi"
+        ],
+        "likeCount": 14,
+        "commentCount": 0,
+        "viewCount": 871,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/okaRDEg1IGqC1EE1IBiWxcFCGo0zXBfle9AD8h~tplv-tiktokx-origin.image?dr=14575&x-expires=1793390400&x-signature=MZDk7ja0UJMZsap1PL%2BwAhHJxPc%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+        "videoUrl": "",
+        "durationSeconds": 17
+      },
+      {
+        "id": "ardian.tanah-7683071417469979925",
+        "shortcode": "7683071417469979925",
+        "createTime": 1788854473,
+        "timestamp": 1788854473000,
+        "postedAt": "2026-09-08T08:01:13.000Z",
+        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7683071417469979925",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "cocok a dadi tamboy kun?? ardian kun😅 #ardiantanah #komedi ",
+        "hashtags": [
+          "#ardiantanah",
+          "#komedi"
+        ],
+        "likeCount": 15,
+        "commentCount": 0,
+        "viewCount": 960,
+        "saveCount": 1,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/o0LFZUeVPAX4DSnJIiT4ZjgC4YfegrNgIIEAgG~tplv-tiktokx-origin.image?dr=14575&x-expires=1793390400&x-signature=xK2jiisEu6N7j56V4vSj8%2BO3A%2Fc%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+        "videoUrl": "",
+        "durationSeconds": 46
+      },
+      {
+        "id": "ardian.tanah-7680394344855293204",
+        "shortcode": "7680394344855293204",
+        "createTime": 1788231171,
+        "timestamp": 1788231171000,
+        "postedAt": "2026-09-01T02:52:51.000Z",
+        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7680394344855293204",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "makasi ya bubb gak disuruh tidur diluar @Nisyananda  #ardiantanah #komedi ",
+        "hashtags": [
+          "#ardiantanah",
+          "#komedi"
+        ],
+        "likeCount": 9,
+        "commentCount": 3,
+        "viewCount": 846,
+        "saveCount": 1,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/oQjcDFeG4gSYjMVIGf7opLFHYCAAeIv5LLYZgA~tplv-tiktokx-origin.image?dr=14575&x-expires=1793390400&x-signature=EwALBXHOHF%2Fjd7XaZcnF6iULrPs%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
+        "videoUrl": "",
+        "durationSeconds": 22
+      },
+      {
         "id": "ardian.tanah-7679001685305330964",
         "shortcode": "7679001685305330964",
         "createTime": 1787906912,
@@ -111301,9 +111626,9 @@
           "#komedi",
           "#partilibur2026"
         ],
-        "likeCount": 14,
+        "likeCount": 15,
         "commentCount": 0,
-        "viewCount": 707,
+        "viewCount": 943,
         "saveCount": 0,
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/oI2EnfURpgLRDPHIDSvEApBcSBkFIlvnqNrfSi~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=nvykaZzKNHPDtq4rUYHJ6uJTMJs%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
         "videoUrl": "",
@@ -111325,9 +111650,9 @@
           "#ardiantanah",
           "#komedi"
         ],
-        "likeCount": 3,
+        "likeCount": 4,
         "commentCount": 0,
-        "viewCount": 607,
+        "viewCount": 707,
         "saveCount": 1,
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/oQIUhJgA4fALUI92YMj3VHe94mGKDCMggKcVmf~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=ZkkER67%2Bthd8064pQjcAp%2F%2FwapQ%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
         "videoUrl": "",
@@ -111350,9 +111675,9 @@
           "#komedi",
           "#bankmandiri"
         ],
-        "likeCount": 18,
-        "commentCount": 2,
-        "viewCount": 1306,
+        "likeCount": 20,
+        "commentCount": 4,
+        "viewCount": 1399,
         "saveCount": 7,
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/oQf1VYIyCtBR0NkiboiFGIZqASUCIwA7t9DuqA~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=p4N%2FYF4B74zd2ZcPy39Jv3OZMlI%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
         "videoUrl": "",
@@ -111972,31 +112297,6 @@
         "viewCount": 10700,
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/ogDcbAQZ0oIcfQQUL2W8DCAUmSflloI2j2MfIN~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=jeHwpJslmm%2B41jUfTWzcPyMwpxg%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
         "postedAt": "2026-08-01T07:48:50.000Z"
-      },
-      {
-        "id": "ardian.tanah-7668555089585687828",
-        "shortcode": "7668555089585687828",
-        "createTime": 1785474624,
-        "timestamp": 1785474624000,
-        "postedAt": "2026-07-31T05:10:24.000Z",
-        "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7668555089585687828",
-        "mediaType": "VIDEO",
-        "isVideo": true,
-        "platform": "tiktok",
-        "source": "tt-browser",
-        "caption": "Sampai berjumpa besok gaiss di BNS Parti Libur Caravan 2026🤩 Jadi gak sabar nungguin penampilan Limbad @limbadindonesia  #partilibur2026 #ardiantanah #komedi ",
-        "hashtags": [
-          "#partilibur2026",
-          "#ardiantanah",
-          "#komedi"
-        ],
-        "likeCount": 12,
-        "commentCount": 1,
-        "viewCount": 595,
-        "saveCount": 0,
-        "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/oQsWruoERIrAkUHffdIDazDqnmNFEB2CBg14Lb~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=29XMghVuHvUOMoX3Of9TREXEFGs%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
-        "videoUrl": "",
-        "durationSeconds": 11
       },
       {
         "id": "7668555089585687828",
@@ -115554,8 +115854,8 @@
         "videoUrl": "https://www.tiktok.com/@ardian.tanah/video/7571660822368374036?_r=1&u_code=0&region=US&mid=7571660867759098645&preview_pb=0&sharer_language=en&_d=f01l62e0g3147f&share_item_id=7571660822368374036&source=h5_t",
         "playCount": 63615,
         "diggCount": 928,
-        "likeCount": 1003,
-        "commentCount": 16,
+        "likeCount": 1032,
+        "commentCount": 20,
         "shareCount": 28,
         "collectCount": 109,
         "saveCount": 109,
@@ -115578,7 +115878,7 @@
         "musicTitle": "original sound - ardian tanah",
         "musicAuthor": "ardian tanah",
         "mediaType": "VIDEO",
-        "viewCount": 70900,
+        "viewCount": 73200,
         "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7571660822368374036?_r=1&u_code=0&region=US&mid=7571660867759098645&preview_pb=0&sharer_language=en&_d=f01l62e0g3147f&share_item_id=7571660822368374036&source=h5_t",
         "postedAt": "2025-11-12T02:31:10.000Z",
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/oYfp4zRAEKBEcTmiG8iiwEAWBrAkIgCzfOAc5A~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=4WYNwmiFu8hK1kjov4%2FT9IsgFhQ%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
@@ -118638,7 +118938,7 @@
         "playCount": 48867,
         "diggCount": 822,
         "likeCount": 822,
-        "commentCount": 40,
+        "commentCount": 42,
         "shareCount": 108,
         "collectCount": 80,
         "saveCount": 108,
@@ -118657,7 +118957,7 @@
         "musicTitle": "original sound - ardian tanah",
         "musicAuthor": "ardian tanah",
         "mediaType": "VIDEO",
-        "viewCount": 48800,
+        "viewCount": 48900,
         "postUrl": "https://www.tiktok.com/@ardian.tanah/video/7480015084429888823?_r=1&u_code=0&region=US&mid=7480015269537024774&preview_pb=0&sharer_language=en&_d=f01l62e0g3147f&share_item_id=7480015084429888823&source=h5_t",
         "postedAt": "2025-03-10T03:18:55.000Z",
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-maliva-p-0068/okA5EiGT48UuBWBQaS9ZOZEBOoq5bA5USIivh~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=EmCnDh5gQIGoArPxwd7cRrZG1TY%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
@@ -123935,16 +124235,16 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-maliva-p-0068/oYqDfADQQUxBvFR0n2WZKBJEQEHBB97IjleVEo~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=oWbP6X7tvLoHR0wAwjWbXxONCEw%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-10-27T20:35:45.486Z",
-    "lastFreeEnrichAt": "2026-10-27T20:35:45.486Z",
+    "scrapedAt": "2026-10-28T20:54:51.225Z",
+    "lastTtBrowserAt": "2026-10-28T20:54:51.225Z",
     "stats": {
-      "totalPosts": 394,
-      "durationMs": 14820,
+      "totalPosts": 406,
+      "durationMs": 15731,
       "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 0
+      "source": "tt-browser",
+      "newPostsAdded": 13,
+      "metricsUpgraded": 5,
+      "scrollPages": 4
     }
   },
   {
@@ -139592,7 +139892,11 @@
       "enriched": true,
       "enrichmentSource": "tikwm-per-video (via DDG-Jina + Bing-Jina)",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0
+      "metricsUpgraded": 0,
+      "bootstrappedFromBundled": true,
+      "bootstrappedAt": "2026-10-28T20:52:58.588Z",
+      "lastTtBrowserAt": "2026-10-28T20:55:14.043Z",
+      "ttBrowserZero": true
     }
   },
   {
@@ -144572,7 +144876,11 @@
       "enriched": true,
       "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0
+      "metricsUpgraded": 0,
+      "bootstrappedFromBundled": true,
+      "bootstrappedAt": "2026-10-28T20:52:58.593Z",
+      "lastTtBrowserAt": "2026-10-28T20:55:33.806Z",
+      "ttBrowserZero": true
     }
   }
 ]
