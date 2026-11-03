@@ -21461,11 +21461,11 @@
         "mentions": []
       }
     ],
-    "scrapedAt": "2026-11-02T23:24:22.827Z",
-    "lastFreeEnrichAt": "2026-11-02T23:24:22.827Z",
+    "scrapedAt": "2026-11-03T21:41:27.797Z",
+    "lastFreeEnrichAt": "2026-11-03T21:41:27.797Z",
     "stats": {
       "totalPosts": 966,
-      "durationMs": 1378,
+      "durationMs": 16204,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -21474,7 +21474,7 @@
       "enrichedLikeCount": 952,
       "enrichedViewCount": 346,
       "enrichedCommentCount": 440,
-      "lastEmbedEnrichAt": "2026-11-02T23:45:00.229Z",
+      "lastEmbedEnrichAt": "2026-11-03T21:54:18.940Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -45807,11 +45807,11 @@
         "mentions": []
       }
     ],
-    "scrapedAt": "2026-11-02T23:24:25.800Z",
-    "lastFreeEnrichAt": "2026-11-02T23:24:25.800Z",
+    "scrapedAt": "2026-11-03T21:41:45.913Z",
+    "lastFreeEnrichAt": "2026-11-03T21:41:45.913Z",
     "stats": {
       "totalPosts": 828,
-      "durationMs": 952,
+      "durationMs": 16091,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -45820,7 +45820,7 @@
       "enrichedLikeCount": 822,
       "enrichedViewCount": 382,
       "enrichedCommentCount": 237,
-      "lastEmbedEnrichAt": "2026-11-02T23:46:32.914Z",
+      "lastEmbedEnrichAt": "2026-11-03T21:55:56.947Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -50382,7 +50382,7 @@
         "shortcode": "DblXvjATYpU",
         "caption": "Semoga Parti Libur selalu tumbuh, semakin besar, dan semakin keren kedepannya!!\n\nSee u at Parti Libur 2027, semoga semakin meriah dan Much crazier🔥🔥\n\nAdakah moment berkesan yang kalian alami kemarin??\n\nParti Libur\nParti teruss🫵\n\n#partilibur2026 #ardiantanah #bns",
         "timestamp": 1785773087,
-        "likeCount": 60,
+        "likeCount": 61,
         "commentCount": 0,
         "viewCount": 2741,
         "saveCount": 0,
@@ -51894,11 +51894,11 @@
         "postedAt": "2023-02-03T11:23:45.000Z"
       }
     ],
-    "scrapedAt": "2026-11-02T23:24:31.519Z",
-    "lastFreeEnrichAt": "2026-11-02T23:24:31.519Z",
+    "scrapedAt": "2026-11-03T21:41:48.868Z",
+    "lastFreeEnrichAt": "2026-11-03T21:41:48.868Z",
     "stats": {
       "totalPosts": 283,
-      "durationMs": 3708,
+      "durationMs": 941,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -51907,7 +51907,7 @@
       "enrichedLikeCount": 283,
       "enrichedViewCount": 122,
       "enrichedCommentCount": 226,
-      "lastEmbedEnrichAt": "2026-11-02T23:47:59.222Z",
+      "lastEmbedEnrichAt": "2026-11-03T21:57:29.860Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 1
     }
@@ -77932,11 +77932,11 @@
         ]
       }
     ],
-    "scrapedAt": "2026-11-02T23:24:49.316Z",
-    "lastFreeEnrichAt": "2026-11-02T23:24:49.316Z",
+    "scrapedAt": "2026-11-03T21:41:51.792Z",
+    "lastFreeEnrichAt": "2026-11-03T21:41:51.792Z",
     "stats": {
       "totalPosts": 1030,
-      "durationMs": 15792,
+      "durationMs": 920,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -77945,7 +77945,7 @@
       "enrichedLikeCount": 1030,
       "enrichedViewCount": 907,
       "enrichedCommentCount": 619,
-      "lastEmbedEnrichAt": "2026-11-02T23:49:34.832Z",
+      "lastEmbedEnrichAt": "2026-11-03T21:59:12.103Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -100934,7 +100934,11 @@
       "enriched": true,
       "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0
+      "metricsUpgraded": 0,
+      "bootstrappedFromBundled": true,
+      "bootstrappedAt": "2026-11-03T21:38:41.926Z",
+      "lastTtBrowserAt": "2026-11-03T21:39:50.734Z",
+      "ttBrowserZero": true
     }
   },
   {
@@ -100961,6 +100965,417 @@
       "localAvatar": "/TITAN/assets/avatars/tt-syahfalahproperti.jpeg"
     },
     "posts": [
+      {
+        "id": "syahfalahproperti-7703868649115012372",
+        "shortcode": "7703868649115012372",
+        "createTime": 1793696705,
+        "timestamp": 1793696705000,
+        "postedAt": "2026-11-03T09:05:05.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7703868649115012372",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Sudah Subsidi kok masih Renov  Di Bhumi Saka Arum langsung siap huni tanpa Renovasi !!  Segera amankan unit Impian mu di Bhumi Saka Arum  Hubungi Admin 081333372016 #syahfalahproperti #ptlembayung #bhumisakaarum #rumahsubsidilumajang ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#bhumisakaarum",
+          "#rumahsubsidilumajang"
+        ],
+        "likeCount": 7,
+        "commentCount": 0,
+        "viewCount": 176,
+        "saveCount": 1,
+        "thumbnailUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oEz08YAciINIDfrVAMLGgogpeWIfcCDoYGOj0L~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=dVhs0iu9KAaHauBu4GD61SHCQTg%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 52
+      },
+      {
+        "id": "syahfalahproperti-7703505690765184277",
+        "shortcode": "7703505690765184277",
+        "createTime": 1793612196,
+        "timestamp": 1793612196000,
+        "postedAt": "2026-11-02T09:36:36.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7703505690765184277",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Dari pada cuma mantau unit aja tapi gak booking², mending buruan deh sebelum semuanya sold out!!  Rumah Subsidi Langsung Siap Huni, Tanpa Renovasi✨ ☎ 0813-3337-2016 📍Mustika Lembayung #syahfalahproperti #perumahanlumajang #ptlembayung #mustikalembayung ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#perumahanlumajang",
+          "#ptlembayung",
+          "#mustikalembayung"
+        ],
+        "likeCount": 10,
+        "commentCount": 1,
+        "viewCount": 498,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/okAjM0QOyTfe6hopIXMnZBAgM8AfXDRxECFVLg~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=wRY7JOEInEaL539HNvHoSrLTMxs%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 30
+      },
+      {
+        "id": "syahfalahproperti-7701226861300518165",
+        "shortcode": "7701226861300518165",
+        "createTime": 1793081614,
+        "timestamp": 1793081614000,
+        "postedAt": "2026-10-27T06:13:34.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7701226861300518165",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Rumah Subsidi Kok Masih Renovasi, Yo Gak Josjiss😋 Rumah Subsidi Langsung Siap Huni, Tanpa Renovasi✨ Booking Hanya 100 Ribu Aja!!  ☎️ 0813-3337-2016 📍Mustika Lembayung #syahfalahproperti #PTlembayung #mustikalembayung #rumahsubsidiLumajang ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#mustikalembayung",
+          "#rumahsubsidilumajang"
+        ],
+        "likeCount": 2,
+        "commentCount": 0,
+        "viewCount": 274,
+        "saveCount": 1,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/o0viuCA5IJIuDBqxifxpgIC41RhQaBFWcCiwAA~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=k%2BN%2BtBLp25GTuWBk4KG8V0NAB8g%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 75
+      },
+      {
+        "id": "syahfalahproperti-7700907090495393045",
+        "shortcode": "7700907090495393045",
+        "createTime": 1793007162,
+        "timestamp": 1793007162000,
+        "postedAt": "2026-10-26T09:32:42.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7700907090495393045",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Soriii kali ini gak mikir gengsi, pengen fokus investasi✌😖 Rumah Subsidi Langsung Siap Huni, Tanpa Renovasi✨ ☎0813-3337-2016 📍Mustika Lembayung #syahfalahproperti #ptlembayung #rumahsubsidilumajang #mustikalembayung ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#rumahsubsidilumajang",
+          "#mustikalembayung"
+        ],
+        "likeCount": 11,
+        "commentCount": 0,
+        "viewCount": 499,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/ooJjfA5ijoEsDIgVevLeDCACQHSbxEgNjJGLIN~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=om58VzPW2TbDeEDgoUb%2B3vzEM8E%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 17
+      },
+      {
+        "id": "syahfalahproperti-7700122501216505089",
+        "shortcode": "7700122501216505089",
+        "createTime": 1792824485,
+        "timestamp": 1792824485000,
+        "postedAt": "2026-10-24T06:48:05.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7700122501216505089",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "ayoo gesss tukuo mumpung durung tak antemi😖✌ Rumah Subsidi Langsung Siap Huni, Tanpa Renovasi✨ ☎ 0813-3337-2016 📍Mustika Lembayung #syahfalahproperti  #ptlembayung  #RumahSubsidiLumajang #mustikalembayung ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#rumahsubsidilumajang",
+          "#mustikalembayung"
+        ],
+        "likeCount": 4,
+        "commentCount": 0,
+        "viewCount": 689,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/o811bCBkIAAicHyAfCAwIjLiEicJyRwpKoYIqV~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=1QwRY3o7OqE0hwqi51diu%2Bw9y%2F4%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 33
+      },
+      {
+        "id": "syahfalahproperti-7699742805094255892",
+        "shortcode": "7699742805094255892",
+        "createTime": 1792736082,
+        "timestamp": 1792736082000,
+        "postedAt": "2026-10-23T06:14:42.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7699742805094255892",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Rumah Subsidi Langsung Siap Huni, Tanpa Renovasi✨ Booking Hanya 100 Ribu Saja!!!  ☎ 0813-3337-2016 📍Mustika Lembayung #syahfalahproperti #PTlembayung #RumahSubsidiLumajang #mustikalembayung ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#rumahsubsidilumajang",
+          "#mustikalembayung"
+        ],
+        "likeCount": 10,
+        "commentCount": 3,
+        "viewCount": 692,
+        "saveCount": 1,
+        "thumbnailUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/o0QGaE1GDQd0Re7GIrfAHWGbLReHAF10OgO1ec~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=O%2Bl3TiQn8ryZaMnq7x5EIKy%2FUYU%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 30
+      },
+      {
+        "id": "syahfalahproperti-7699353161110228245",
+        "shortcode": "7699353161110228245",
+        "createTime": 1792645362,
+        "timestamp": 1792645362000,
+        "postedAt": "2026-10-22T05:02:42.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7699353161110228245",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "mimin sampek bosenn sumpill nihh yeaaa😖 #syahfalahproperti #PTlembayung #RumahSubsidiLumajang ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#rumahsubsidilumajang"
+        ],
+        "likeCount": 1,
+        "commentCount": 0,
+        "viewCount": 257,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-i-photomode-sg/0f7861c39c0e42bf99cf1f6cae25b33e~tplv-photomode-image.jpeg?dr=9616&x-expires=1793912400&x-signature=%2BUcA2wjVZsKkfkLllhwq6Pdl2%2Fc%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=9b759fb9&idc=useast5&ftpl=1",
+        "videoUrl": ""
+      },
+      {
+        "id": "syahfalahproperti-7699007061706673428",
+        "shortcode": "7699007061706673428",
+        "createTime": 1792564774,
+        "timestamp": 1792564774000,
+        "postedAt": "2026-10-21T06:39:34.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7699007061706673428",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Kalau kamu udah nemu yang tepat, langsung aja merapat👇🏻 ☎ 0813-3337-2016 📍Mustika Lembayung #syahfalahproperti #ptlembayung #RumahSubsidiLumajang #mustikalembayung ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#rumahsubsidilumajang",
+          "#mustikalembayung"
+        ],
+        "likeCount": 3,
+        "commentCount": 0,
+        "viewCount": 298,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oQERPMIYeTZG5LD1BgfWF7AcC4IBicrLBF2qXE~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=PvTVO6zIeDLhrLuKvJQDXWyOZUI%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 47
+      },
+      {
+        "id": "syahfalahproperti-7698630715247906068",
+        "shortcode": "7698630715247906068",
+        "createTime": 1792477154,
+        "timestamp": 1792477154000,
+        "postedAt": "2026-10-20T06:19:14.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7698630715247906068",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Intinya jangan beli karena gengsi!!  Rumah Subsidi Langsung Siap Huni, Tanpa Renovasi✨ Info Booking & Survei ☎️ 0813-3337-2016 📍 Mustika Lembayung #Syahfalahproperti #PTlembayung #rumahsubsidiLumajang #mustikalembayung ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#rumahsubsidilumajang",
+          "#mustikalembayung"
+        ],
+        "likeCount": 0,
+        "commentCount": 0,
+        "viewCount": 229,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-i-photomode-sg/30d909285e974cf2acf60731f93f9504~tplv-photomode-image.jpeg?dr=9616&x-expires=1793912400&x-signature=lQ3jcRprh5wB%2FACOFZRJO9vUEq0%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=9b759fb9&idc=useast5&ftpl=1",
+        "videoUrl": ""
+      },
+      {
+        "id": "syahfalahproperti-7698289011944672533",
+        "shortcode": "7698289011944672533",
+        "createTime": 1792397594,
+        "timestamp": 1792397594000,
+        "postedAt": "2026-10-19T08:13:14.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7698289011944672533",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Ketika STB, ada bagian bangunan yang perlu dibenahi? Tenang, kami siap membantu! 😌🏡 Sebagai developer yang terpercaya dan bertanggung jawab, kami berkomitmen menjaga kualitas setiap produk serta memastikan kepuasan pelanggan. Saat STB, kamu bisa menyampaikan bagian bangunan yang perlu diperbaiki melalui formulir komplain. Selanjutnya, tim proyek kami akan menindaklanjuti komplain tersebut dan melakukan perbaikan serta finishing ulang sesuai kebutuhan. Tenang, kamu juga mendapatkan masa garansi selama 1 bulan untuk menyampaikan komplain jika ada bagian bangunan yang belum sesuai. Jadi, tak perlu khawatir! Kami siap mendampingi dan menindaklanjuti setiap komplain dengan penuh tanggung jawab, karena kualitas rumah dan kepuasan pelanggan adalah prioritas kami. 🤝✨ #Syahfalahproperti #PTlembayung #rumahsubsidilumajang #mustikalembayung ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#rumahsubsidilumajang",
+          "#mustikalembayung"
+        ],
+        "likeCount": 10,
+        "commentCount": 0,
+        "viewCount": 700,
+        "saveCount": 1,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oMjdDDFvAKngYOHVI6oLIIDqgCdefkeXZAGRIm~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=ShhQc4htzBYg8LU5%2FZPws%2Bns0To%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 58
+      },
+      {
+        "id": "syahfalahproperti-7697970181431364885",
+        "shortcode": "7697970181431364885",
+        "createTime": 1792323357,
+        "timestamp": 1792323357000,
+        "postedAt": "2026-10-18T11:35:57.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7697970181431364885",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Kalau masih gak percaya, langsung aja cek lokasi di Mustika Lembayung Sumbersuko☺️ Jangan Lupa sekalian membawa : ✅Kartu Keluarga ✅ Ktp Biar kami langsung bantu proses pemberkasan😉 Rumah Subsidi Langsung Siap Huni, Tanpa Renovasi✨ ☎️ 0813-3337-2016 📍Mustika Lembayung Sumbersuko #Syahfalahproperti #PTlembayung #mustikalembayung #rumahsubsidiLumajang ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#mustikalembayung",
+          "#rumahsubsidilumajang"
+        ],
+        "likeCount": 32,
+        "commentCount": 0,
+        "viewCount": 4283,
+        "saveCount": 13,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oEIUIEAyIrUaA5B1WiDVfomFXd7C4irwuMlxAq~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=qG97Xpwu9mvq81UcTlEa1ykGhxc%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 37
+      },
+      {
+        "id": "syahfalahproperti-7697561602509376789",
+        "shortcode": "7697561602509376789",
+        "createTime": 1792228233,
+        "timestamp": 1792228233000,
+        "postedAt": "2026-10-17T09:10:33.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7697561602509376789",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Emang gak becuss!!!! Disuruh bikin Hook yang menarik. Malah ngerusakin pintu😡 Rumah Subsidi Tanpa Renovasi✨ ☎️ 0813-3337-2016 📍Mustika Lembayung #Syahfalahproperti #PTlembayung #rumahsubsidilumajang #mustikalembayung ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#rumahsubsidilumajang",
+          "#mustikalembayung"
+        ],
+        "likeCount": 10,
+        "commentCount": 0,
+        "viewCount": 1034,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/ogLb460VpAvEDBvEIGqnnjOCorTeQjmfIfaAQG~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=l3rNMxoyXWeDHmCMnrxS32I7P9Q%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 28
+      },
+      {
+        "id": "syahfalahproperti-7697185877310688532",
+        "shortcode": "7697185877310688532",
+        "createTime": 1792140754,
+        "timestamp": 1792140754000,
+        "postedAt": "2026-10-16T08:52:34.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7697185877310688532",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "gelutt wes, penting aku clossing☺️ becandyaaaa🙌 #Syahfalahproperti #PTLembayung #RumahSubsidiLumajang #MustikaLembayung ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#rumahsubsidilumajang",
+          "#mustikalembayung"
+        ],
+        "likeCount": 0,
+        "commentCount": 0,
+        "viewCount": 378,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oULaBfxVCinuId5BnB1wiAtREXIPApBxHAF0qi~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=NK1VuWEXjxr4JMrb%2FF8ky2ZmyDo%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 32
+      },
+      {
+        "id": "syahfalahproperti-7696803752799390996",
+        "shortcode": "7696803752799390996",
+        "createTime": 1792051779,
+        "timestamp": 1792051779000,
+        "postedAt": "2026-10-15T08:09:39.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7696803752799390996",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Info janda area Lumajang, umah sudah ready ini mintol hubungi kesini👇🏻 ☎ 0813-3337-2016 📍Mustika Lembayung #Syahfalahproperti #RumahSubsidiLumajang #RumahSubsidiLumajang ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#rumahsubsidilumajang"
+        ],
+        "likeCount": 6,
+        "commentCount": 0,
+        "viewCount": 533,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/oQrEOiekI1zEcx0BaQsDfBNRjoAFC4IgKbRqIP~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=u%2F9o9nGKUACkD0XSPsoS1SeIXRU%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 58
+      },
+      {
+        "id": "syahfalahproperti-7696432107056286996",
+        "shortcode": "7696432107056286996",
+        "createTime": 1791965249,
+        "timestamp": 1791965249000,
+        "postedAt": "2026-10-14T08:07:29.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7696432107056286996",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Wes tak usahakno ndue umah dewe ben gak campur morotuo. Lakok tibak e ditinggal lungo karo lanangan liyo. 😀🤣 Rumah Subsidi Langsung Siap Huni, Tanpa Renovasi! 🏡 ☎️ 0813-3337-2016 📍 Mustika Lembayung #Syahfalahproperti #PTLembayung #RumahSubsidiLumajang #MustikaLembayung ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#rumahsubsidilumajang",
+          "#mustikalembayung"
+        ],
+        "likeCount": 4,
+        "commentCount": 1,
+        "viewCount": 590,
+        "saveCount": 0,
+        "thumbnailUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/ocp1epQggDAVXfn84cX4e3s0QIAEuIAVMCnjNp~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=zLgFB6jX5ZT1UcZWWZMcJ%2F89FoA%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 36
+      },
+      {
+        "id": "syahfalahproperti-7696047598926302485",
+        "shortcode": "7696047598926302485",
+        "createTime": 1791875723,
+        "timestamp": 1791875723000,
+        "postedAt": "2026-10-13T07:15:23.000Z",
+        "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7696047598926302485",
+        "mediaType": "VIDEO",
+        "isVideo": true,
+        "platform": "tiktok",
+        "source": "tt-browser",
+        "caption": "Rumah Subsidi No Drama No Renovasi, Langsung Siap Huni!! 🫵🏻 @ardian.tanah  Booking Hanya 100 Ribu AJA!!!  ☎️0813-3337-2016 📍Mustika Lembayung #Syahfalahproperti #PTlembayung #rumahsubsidiLumajang #mustikalembayung ",
+        "hashtags": [
+          "#syahfalahproperti",
+          "#ptlembayung",
+          "#rumahsubsidilumajang",
+          "#mustikalembayung"
+        ],
+        "likeCount": 7,
+        "commentCount": 0,
+        "viewCount": 508,
+        "saveCount": 2,
+        "thumbnailUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-p-0037/ooOrtdeEDQORMbspAFFEcFR47BfFqhBQEwgZEz~tplv-tiktokx-origin.image?dr=9636&x-expires=1793912400&x-signature=8Sv7JTMVuxFWxWQhcu8P5OAoowc%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+        "videoUrl": "",
+        "durationSeconds": 43
+      },
       {
         "id": "syahfalahproperti-7679349054597336340",
         "shortcode": "7679349054597336340",
@@ -105436,11 +105851,11 @@
         "videoUrl": "https://www.tiktok.com/@syahfalahproperti/video/7574020750882000149?_r=1&u_code=0&region=US&mid=7574020839792823061&preview_pb=0&sharer_language=en&_d=f019e3cj7jb7k8&share_item_id=7574020750882000149&source=h5_t",
         "playCount": 2255,
         "diggCount": 21,
-        "likeCount": 25,
-        "commentCount": 16,
+        "likeCount": 29,
+        "commentCount": 17,
         "shareCount": 13,
         "collectCount": 7,
-        "saveCount": 17,
+        "saveCount": 18,
         "durationSeconds": 62.273,
         "duration": 62.273,
         "hashtags": [
@@ -105459,7 +105874,7 @@
         "mentions": [],
         "musicTitle": "original sound - SYAHFALAH GRIYA AQUILA",
         "musicAuthor": "SYAHFALAH GRIYA AQUILA",
-        "viewCount": 2714,
+        "viewCount": 3305,
         "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7574020750882000149?_r=1&u_code=0&region=US&mid=7574020839792823061&preview_pb=0&sharer_language=en&_d=f019e3cj7jb7k8&share_item_id=7574020750882000149&source=h5_t",
         "postedAt": "2025-11-18T11:08:52.000Z",
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/ocABO7DbFAN2HUc8ARn3ACzEK4YEIUAfgpFe2E~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=kEw46arZewup6ll3q25nAnORHgU%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
@@ -105474,11 +105889,11 @@
         "videoUrl": "https://www.tiktok.com/@syahfalahproperti/video/7574006750278356245?_r=1&u_code=0&region=US&mid=7574006828901976840&preview_pb=0&sharer_language=en&_d=f019e3cj7jb7k8&share_item_id=7574006750278356245&source=h5_t",
         "playCount": 2736,
         "diggCount": 39,
-        "likeCount": 45,
-        "commentCount": 16,
+        "likeCount": 51,
+        "commentCount": 17,
         "shareCount": 32,
         "collectCount": 17,
-        "saveCount": 35,
+        "saveCount": 38,
         "durationSeconds": 60.011,
         "duration": 60.011,
         "hashtags": [
@@ -105498,7 +105913,7 @@
         "mentions": [],
         "musicTitle": "original sound - SYAHFALAH GRIYA AQUILA",
         "musicAuthor": "SYAHFALAH GRIYA AQUILA",
-        "viewCount": 3140,
+        "viewCount": 3733,
         "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7574006750278356245?_r=1&u_code=0&region=US&mid=7574006828901976840&preview_pb=0&sharer_language=en&_d=f019e3cj7jb7k8&share_item_id=7574006750278356245&source=h5_t",
         "mediaType": "VIDEO",
         "postedAt": "2025-11-18T10:14:38.000Z",
@@ -109411,7 +109826,7 @@
         "mentions": [],
         "musicTitle": "original sound - SYAHFALAH GRIYA AQUILA",
         "musicAuthor": "SYAHFALAH GRIYA AQUILA",
-        "viewCount": 5883,
+        "viewCount": 6533,
         "postUrl": "https://www.tiktok.com/@syahfalahproperti/video/7456638907703217426?_r=1&u_code=0&region=US&mid=7456638957439208209&preview_pb=0&sharer_language=en&_d=f019e3cj7jb7k8&share_item_id=7456638907703217426&source=h5_t",
         "postedAt": "2025-01-06T03:27:25.000Z",
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/ooE7IAAAITovAsBzIiBBf15rXbxCNiAwOAaZBO~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=9gBeX88jfGHD37%2BQ4ddVPXMZamg%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2",
@@ -117138,16 +117553,16 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-useast2a-p-0037-aiso/oEODGUQ4bAIEn3v6BnVjJeBUODDPeCV1RZKQHH~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=R%2BBx1mQX8hoJbcMaGH1t2pEiJVQ%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-11-02T23:25:36.688Z",
-    "lastFreeEnrichAt": "2026-11-02T23:25:36.688Z",
+    "scrapedAt": "2026-11-03T21:40:10.599Z",
+    "lastTtBrowserAt": "2026-11-03T21:40:10.599Z",
     "stats": {
-      "totalPosts": 474,
-      "durationMs": 22830,
+      "totalPosts": 490,
+      "durationMs": 19844,
       "isDummy": false,
-      "enriched": true,
-      "enrichmentSource": "bundled-preservation",
-      "newPostsAdded": 0,
-      "metricsUpgraded": 0
+      "source": "tt-browser",
+      "newPostsAdded": 16,
+      "metricsUpgraded": 3,
+      "scrollPages": 5
     }
   },
   {
@@ -130127,7 +130542,11 @@
       "enriched": true,
       "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0
+      "metricsUpgraded": 0,
+      "bootstrappedFromBundled": true,
+      "bootstrappedAt": "2026-11-03T21:38:41.953Z",
+      "lastTtBrowserAt": "2026-11-03T21:40:34.223Z",
+      "ttBrowserZero": true
     }
   },
   {
@@ -145775,7 +146194,11 @@
       "enriched": true,
       "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0
+      "metricsUpgraded": 0,
+      "bootstrappedFromBundled": true,
+      "bootstrappedAt": "2026-11-03T21:38:41.958Z",
+      "lastTtBrowserAt": "2026-11-03T21:40:52.316Z",
+      "ttBrowserZero": true
     }
   },
   {
@@ -150755,7 +151178,11 @@
       "enriched": true,
       "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0
+      "metricsUpgraded": 0,
+      "bootstrappedFromBundled": true,
+      "bootstrappedAt": "2026-11-03T21:38:41.965Z",
+      "lastTtBrowserAt": "2026-11-03T21:41:11.454Z",
+      "ttBrowserZero": true
     }
   }
 ]
