@@ -21461,11 +21461,11 @@
         "mentions": []
       }
     ],
-    "scrapedAt": "2026-11-03T21:41:27.797Z",
-    "lastFreeEnrichAt": "2026-11-03T21:41:27.797Z",
+    "scrapedAt": "2026-11-04T21:48:50.304Z",
+    "lastFreeEnrichAt": "2026-11-04T21:48:50.304Z",
     "stats": {
       "totalPosts": 966,
-      "durationMs": 16204,
+      "durationMs": 1883,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -21474,7 +21474,7 @@
       "enrichedLikeCount": 952,
       "enrichedViewCount": 346,
       "enrichedCommentCount": 440,
-      "lastEmbedEnrichAt": "2026-11-03T21:54:18.940Z",
+      "lastEmbedEnrichAt": "2026-11-04T22:10:26.346Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -45807,11 +45807,11 @@
         "mentions": []
       }
     ],
-    "scrapedAt": "2026-11-03T21:41:45.913Z",
-    "lastFreeEnrichAt": "2026-11-03T21:41:45.913Z",
+    "scrapedAt": "2026-11-04T21:48:53.311Z",
+    "lastFreeEnrichAt": "2026-11-04T21:48:53.311Z",
     "stats": {
       "totalPosts": 828,
-      "durationMs": 16091,
+      "durationMs": 991,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -45820,7 +45820,7 @@
       "enrichedLikeCount": 822,
       "enrichedViewCount": 382,
       "enrichedCommentCount": 237,
-      "lastEmbedEnrichAt": "2026-11-03T21:55:56.947Z",
+      "lastEmbedEnrichAt": "2026-11-04T22:12:03.312Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -51894,11 +51894,11 @@
         "postedAt": "2023-02-03T11:23:45.000Z"
       }
     ],
-    "scrapedAt": "2026-11-03T21:41:48.868Z",
-    "lastFreeEnrichAt": "2026-11-03T21:41:48.868Z",
+    "scrapedAt": "2026-11-04T21:49:07.106Z",
+    "lastFreeEnrichAt": "2026-11-04T21:49:07.106Z",
     "stats": {
       "totalPosts": 283,
-      "durationMs": 941,
+      "durationMs": 11782,
       "isDummy": false,
       "enriched": false,
       "enrichmentSource": "bundled-preservation",
@@ -51907,9 +51907,9 @@
       "enrichedLikeCount": 283,
       "enrichedViewCount": 122,
       "enrichedCommentCount": 226,
-      "lastEmbedEnrichAt": "2026-11-03T21:57:29.860Z",
+      "lastEmbedEnrichAt": "2026-11-04T22:13:31.102Z",
       "embedEnrichAttempted": 50,
-      "embedEnrichUpgraded": 1
+      "embedEnrichUpgraded": 0
     }
   },
   {
@@ -77932,20 +77932,20 @@
         ]
       }
     ],
-    "scrapedAt": "2026-11-03T21:41:51.792Z",
-    "lastFreeEnrichAt": "2026-11-03T21:41:51.792Z",
+    "scrapedAt": "2026-11-04T21:49:12.757Z",
+    "lastFreeEnrichAt": "2026-11-04T21:49:12.757Z",
     "stats": {
       "totalPosts": 1030,
-      "durationMs": 920,
+      "durationMs": 3647,
       "isDummy": false,
-      "enriched": false,
-      "enrichmentSource": "bundled-preservation",
+      "enriched": true,
+      "enrichmentSource": "jina-web",
       "newPostsAdded": 0,
       "metricsUpgraded": 0,
       "enrichedLikeCount": 1030,
       "enrichedViewCount": 907,
       "enrichedCommentCount": 619,
-      "lastEmbedEnrichAt": "2026-11-03T21:59:12.103Z",
+      "lastEmbedEnrichAt": "2026-11-04T22:15:09.838Z",
       "embedEnrichAttempted": 50,
       "embedEnrichUpgraded": 0
     }
@@ -100925,20 +100925,16 @@
         "durationSeconds": 109
       }
     ],
-    "scrapedAt": "2026-11-02T23:25:10.736Z",
-    "lastFreeEnrichAt": "2026-11-02T23:25:10.736Z",
+    "scrapedAt": "2026-11-04T21:49:42.164Z",
+    "lastFreeEnrichAt": "2026-11-04T21:49:42.164Z",
     "stats": {
       "totalPosts": 803,
-      "durationMs": 19313,
+      "durationMs": 27294,
       "isDummy": false,
       "enriched": true,
       "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0,
-      "bootstrappedFromBundled": true,
-      "bootstrappedAt": "2026-11-03T21:38:41.926Z",
-      "lastTtBrowserAt": "2026-11-03T21:39:50.734Z",
-      "ttBrowserZero": true
+      "metricsUpgraded": 0
     }
   },
   {
@@ -100951,16 +100947,16 @@
       "nickname": "SYAHFALAH GRIYA AQUILA",
       "fullName": "SYAHFALAH GRIYA AQUILA",
       "avatarUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-maliva-avt-0068/c03c5146d05474be62fc5b304f79237a~tplv-tiktokx-cropcenter:1080:1080.webp?dr=9640&refresh_token=dac98403&x-expires=1784836800&x-signature=KyosS3VD4gZ%2FFhOfWRm%2BoXGi1Us%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=2472a6c6&idc=useast8",
-      "bio": "TikTok Shop is now available on web!",
-      "biography": "TikTok Shop is now available on web!",
+      "bio": "Company",
+      "biography": "Company",
       "verified": false,
-      "followerCount": 1286,
+      "followerCount": 1287,
       "followingCount": 316,
       "heartCount": 10600,
       "postCount": 418,
       "externalUrl": "",
       "isPrivate": false,
-      "signature": "TikTok Shop is now available on web!",
+      "signature": "Company",
       "videoCount": 418,
       "localAvatar": "/TITAN/assets/avatars/tt-syahfalahproperti.jpeg"
     },
@@ -117553,16 +117549,16 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-useast2a-p-0037-aiso/oEODGUQ4bAIEn3v6BnVjJeBUODDPeCV1RZKQHH~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=R%2BBx1mQX8hoJbcMaGH1t2pEiJVQ%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-11-03T21:40:10.599Z",
-    "lastTtBrowserAt": "2026-11-03T21:40:10.599Z",
+    "scrapedAt": "2026-11-04T21:50:00.136Z",
+    "lastFreeEnrichAt": "2026-11-04T21:50:00.136Z",
     "stats": {
       "totalPosts": 490,
-      "durationMs": 19844,
+      "durationMs": 14952,
       "isDummy": false,
-      "source": "tt-browser",
-      "newPostsAdded": 16,
-      "metricsUpgraded": 3,
-      "scrollPages": 5
+      "enriched": true,
+      "enrichmentSource": "bundled-preservation",
+      "newPostsAdded": 0,
+      "metricsUpgraded": 0
     }
   },
   {
@@ -117578,8 +117574,8 @@
       "bio": "TikTok Shop is now available on web!",
       "biography": "TikTok Shop is now available on web!",
       "verified": false,
-      "followerCount": 9964,
-      "followingCount": 214,
+      "followerCount": 9975,
+      "followingCount": 215,
       "heartCount": 30700,
       "postCount": 359,
       "externalUrl": "",
@@ -130533,20 +130529,16 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-maliva-p-0068/oYqDfADQQUxBvFR0n2WZKBJEQEHBB97IjleVEo~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=oWbP6X7tvLoHR0wAwjWbXxONCEw%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-11-02T23:25:58.212Z",
-    "lastFreeEnrichAt": "2026-11-02T23:25:58.212Z",
+    "scrapedAt": "2026-11-04T21:50:23.007Z",
+    "lastFreeEnrichAt": "2026-11-04T21:50:23.007Z",
     "stats": {
       "totalPosts": 406,
-      "durationMs": 18513,
+      "durationMs": 19859,
       "isDummy": false,
       "enriched": true,
       "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0,
-      "bootstrappedFromBundled": true,
-      "bootstrappedAt": "2026-11-03T21:38:41.953Z",
-      "lastTtBrowserAt": "2026-11-03T21:40:34.223Z",
-      "ttBrowserZero": true
+      "metricsUpgraded": 0
     }
   },
   {
@@ -130559,16 +130551,16 @@
       "nickname": "achmad ardiansyah",
       "fullName": "achmad ardiansyah",
       "avatarUrl": "https://p19-common-sign.tiktokcdn-us.com/tos-alisg-avt-0068/b68650c195b57dad6c3c27d5aae1d35a~tplv-tiktokx-cropcenter:1080:1080.webp?dr=9640&refresh_token=b5e383f9&x-expires=1784703600&x-signature=%2Bw2Ov5%2F8sNyotN5oSGPAryv2os4%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=2472a6c6&idc=useast8",
-      "bio": "ardiantanahmenjawab",
-      "biography": "ardiantanahmenjawab",
+      "bio": "TikTok Shop is now available on web!",
+      "biography": "TikTok Shop is now available on web!",
       "verified": false,
-      "followerCount": 5388,
+      "followerCount": 5387,
       "followingCount": 100,
       "heartCount": 70100,
       "postCount": 497,
       "externalUrl": "",
       "isPrivate": false,
-      "signature": "ardiantanahmenjawab",
+      "signature": "TikTok Shop is now available on web!",
       "videoCount": 497,
       "localAvatar": "/TITAN/assets/avatars/tt-ardiantanahmenjawab.jpeg"
     },
@@ -146185,20 +146177,16 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-maliva-p-0068/ogjwYDPEIQFrBK7fEQlGeJmQtrR1xAAuEICBBm~tplv-tiktokx-origin.image?dr=14575&x-expires=1788202800&x-signature=18tnWtmDjMKSKnmnOjGX9VrzEc0%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-11-02T23:26:16.968Z",
-    "lastFreeEnrichAt": "2026-11-02T23:26:16.968Z",
+    "scrapedAt": "2026-11-04T21:50:49.104Z",
+    "lastFreeEnrichAt": "2026-11-04T21:50:49.104Z",
     "stats": {
       "totalPosts": 505,
-      "durationMs": 15751,
+      "durationMs": 23090,
       "isDummy": false,
       "enriched": true,
       "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0,
-      "bootstrappedFromBundled": true,
-      "bootstrappedAt": "2026-11-03T21:38:41.958Z",
-      "lastTtBrowserAt": "2026-11-03T21:40:52.316Z",
-      "ttBrowserZero": true
+      "metricsUpgraded": 0
     }
   },
   {
@@ -146211,16 +146199,16 @@
       "nickname": "Nisyananda",
       "fullName": "Nisyananda",
       "avatarUrl": "https://p16-common-sign.tiktokcdn-us.com/tos-alisg-avt-0068/0258aa84bf39276b055167e3387e92e0~tplv-tiktokx-cropcenter:1080:1080.webp?dr=9640&refresh_token=a6009de3&x-expires=1784703600&x-signature=4lsIzbpbTWQHSK2KlaBZ3TGqeb4%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=2472a6c6&idc=useast8",
-      "bio": "itsnisyananda",
-      "biography": "itsnisyananda",
+      "bio": "Company",
+      "biography": "Company",
       "verified": false,
-      "followerCount": 34900,
+      "followerCount": 35300,
       "followingCount": 14,
-      "heartCount": 317100,
+      "heartCount": 329900,
       "postCount": 166,
       "externalUrl": "",
       "isPrivate": false,
-      "signature": "itsnisyananda",
+      "signature": "Company",
       "videoCount": 166,
       "localAvatar": "/TITAN/assets/avatars/tt-itsnisyananda.jpeg"
     },
@@ -151169,20 +151157,16 @@
         "thumbnailUrl": "https://p16-common-sign.tiktokcdn.com/tos-maliva-p-0068/91719c06458542f9990ccb8224b04e92_1725695759~tplv-tiktokx-origin.image?dr=14575&x-expires=1788199200&x-signature=d3zLi9XBZhaYw1lv9tNFNtKhEOg%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my2"
       }
     ],
-    "scrapedAt": "2026-11-02T23:26:37.405Z",
-    "lastFreeEnrichAt": "2026-11-02T23:26:37.405Z",
+    "scrapedAt": "2026-11-04T21:51:13.431Z",
+    "lastFreeEnrichAt": "2026-11-04T21:51:13.431Z",
     "stats": {
       "totalPosts": 170,
-      "durationMs": 17430,
+      "durationMs": 21318,
       "isDummy": false,
       "enriched": true,
       "enrichmentSource": "bundled-preservation",
       "newPostsAdded": 0,
-      "metricsUpgraded": 0,
-      "bootstrappedFromBundled": true,
-      "bootstrappedAt": "2026-11-03T21:38:41.965Z",
-      "lastTtBrowserAt": "2026-11-03T21:41:11.454Z",
-      "ttBrowserZero": true
+      "metricsUpgraded": 0
     }
   }
 ]
